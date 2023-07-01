@@ -1,0 +1,13 @@
+version: "3"
+services:
+  webhook-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT:3000
+      - VERIFY_TOKEN:""
+    volumes:
+      - ./dist:/app/dist

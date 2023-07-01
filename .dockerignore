@@ -1,0 +1,28 @@
+node_modules
+npm-debug.log
+
+# code files 
+./src
+./dist
+
+
+# Dockerfiles 
+.dockerignore
+
+# Dev 
+
+Dockerfile.dev
+docker-compose.dev.yaml
+
+# Prod
+Dockerfile
+docker-compose.yaml
+
+# Typescript
+tsconfig.json
+
+# Git
+.gitignore
+.git/
+
+
