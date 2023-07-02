@@ -23,6 +23,9 @@ RUN chown -R myuser:myuser /app
 # Switch to the new user
 USER myuser
 
+# Indicate that port 3000 will be opened in this application.
+EXPOSE 3000
+
 # Set the command to run the entry point script
 # Start nodemon 
 CMD npm run dev

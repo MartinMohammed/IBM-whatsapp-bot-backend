@@ -8,6 +8,6 @@ services:
       - "3000:3000"
     environment:
       - PORT=3000
-      - VERIFY_TOKEN=""
+      - VERIFY_TOKEN="8f76f6840a48f64159f30c1ff659e7bd8220f1e4cf31bf44f241e24f"
     volumes:
       - ./dist:/app/dist # Mount the local "dist" directory to the container's "dist" directory

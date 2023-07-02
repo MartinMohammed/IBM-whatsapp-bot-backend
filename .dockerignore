@@ -3,7 +3,6 @@ npm-debug.log
 
 # code files 
 ./src
-./dist
 
 
 # Dockerfiles 

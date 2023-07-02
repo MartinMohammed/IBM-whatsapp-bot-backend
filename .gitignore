@@ -1,3 +1,11 @@
+# Miscellaneous
+keys
+
+
+# Mac specific 
+.DS_Store
+
+
 # Logs
 logs
 *.log
