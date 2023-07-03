@@ -2,7 +2,9 @@
 // Import the necessary libraries: express and body-parser.
 import express from "express";
 import bodyParser from "body-parser";
-import router from "./routes/Webhook";
+import webhookRouter from "./routes/Webhook";
+import healthRouter from "./routes/Health";
+
 // ----------------- Requirements ----------------- //
 
 // ----------------- CONSTANTS ----------------- //
@@ -14,7 +16,8 @@ const app = express();
 app.use(bodyParser.json());
 
 // Sign in the router
-app.use("/webhook", router);
+app.use("/", healthRouter);
+app.use("/webhook", webhookRouter);
 // ----------------- Register middleware ----------------- //
 
 // ----------------- Register routes ----------------- //
