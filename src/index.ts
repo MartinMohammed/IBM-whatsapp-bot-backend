@@ -20,14 +20,6 @@ app.use("/", healthRouter);
 app.use("/webhook", webhookRouter);
 // ----------------- Register middleware ----------------- //
 
-// ----------------- Register routes ----------------- //
-// Uncomment the following route handler to respond with "Hi" on the root endpoint.
-
-app.get("/", (req, res) => {
-  res.send("Hi");
-});
-// ----------------- Register routes ----------------- //
-
 const PORT = process.env.PORT || 3000; // Use the provided environment variable or fallback to port 3000.
 app.listen(PORT, () => {
   console.log(`Server listening on Port: ${PORT}`);
