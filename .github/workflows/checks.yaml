@@ -1,0 +1,50 @@
+# Workflow name
+name: Checks
+
+# Trigger on push events to the main branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # Job for testing and linting
+  test-lint:
+    # Human-friendly name
+    name: Test
+    # The runner, specifies the operating system for the job
+    # docker-compose comes pre-installed on this operating system
+    runs-on: ubuntu-20.04
+    # Steps to be executed for the job
+    steps:
+      - name: Login to Docker Hub
+        # Using a pre-made action provided by the GitHub Actions repository
+        # An action is a Docker container with a configuration to perform a specific task
+        uses: docker/login-action@v2.2.0
+        # Credentials from GitHub secrets
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Checkout
+        # Checking out the code to make it available for subsequent steps
+        # In the context of GitHub Actions, "checking out" refers to the process
+        # of fetching the source code of your repository and making
+        # it available for the subsequent steps in the workflow.
+        # It allows the workflow to access and work with the codebase, such as running tests,
+        # performing linting, or building artifacts.
+        uses: actions/checkout@v3.5.3
+
+      - name: Build
+        # Building the Docker image using the provided Dockerfile
+        run: docker build -f Dockerfile.dev -t project-image .
+
+      - name: Test
+        # Running the tests inside the project's Docker container
+        run: docker run project-image npm run coverage
+
+      - name: Build and Push
+        # Building the new Docker image and pushing it to the Docker registry
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USER }}/webhook-api:latest .
+          docker push ${{ secrets.DOCKERHUB_USER }}/webhook-api:latest
