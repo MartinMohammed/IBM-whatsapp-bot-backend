@@ -1,4 +1,6 @@
+import Helper from "../../Helper";
 import { MessageTypes } from "../../processWebhookPayload/types/message";
+import { Services } from "../../types/service";
 import { sendTextMessage } from "../sendTextMessage";
 import { IMessagesEndpointError } from "../types/error";
 import { IMessageResponseData, ITextObject } from "../types/textMessage";
@@ -37,50 +39,67 @@ describe("sendMessage Test", () => {
       body: "Hi",
     },
   };
-  let mockAxiosPost: jest.SpyInstance;
+  let mockAxiosRequest: jest.SpyInstance;
+
   beforeAll(() => {
     // Mock console.log
     jest.spyOn(console, "log").mockImplementation(() => {});
-    // Your test code here
   });
+
   beforeEach(() => {
     // Mock the axios.post method
-    mockAxiosPost = jest.spyOn(axios, "post");
+    mockAxiosRequest = jest.spyOn(axios, "request");
   });
-  it("should make a post request to the WhatsApp Cloud API to send a message to a user", async () => {
+
+  it("should make a POST request to the WhatsApp Cloud API to send a message to a user", async () => {
     // Mock the axios.post method to return the demo response body
-    mockAxiosPost.mockResolvedValue(constDemoResponseBody);
+    mockAxiosRequest.mockResolvedValue(constDemoResponseBody);
+
     // Call the sendTextMessage function and expect it not to throw an error
     await expect(sendTextMessage(demoTextObject)).resolves.not.toThrowError();
+
     // Expect the axios.post method to have been called with the correct arguments
-    expect(mockAxiosPost).toHaveBeenCalledWith(
-      expect.any(String),
-      demoTextObject
-    );
+    expect(mockAxiosRequest).toHaveBeenCalledWith({
+      url: Helper.constructUrlPathToMetaService(Services.MESSAGES),
+      method: "post",
+      maxBodyLength: Infinity,
+      data: demoTextObject,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.USER_ACCESS_TOKEN}`,
+      },
+    });
   });
+
   it("should throw an error because the status code returned was not 200", async () => {
     // Mock the axios.post method to return a response with status 404
-    mockAxiosPost.mockResolvedValue({ status: 404, data: demoResponseData });
+    mockAxiosRequest.mockResolvedValue({ status: 404, data: demoResponseData });
+
     // Expect sendTextMessage to throw an error when called
     await expect(sendTextMessage(demoTextObject)).rejects.toThrowError(
       "Failed to send message to Meta."
     );
   });
-  it("should throw an error if status code is 200 but no response body was sent or when it is empty", async () => {
+
+  it("should throw an error if the status code is 200 but no response body was sent or when it is empty", async () => {
     // Mock the axios.post method to return a response with status 200 and no data
-    mockAxiosPost.mockResolvedValue({ status: 200 });
+    mockAxiosRequest.mockResolvedValue({ status: 200 });
+
     // Expect sendTextMessage to throw an error when called
     await expect(sendTextMessage(demoTextObject)).rejects.toThrowError(
       "Failed to send message to Meta."
     );
+
     // Mock the axios.post method to return a response with status 200 and empty data
-    mockAxiosPost.mockResolvedValue({ status: 200, data: {} });
+    mockAxiosRequest.mockResolvedValue({ status: 200, data: {} });
+
     // Expect sendTextMessage to throw an error when called
     await expect(sendTextMessage(demoTextObject)).rejects.toThrowError(
       "Failed to send message to Meta."
     );
   });
-  it("should throw an error containing the error message when 'error' property was set in response data", async () => {
+
+  it("should throw an error containing the error message when the 'error' property was set in response data", async () => {
     const messageEndpointError: IMessagesEndpointError = {
       error: {
         code: 238,
@@ -89,17 +108,18 @@ describe("sendMessage Test", () => {
         error_data: {
           messaging_product: "whatsapp",
           details:
-            "Recipient phone number not in allowed list: Add recipient phone number to recipient list and try again.",
+            "Recipient phone number not in allowed list: Add recipient phone number to the recipient list and try again.",
         },
         fbtrace_id: "A7AFUulwUEMY3wOGvyJwzg-",
       },
     };
-    mockAxiosPost.mockResolvedValue({
+
+    mockAxiosRequest.mockResolvedValue({
       status: 200,
       data: messageEndpointError,
     });
+
     // Expect sendTextMessage to throw an error containing the error message
-    // Await Promise to reject and throw an error.
     await expect(sendTextMessage(demoTextObject)).rejects.toThrowError(
       new Error(
         "Failed to send message to Meta. Error: " +
@@ -107,10 +127,12 @@ describe("sendMessage Test", () => {
       )
     );
   });
+
   afterEach(() => {
     // Clears the mock.calls and mock.instances properties of all mocks
     jest.clearAllMocks();
   });
+
   afterAll(() => {
     // Restore all mocks
     jest.restoreAllMocks();

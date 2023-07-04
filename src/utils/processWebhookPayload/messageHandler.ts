@@ -1,7 +1,6 @@
 import { sendTextMessage } from "../messagingFeatures/sendTextMessage";
 import { ITextObject } from "../messagingFeatures/types/textMessage";
 import { IValue } from "./types/change";
-
 import {
   IMessage,
   ITextMessage,
@@ -9,32 +8,6 @@ import {
   IImageMessage,
   MessageTypes,
 } from "./types/message";
-
-// /**
-//  * Represents a generic message handler.
-//  * @param message - The message to handle.
-//  * @param metadata - The metadata associated with the message.
-//  */
-// export function messageHandler(
-//   message: ITextMessage,
-//   metadata: Value["metadata"]
-// ): void | { from: String; id: String; timestamp: String; type: String };
-
-// export function messageHandler(
-//   message: IReactionMessage,
-//   metadata: Value["metadata"]
-// ): void;
-
-// export function messageHandler(
-//   message: IImageMessage,
-
-//   metadata: Value["metadata"]
-// ): void | {
-//   from: String;
-//   id: String;
-//   timestamp: String;
-//   type: String;
-// };
 
 /**
  * Handles different types of messages by printing their properties.
@@ -75,20 +48,24 @@ export function messageHandler(
             message.from
           }\nYour last WAMID: ${
             message.id
-          }\nThe date of the last message: ${new Date(message.timestamp)}`,
+          }\nThe date of the last message: ${new Date(
+            +message.timestamp * 1000
+          ).toLocaleString()}`,
         },
       };
       sendTextMessage(textObject);
       break;
+
     // TODO: IMPLEMENT
     case MessageTypes.REACTION:
-      // // Handle reaction messages
+      // Handle reaction messages
       // const reactionMessage = message as IReactionMessage;
       // console.log("Reaction Message ID:", reactionMessage.reaction.message_id);
       // console.log("Emoji:", reactionMessage.reaction.emoji);
       break;
+
     case MessageTypes.IMAGE:
-      // // Handle image messages
+      // Handle image messages
       // const imageMessage = message as IImageMessage;
       // console.log("Image Caption:", imageMessage.image.caption);
       // console.log("Image MIME Type:", imageMessage.image.mime_type);

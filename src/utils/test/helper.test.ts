@@ -22,8 +22,8 @@ describe("Meta Cloud API Service Endpoint Tests", () => {
 
   it(`should return the correct URL for the ${Services.MESSAGES} service endpoint`, () => {
     const result = Helper.constructUrlPathToMetaService(Services.MESSAGES);
-    const { FacebookBaseUrl, MetaGraphAPIVersion, PhoneNumber } = Constants;
-    const expectedUrl = `${FacebookBaseUrl}/${MetaGraphAPIVersion}/${PhoneNumber}/${Services.MESSAGES}`;
+    const { FacebookBaseUrl, MetaGraphAPIVersion, PhoneNumberID } = Constants;
+    const expectedUrl = `${FacebookBaseUrl}/${MetaGraphAPIVersion}/${PhoneNumberID}/${Services.MESSAGES}`;
     expect(result).toBe(expectedUrl);
   });
 });

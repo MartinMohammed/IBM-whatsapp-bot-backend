@@ -43,8 +43,8 @@ jobs:
         # Running the tests inside the project's Docker container
         run: docker run project-image npm run coverage
 
-      - name: Build and Push Docker production image
-        # Building the new Docker image and pushing it to the Docker registry
-        run: |
-          docker build -t ${{ secrets.DOCKERHUB_USER }}/webhook-api:latest .
-          docker push ${{ secrets.DOCKERHUB_USER }}/webhook-api:latest
+      # - name: Build and Push Docker production image
+      #   # Building the new Docker image and pushing it to the Docker registry
+      #   run: |
+      #     docker build -t ${{ secrets.DOCKERHUB_USER }}/webhook-api:latest .
+      #     docker push ${{ secrets.DOCKERHUB_USER }}/webhook-api:latest

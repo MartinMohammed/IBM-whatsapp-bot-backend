@@ -1,15 +1,12 @@
 import { demoChangesPayload } from "../../../demoData/webhookPayload";
-import { messageHandler } from "../messageHandler";
+import { messageHandler, repliedToMessage } from "../messageHandler";
 import { IMessage, MessageTypes } from "../types/message";
 import * as MessageHandlerModule from "../messageHandler";
 import * as SendTextMessageModule from "../../messagingFeatures/sendTextMessage";
 
 describe("Given messages from Changes:", () => {
-  let mockedRepliedToMessage: jest.SpyInstance<
-    boolean,
-    [message: IMessage],
-    any
-  >;
+  let mockedRepliedToMessage: jest.SpyInstance<boolean, [message: IMessage]>;
+
   beforeAll(() => {
     // Mock the console.log function
     jest.spyOn(console, "log").mockImplementation(() => {});
@@ -26,18 +23,18 @@ describe("Given messages from Changes:", () => {
   });
 
   it("should throw an error if the message type is unknown", () => {
-    const unkownMessageType = "unknown_message_type";
+    const unknownMessageType = "unknown_message_type";
 
     const { metadata, messages } = demoChangesPayload.entry[0].changes[0].value;
     const demoMessage = {
       ...messages![0],
-      type: unkownMessageType as MessageTypes,
+      type: unknownMessageType as MessageTypes,
     } as IMessage;
 
     expect(() => {
       messageHandler(demoMessage, metadata);
       expect(mockedRepliedToMessage).toReturnWith(false);
-    }).toThrow(Error("Unknown Message Type: " + unkownMessageType));
+    }).toThrow(Error("Unknown Message Type: " + unknownMessageType));
   });
 
   it("should not throw an error if the message type is known", () => {
@@ -54,9 +51,9 @@ describe("Given messages from Changes:", () => {
       }).not.toThrow(Error("Unknown Message Type: " + validMessageType));
     });
   });
-  test("that 'repliedToMessage function returns true if the message is indeed a reply message.", () => {
-    const { messages, metadata } =
-      demoChangesPayload["entry"][0].changes[0].value;
+
+  test("that 'repliedToMessage' function returns true if the message is indeed a reply message", () => {
+    const { messages, metadata } = demoChangesPayload.entry[0].changes[0].value;
     const demoMessage: IMessage = {
       ...messages![0],
       context: {

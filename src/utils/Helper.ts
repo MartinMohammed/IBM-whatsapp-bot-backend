@@ -6,7 +6,7 @@ import Constants from "./Constants";
  * Creates a path to the specified URL.
  */
 function constructUrlPathToMetaService(service: ServiceType): string {
-  const { FacebookBaseUrl, PhoneNumber, MetaGraphAPIVersion } = Constants;
+  const { FacebookBaseUrl, PhoneNumberID, MetaGraphAPIVersion } = Constants;
 
   switch (service) {
     case Services.BUSINESS_COMPLIANCE_INFO:
@@ -15,7 +15,7 @@ function constructUrlPathToMetaService(service: ServiceType): string {
     case Services.MESSAGES:
     case Services.DERIGSTER:
     case Services.WHATSAPP_BUSINESS_PROFILE:
-      return `${FacebookBaseUrl}/${MetaGraphAPIVersion}/${PhoneNumber}/${service}`;
+      return `${FacebookBaseUrl}/${MetaGraphAPIVersion}/${PhoneNumberID}/${service}`;
     // TODO
     // case Services.PHONE_NUMBERS:
     //   break;
