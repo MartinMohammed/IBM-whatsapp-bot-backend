@@ -4,11 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./dist/index.js",
-    "dev": "nodemon ./dist/index.js",
+    "start": "node ./dist/server.js",
+    "dev": "nodemon ./dist/server.js",
     "build": "tsc && for file in ./dist/**/*.js; do uglifyjs $file -c -m -o $file; done",
-    "watch": "tsc --watch"
+    "build:watch": "tsc --watch",
+    "test": "jest --verbose --coverage ./dist",
+    "test:watch": "jest --verbose --watchAll --coverage ./dist"
   },
   "keywords": [],
   "author": "",
@@ -19,8 +20,14 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.17",
+    "@types/jest": "^29.5.2",
+    "@types/lodash": "^4.14.195",
     "@types/node": "^20.3.3",
+    "@types/supertest": "^2.0.12",
+    "jest": "^29.5.0",
+    "lodash": "^4.17.21",
     "nodemon": "^2.0.22",
+    "supertest": "^6.3.3",
     "typescript": "^5.1.6",
     "uglify-js": "^3.17.4"
   }

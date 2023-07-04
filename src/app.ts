@@ -20,7 +20,5 @@ app.use("/", healthRouter);
 app.use("/webhook", webhookRouter);
 // ----------------- Register middleware ----------------- //
 
-const PORT = process.env.PORT || 3000; // Use the provided environment variable or fallback to port 3000.
-app.listen(PORT, () => {
-  console.log(`Server listening on Port: ${PORT}`);
-});
+// Export for supertest purposes.
+export default app;

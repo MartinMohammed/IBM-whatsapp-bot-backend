@@ -1,24 +1,18 @@
 {
   "compilerOptions": {
-    // Specifies the target ECMAScript version to compile to.
     "target": "es2016",
-
-    // Specifies the module system to use for outputting the compiled code.
     "module": "commonjs",
-
-    // Specifies the output directory for the compiled code.
     "outDir": "./dist",
-
-    // Enables interoperability between CommonJS and ES modules.
     "esModuleInterop": true,
-
-    // Ensures consistent casing for file names, including imports.
     "forceConsistentCasingInFileNames": true,
-
-    // Enables strict type checking and stricter error checking.
     "strict": true,
-
-    // Skips type checking for declaration files (e.g., *.d.ts files).
     "skipLibCheck": true
-  }
+  },
+  "include": [
+    "src/**/*.ts", // Include all files under "src" directory
+    "tests/**/*.test.ts" // Include all files ending with "test.ts" under "tests" directory
+  ],
+  "exclude": [
+    "node_modules" // Exclude the "node_modules" directory
+  ]
 }

@@ -14,6 +14,10 @@ RUN npm install
 # Copy all remaining files to the working directory
 COPY ./ .
 
+# Remove all test files from production dist. version 
+RUN find . -name '*.test.ts' -delete
+
+
 # Create a new user inside the container
 RUN addgroup -S myuser && adduser -S -G myuser myuser
 
