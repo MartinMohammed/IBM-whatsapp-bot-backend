@@ -6,7 +6,9 @@ const router = express.Router();
 // To make a health check
 router.get("/health", (req: Request, res: Response) => {
   // Send HTTP Status code 200, indicating the service is online.
-  res.status(200).json({});
+  res.status(200).json({
+    status: "OK",
+  });
 });
 
 export default router;

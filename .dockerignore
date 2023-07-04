@@ -1,3 +1,8 @@
+# Miscallenous 
+scripts
+
+
+# Npm and node
 node_modules
 npm-debug.log
 
@@ -8,13 +13,10 @@ npm-debug.log
 demoData
 coverage
 
-
-
 # Dockerfiles 
 .dockerignore
 
 # Dev 
-
 Dockerfile.dev
 docker-compose.dev.yaml
 

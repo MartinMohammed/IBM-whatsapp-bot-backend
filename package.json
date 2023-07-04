@@ -6,9 +6,10 @@
   "scripts": {
     "start": "node ./dist/server.js",
     "dev": "nodemon ./dist/server.js",
-    "build": "tsc && for file in ./dist/**/*.js; do uglifyjs $file -c -m -o $file; done",
+    "build": "tsc && find ./dist -type f -name '*.js' -exec uglifyjs {} -c -m -o {} \\;",
     "build:watch": "tsc --watch",
-    "test": "jest --verbose --coverage ./dist",
+    "test": "jest --verbose ./dist",
+    "coverage": "jest --verbose --coverage ./dist",
     "test:watch": "jest --verbose --watchAll --coverage ./dist"
   },
   "keywords": [],

@@ -18,7 +18,9 @@ describe("Given the endpoint '/health': ", () => {
     expect(response.statusCode).toBe(200);
 
     // Expect the response body to be an empty JSON object
-    expect(response.body).toEqual({});
+    expect(response.body).toEqual({
+      status: "OK",
+    });
   });
   afterAll(() => {
     jest.restoreAllMocks();

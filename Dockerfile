@@ -14,10 +14,11 @@ RUN npm install
 # Copy all remaining files to the working directory
 COPY ./ .
 
-# Remove all test files from production dist. version 
-RUN find . -name '*.test.ts' -delete
+# Search for and remove all "test" directories within the project.
+RUN find /app/dist -type d -name "test" -prune -exec rm -rf {} \;
 
-
+# Remove the demoData folder 
+RUN rm -rf /app/dist/demoData
 
 
 # Create a new user inside the container
@@ -32,5 +33,5 @@ USER myuser
 # Indicate that port 3000 will be opened in this application.
 EXPOSE 3000
 
-# Set the command to build and start the application in development mode
-CMD npm run start
+# Set the command to build and start the application in
+CMD [ "npm", "run", "start" ]

@@ -28,4 +28,4 @@ EXPOSE 3000
 
 # Set the command to run the entry point script
 # Start nodemon 
-CMD npm run dev
+CMD npm run jest && npm run dev
