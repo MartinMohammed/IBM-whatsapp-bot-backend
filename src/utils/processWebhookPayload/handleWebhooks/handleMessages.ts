@@ -1,5 +1,5 @@
 import { messageHandler } from "../messageHandler";
-import { Value } from "../types/change";
+import { IValue } from "../types/change";
 import {
   MessageTypes,
   IMessage,
@@ -13,11 +13,13 @@ import {
  * @param messages - An array of message objects.
  * @param metadata - Metadata describing the business subscribed to the webhook.
  */
-export function handleMessages(
+export async function handleMessages(
   messages: IMessage[],
-  metadata: Value["metadata"]
-): void {
-  messages.forEach((message) => {
-    messageHandler(message, metadata);
-  });
+  metadata: IValue["metadata"]
+): Promise<void> {
+  await Promise.all(
+    messages.map(async (message) => {
+      await messageHandler(message, metadata);
+    })
+  );
 }

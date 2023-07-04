@@ -1,7 +1,7 @@
 import express from "express";
 import {
   verifyWebhook,
-  receiveMessages,
+  receiveChanges,
 } from "../controllers/webhookController";
 
 const router = express.Router();
@@ -11,6 +11,6 @@ const router = express.Router();
 router.get("/", verifyWebhook);
 
 // Handle events, e.g., receive messages.
-router.post("/", receiveMessages);
+router.post("/", receiveChanges);
 
 export default router;

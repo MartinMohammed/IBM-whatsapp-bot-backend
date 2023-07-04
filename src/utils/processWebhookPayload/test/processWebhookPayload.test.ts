@@ -4,20 +4,24 @@ import { IWebhookMessagesPayload } from "../types/webhookMessagesPayload";
 import { processWebhookPayload } from "../processWebhookPayload";
 import Mutable from "../../types/mutable";
 import { Field, FieldTypes, IChange } from "../types/change";
-import { Value } from "../types/change";
-import * as validateWebhookPayload from "../validateWebhookPayload";
+import { IValue } from "../types/change";
+import * as ValidateWebhookPayloadModule from "../validateWebhookPayload";
+import * as SendTextMessageModule from "../../messagingFeatures/sendTextMessage";
 
 describe("Given a webhook payload: ", () => {
   // Mock the console.log function
   beforeAll(() => {
     jest.spyOn(console, "log").mockImplementation(() => {});
+    jest
+      .spyOn(SendTextMessageModule, "sendTextMessage")
+      .mockImplementation((textObject) => Promise.resolve());
   });
 
   beforeEach(() => {
     // Mock the validateWebhookPayload function
     // Allow the Payload data to be valid.
     jest
-      .spyOn(validateWebhookPayload, "validateWebhookPayload")
+      .spyOn(ValidateWebhookPayloadModule, "validateWebhookPayload")
       .mockReturnValue(true);
   });
 
@@ -29,7 +33,7 @@ describe("Given a webhook payload: ", () => {
     // Modify the messages property to be undefined
     const change: Mutable<IChange> =
       copyOfDemoChangesPayload.entry[0].changes[0];
-    (change.value as Mutable<Value>).messages = undefined!;
+    (change.value as Mutable<IValue>).messages = undefined!;
 
     // Invoke the processWebhookPayload function
     expect(() => processWebhookPayload(copyOfDemoChangesPayload)).toThrowError(

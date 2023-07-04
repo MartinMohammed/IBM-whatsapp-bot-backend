@@ -1,13 +1,12 @@
 import { IStatus } from "./status";
 import { IImageMessage, IReactionMessage, ITextMessage } from "./message";
 import { IContact } from "./contact";
-import { IError } from "./error";
 
 /**
  * Represents a change object in the webhook payload.
  */
 export interface IChange {
-  readonly value: Value;
+  readonly value: IValue;
   // The field property in the webhook payload refers to the type of webhook event or notification being received.
   // It indicates the specific category or type of change that is being notified.
   readonly field: Field;
@@ -16,7 +15,7 @@ export interface IChange {
 /**
  * Represents the value object within a change object.
  */
-export interface Value {
+export interface IValue {
   // Product used to send the message.
   readonly messaging_product: "whatsapp";
 
@@ -27,9 +26,6 @@ export interface Value {
   };
   // Array of contact objects with information for the customer who sent a message to the business.
   readonly contacts: IContact[];
-
-  //   An array of error objects describing the error.
-  readonly errors?: IError[];
 
   // Status object for a message that was sent by the business that is subscribed to the webhook.
   readonly statuses?: IStatus[];

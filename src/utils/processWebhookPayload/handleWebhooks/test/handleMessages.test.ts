@@ -2,6 +2,7 @@ import { demoChangesPayload } from "../../../../demoData/webhookPayload";
 import { IMessage, MessageType, MessageTypes } from "../../types/message";
 import { handleMessages } from "../handleMessages";
 import * as messageHandler from "../../messageHandler";
+import * as SendTextMessageModule from "../../../messagingFeatures/sendTextMessage";
 
 describe("Given a bunch of messages", () => {
   let mockMessageHandler: jest.SpyInstance<
@@ -21,6 +22,9 @@ describe("Given a bunch of messages", () => {
   });
 
   beforeEach(() => {
+    jest
+      .spyOn(SendTextMessageModule, "sendTextMessage")
+      .mockImplementation((textObject) => Promise.resolve());
     // Mock the messageHandler function
     mockMessageHandler = jest
       .spyOn(messageHandler, "messageHandler")

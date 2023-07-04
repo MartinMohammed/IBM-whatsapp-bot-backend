@@ -1,3 +1,5 @@
+import { IErrorMessage } from "./error";
+
 /**
  * Represents a message object within the value object.
  */
@@ -6,6 +8,12 @@ export interface IMessage {
   readonly id: string;
   readonly timestamp: string;
   readonly type: MessageType;
+  // From represents the point of time the message was sent.
+  // context, information about the message that was replied to.
+  readonly context?: {
+    message_id: string;
+    from: string;
+  };
 }
 
 /**
@@ -18,6 +26,7 @@ export interface ITextMessage extends IMessage {
 
 /**
  * Represents a reaction message object within the value object.
+ * Yes, when you react to a WhatsApp message with an emoji, it can be referred to as a "reaction object."
  */
 export interface IReactionMessage extends IMessage {
   readonly type: MessageTypes.REACTION;
@@ -40,34 +49,76 @@ export interface IImageMessage extends IMessage {
   };
 }
 
+export interface IStickerMessage extends IMessage {
+  readonly type: MessageTypes.STICKER;
+  readonly sticker: {
+    mime_type: string;
+    sha256: string;
+    id: string;
+  };
+}
+
+export interface IUnkownMessage extends IMessage {
+  readonly type: MessageTypes.UNKOWN;
+  readonly?: IErrorMessage[];
+}
+
+// e.g.  Currently, the Cloud API does not support webhook status updates for deleted messages.
+// If a user deletes a message, you will receive a webhook with an error code for an unsupported message type:
+export interface IUnsupportedMessage extends IMessage {
+  readonly type: MessageTypes.UNSUPPORTED;
+  readonly errors?: IErrorMessage[];
+}
+
+export interface ILocationMessage extends IMessage {
+  // Somehow does not have a type
+  readonly location: {
+    readonly latitude: number;
+    readonly longitude: number;
+    readonly name: string;
+    readonly address: string;
+  };
+}
+
+export interface IQuickReplyButtonMessage extends IMessage {
+  readonly type: MessageTypes.BUTTON;
+  button: {
+    // Required for URL buttons.
+    text: String;
+    // Developer-defined payload that is returned when the button is clicked in addition to the display text on the button.
+    payload: String;
+  };
+}
+
 /**
  * Represents the different types of messages as named constants.
+ * Contains some Types that are only available when receiving messanges.
  */
 export enum MessageTypes {
   TEXT = "text",
   IMAGE = "image",
   REACTION = "reaction",
-  AUDIO = "audio",
-  CONTACTS = "contacts",
-  DOCUMENT = "document",
-  LOCATION = "location",
-  RECIPIENT_TYPE = "recipient_type",
   STICKER = "sticker",
-  TEMPLATE = "template",
+  UNKOWN = "unknown",
+  BUTTON = "button",
+  ORDER = "order",
+  INTERACTIVE = "list_reply",
+  SYSTEM = "system",
+  UNSUPPORTED = "unsupported",
 }
 
 /**
  * Represents the different types of messages that are supported by Meta.
- * And currently supported by our application: "text" | "image" | "reaction" | "audio" | "contacts" | "document" | "location" | "recipient_type" | "sticker" | "template"
+ * And currently supported by our application: "text" | "image" | "reaction"
  */
 export type MessageType =
   | MessageTypes.TEXT
-  | MessageTypes.IMAGE
   | MessageTypes.REACTION
-  | MessageTypes.AUDIO
-  | MessageTypes.CONTACTS
-  | MessageTypes.DOCUMENT
-  | MessageTypes.LOCATION
-  | MessageTypes.RECIPIENT_TYPE
+  | MessageTypes.IMAGE
   | MessageTypes.STICKER
-  | MessageTypes.TEMPLATE;
+  | MessageTypes.UNKOWN
+  | MessageTypes.BUTTON
+  | MessageTypes.ORDER
+  | MessageTypes.INTERACTIVE
+  | MessageTypes.SYSTEM
+  | MessageTypes.UNSUPPORTED;

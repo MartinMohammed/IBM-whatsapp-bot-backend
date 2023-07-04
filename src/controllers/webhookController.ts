@@ -26,7 +26,7 @@ function verifyWebhook(req: Request, res: Response): void {
 }
 
 // Receive incoming messages from WhatsApp
-function receiveMessages(req: Request, res: Response): void {
+function receiveChanges(req: Request, res: Response): void {
   const body: IWebhookMessagesPayload = req.body;
   console.log(JSON.stringify(body, null, 2));
 
@@ -48,4 +48,4 @@ function receiveMessages(req: Request, res: Response): void {
   }
 }
 
-export { verifyWebhook, receiveMessages };
+export { verifyWebhook, receiveChanges };

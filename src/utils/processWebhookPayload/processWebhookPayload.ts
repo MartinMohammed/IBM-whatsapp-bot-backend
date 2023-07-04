@@ -30,6 +30,7 @@ function processChanges(changes: IChange[]) {
   // Go through every change.
   changes.forEach((change) => {
     const { field, value } = change;
+    // Currently only supported 'messages'
     switch (field) {
       case FieldTypes.Messages:
         // field — String. Notification type.
