@@ -3,7 +3,7 @@ import { validateWebhookPayload } from "../validateWebhookPayload";
 import { IWebhookMessagesPayload } from "../types/webhookMessagesPayload";
 import Mutable from "../../types/mutable";
 import _ from "lodash";
-import { demoChangesPayload } from "../../../../demoData/webhookPayload";
+import { demoChangesPayload } from "../../../demoData/webhookPayload";
 import { IChange } from "../types/change";
 
 describe("Given sample WebhookPayload: ", () => {

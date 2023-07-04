@@ -1,4 +1,4 @@
-import { demoChangesPayload } from "../../../../../demoData/webhookPayload";
+import { demoChangesPayload } from "../../../../demoData/webhookPayload";
 import { IMessage, MessageType, MessageTypes } from "../../types/message";
 import { handleMessages } from "../handleMessages";
 import * as messageHandler from "../../messageHandler";

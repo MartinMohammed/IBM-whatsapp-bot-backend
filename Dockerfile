@@ -18,6 +18,8 @@ COPY ./ .
 RUN find . -name '*.test.ts' -delete
 
 
+
+
 # Create a new user inside the container
 RUN addgroup -S myuser && adduser -S -G myuser myuser
 

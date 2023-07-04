@@ -1,4 +1,4 @@
-import { demoChangesPayload } from "../../../../demoData/webhookPayload";
+import { demoChangesPayload } from "../../../demoData/webhookPayload";
 import _ from "lodash";
 import { IWebhookMessagesPayload } from "../types/webhookMessagesPayload";
 import { processWebhookPayload } from "../processWebhookPayload";

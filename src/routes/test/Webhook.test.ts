@@ -3,7 +3,7 @@ import { cloneDeep } from "lodash";
 import app from "../../app";
 import Mutable from "../../utils/types/mutable";
 import { IWebhookMessagesPayload } from "../../utils/processWebhookPayload/types/webhookMessagesPayload";
-import { demoChangesPayload } from "../../../demoData/webhookPayload";
+import { demoChangesPayload } from "../../demoData/webhookPayload";
 
 /**
  * Test suite for the '/webhook' endpoint.

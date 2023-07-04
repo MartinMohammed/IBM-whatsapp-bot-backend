@@ -1,6 +1,6 @@
-import { IWebhookMessagesPayload } from "../src/utils/processWebhookPayload/types/webhookMessagesPayload";
-import { MessageTypes } from "../src/utils/processWebhookPayload/types/message";
-import { FieldTypes } from "../src/utils/processWebhookPayload/types/change";
+import { IWebhookMessagesPayload } from "../utils/processWebhookPayload/types/webhookMessagesPayload";
+import { MessageTypes } from "../utils/processWebhookPayload/types/message";
+import { FieldTypes } from "../utils/processWebhookPayload/types/change";
 export let demoChangesPayload: IWebhookMessagesPayload = {
   object: "whatsapp_business_account",
   entry: [

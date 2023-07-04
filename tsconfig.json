@@ -2,17 +2,12 @@
   "compilerOptions": {
     "target": "es2016",
     "module": "commonjs",
-    "outDir": "./dist",
+    "outDir": "./dist", // Specify the output directory as "./dist/src" instead of just "./dist"
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true
   },
-  "include": [
-    "src/**/*.ts", // Include all files under "src" directory
-    "tests/**/*.test.ts" // Include all files ending with "test.ts" under "tests" directory
-  ],
-  "exclude": [
-    "node_modules" // Exclude the "node_modules" directory
-  ]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
 }
