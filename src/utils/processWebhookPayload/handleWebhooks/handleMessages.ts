@@ -7,6 +7,7 @@ import {
   IImageMessage,
   IReactionMessage,
 } from "../types/message";
+import logger from "../../../logger";
 
 /**
  * Handles the message objects within the webhook payload.
@@ -17,6 +18,8 @@ export async function handleMessages(
   messages: IMessage[],
   metadata: IValue["metadata"]
 ) {
+  logger.info("Handling messages:", { messages, metadata });
+
   messages.forEach((message) => {
     messageHandler(message, metadata);
   });

@@ -1,16 +1,11 @@
 import { sendTextMessage } from "../messagingFeatures/sendTextMessage";
 import { ITextObject } from "../messagingFeatures/types/textMessage";
 import { IValue } from "./types/change";
-import {
-  IMessage,
-  ITextMessage,
-  IReactionMessage,
-  IImageMessage,
-  MessageTypes,
-} from "./types/message";
+import { IMessage, ITextMessage, MessageTypes } from "./types/message";
+import logger from "../../logger";
 
 /**
- * Handles different types of messages by printing their properties.
+ * Handles different types of messages by logging their properties and sending a response.
  * @param message - The message to handle.
  * @param metadata - The metadata associated with the message.
  */
@@ -18,43 +13,34 @@ export function messageHandler(
   message: IMessage,
   metadata: IValue["metadata"]
 ) {
-  console.log("From:", message.from);
-  console.log("ID:", message.id);
-  console.log("Timestamp:", message.timestamp);
-  console.log("Type:", message.type);
+  logger.info("Handling message:", { message, metadata });
 
   const isReplyMessage = repliedToMessage(message);
   if (isReplyMessage) {
-    // The person replied to a message.
-    console.log("Person replied to message: ", message.context!.message_id);
-    console.log(message.context!.from); // Point of time replied to
+    logger.info("Message is a reply to another message.", {
+      messageId: message.context!.message_id,
+      from: message.context!.from,
+    });
   }
 
   switch (message.type) {
     case MessageTypes.TEXT:
       // Handle text messages
       const textMessage = message as ITextMessage;
-      console.log("Text:", textMessage.text.body);
+      logger.info("Received text message:", { body: textMessage.text.body });
 
-      // Send a text message back:
-      const textObject: ITextObject = {
-        to: message.from,
-        recipient_type: "individual",
-        messaging_product: "whatsapp",
-        type: textMessage.type,
-        text: {
-          preview_url: false,
-          body: `Echo: ${textMessage.text.body}\nYou are Phone Number: ${
-            message.from
-          }\nYour last WAMID: ${
-            message.id
-          }\nThe date of the last message: ${new Date(
-            +message.timestamp * 1000
-          ).toLocaleString()}`,
-        },
-      };
-      sendTextMessage(textObject);
+      // Send a text message back
+      const responseText: string = `Echo: ${
+        textMessage.text.body
+      }\nYou are Phone Number: ${message.from}\nYour last WAMID: ${
+        message.id
+      }\nThe date of the last message: ${new Date(
+        +message.timestamp * 1000
+      ).toLocaleString()}`;
+      sendResponseMessage(message.from, responseText);
       break;
+
+    // TODO: Handle other message types
 
     // TODO: IMPLEMENT
     case MessageTypes.REACTION:
@@ -89,6 +75,30 @@ export function messageHandler(
   }
 }
 
+/**
+ * Sends a text response message to the specified recipient.
+ * @param recipient - The recipient of the response message.
+ * @param text - The text content of the response message.
+ */
+function sendResponseMessage(recipient: string, text: string) {
+  const textObject: ITextObject = {
+    to: recipient,
+    recipient_type: "individual",
+    messaging_product: "whatsapp",
+    type: MessageTypes.TEXT,
+    text: {
+      preview_url: false,
+      body: text,
+    },
+  };
+  sendTextMessage(textObject);
+}
+
+/**
+ * Checks if a message is a reply to another message.
+ * @param message - The message to check.
+ * @returns A boolean indicating whether the message is a reply.
+ */
 export function repliedToMessage(message: IMessage): boolean {
   return "context" in message ? true : false;
 }

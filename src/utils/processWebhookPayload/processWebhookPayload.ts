@@ -2,6 +2,7 @@ import { IWebhookMessagesPayload } from "./types/webhookMessagesPayload";
 import { validateWebhookPayload } from "./validateWebhookPayload";
 import { handleMessages } from "./handleWebhooks/handleMessages";
 import { FieldTypes, IChange } from "./types/change";
+import logger from "../../logger";
 
 /**
  * Processes the webhook payload and invokes the appropriate message handlers.
@@ -17,6 +18,7 @@ export function processWebhookPayload(
   const notValidWebhookPayloadInGeneral =
     !validateWebhookPayload(webhookPayload);
   if (notValidWebhookPayloadInGeneral) {
+    logger.warn("Invalid webhook payload received.");
     return undefined;
   }
 
@@ -25,7 +27,7 @@ export function processWebhookPayload(
   processChanges(changes);
 }
 
-// TODO: MOVE IT WORKER, TO PROCESS THE CHANGES.
+// TODO: MOVE IT TO WORKER, TO PROCESS THE CHANGES.
 function processChanges(changes: IChange[]) {
   // Go through every change.
   changes.forEach((change) => {
@@ -40,10 +42,12 @@ function processChanges(changes: IChange[]) {
         if (contacts && messages && messages.length !== 0) {
           handleMessages(messages, metadata);
         } else {
+          logger.warn("Received empty messages in the webhook payload.");
           throw Error("Messages should not be empty.");
         }
         break;
       default:
+        logger.warn(`Unhandled webhook field: '${field}'`);
         throw new Error(`Unhandled webhook field: '${field}'`);
     }
   });

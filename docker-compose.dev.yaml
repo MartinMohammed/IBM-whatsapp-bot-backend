@@ -13,3 +13,4 @@ services:
       - PHONE_NUMBER_ID=112688608518505
     volumes:
       - ./dist:/app/dist # Mount the local "dist" directory to the container's "dist" directory
+      - ./logs:/app/logs # Mount the local 'logs' directory to the container's 'logs' directory

@@ -1,5 +1,7 @@
 # Miscallenous 
 scripts
+logs
+.DS_Store
 
 
 # Npm and node
@@ -26,6 +28,7 @@ docker-compose.yaml
 
 # Git
 .gitignore
+.github
 .git/
 
 

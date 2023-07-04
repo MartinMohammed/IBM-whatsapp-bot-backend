@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { processWebhookPayload } from "../utils/processWebhookPayload/processWebhookPayload";
 import { IWebhookMessagesPayload } from "../utils/processWebhookPayload/types/webhookMessagesPayload";
+import logger from "../logger";
 
 // Verify the webhook URL with WhatsApp
 function verifyWebhook(req: Request, res: Response): void {
@@ -12,13 +13,15 @@ function verifyWebhook(req: Request, res: Response): void {
     "hub.verify_token": hubVerifyToken,
   } = req.query;
 
-  console.log("app token: ", appToken);
-
   // Check if the hub.mode is "subscribe" and the hub.verify_token matches the appToken
   if (hubMode === "subscribe" && hubVerifyToken === appToken) {
+    const message = "Received 'GET' request to '/webhook'. Status Code: '200'.";
+    logger.http(message);
     // Return the hub.challenge value to complete the verification process
     res.status(200).send(hubChallenge);
   } else {
+    const message = "Received 'GET' request to '/webhook'. Status Code: '403'.";
+    logger.http(message);
     // If there is a mismatch in hub.mode or hub.verify_token, return a forbidden status
     console.log("Mismatch of hubMode or hubVerifyToken.");
     res.sendStatus(403);
@@ -28,7 +31,7 @@ function verifyWebhook(req: Request, res: Response): void {
 // Receive incoming messages from WhatsApp
 function receiveChanges(req: Request, res: Response): void {
   const body: IWebhookMessagesPayload = req.body;
-  console.log(JSON.stringify(body, null, 2));
+  // console.log(JSON.stringify(body, null, 2));
 
   if (
     body.object == "whatsapp_business_account" &&
@@ -39,11 +42,15 @@ function receiveChanges(req: Request, res: Response): void {
     body.entry[0].changes[0].value.messages &&
     body.entry[0].changes[0].value.messages[0]
   ) {
+    const message = "Received 'POST' request to '/webhook'. Status Code: 200";
+    logger.http(message);
     res.sendStatus(200);
     // Process the received webhook payload
     processWebhookPayload(body);
   } else {
     // If the necessary fields are not present, consider the event as not from the WhatsApp API
+    const message = "Received 'POST' request to '/webhook'. Status Code: 404";
+    logger.http(message);
     res.sendStatus(404);
   }
 }

@@ -1,5 +1,5 @@
 # Use the Node.js 16-alpine base image
-FROM node:16-alpine AS builder
+FROM node:20-alpine3.17 AS builder
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # Update npm && Install all dependencies
-RUN npm install -g npm@latest && npm install
+RUN npm install
 
 # Copy all remaining files to the working directory
 COPY . .
@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build && npm test
 
 # Second stage for the final image
-FROM node:16-alpine
+FROM node:20-alpine3.17
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -28,14 +28,15 @@ COPY --from=builder /app/package.json ./
 
 # Create a new user inside the container
 RUN addgroup -S myuser && adduser -S -G myuser myuser
+# Set the environment to production.
+ENV NODE_ENV="production"
+
 
 # Search for and remove all "test" directories within the project.
 RUN find /app/dist -type d -name "test" -prune -exec rm -rf {} \;
 
-# Remove the demoData folder 
+# Remove the demoData folder
 RUN rm -rf /app/dist/demoData
-
-# Remove the test files and the demoData folder 
 
 # Set the ownership of the working directory to the new user
 RUN chown -R myuser:myuser /app

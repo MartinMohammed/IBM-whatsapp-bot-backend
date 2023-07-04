@@ -6,6 +6,7 @@ import { IMessagesEndpointError } from "./types/error";
 import { Services } from "../types/service";
 import { IMessageResponseData, ITextObject } from "./types/textMessage";
 import axios from "axios";
+import logger from "../../logger";
 
 /**
  * Sends a text message using the Meta Cloud API.
@@ -28,7 +29,7 @@ export async function sendTextMessage(textObject: ITextObject): Promise<void> {
       data: textObject,
     };
     response = await axios.request(config);
-    console.log("message was sent");
+    logger.info("Text message sent:", textObject);
   } catch (e) {
     // If an error occurs during the POST request, return without throwing an error.
     // This allows the calling function to handle the failure gracefully.
