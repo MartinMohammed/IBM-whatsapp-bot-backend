@@ -16,10 +16,8 @@ import {
 export async function handleMessages(
   messages: IMessage[],
   metadata: IValue["metadata"]
-): Promise<void> {
-  await Promise.all(
-    messages.map(async (message) => {
-      await messageHandler(message, metadata);
-    })
-  );
+) {
+  messages.forEach((message) => {
+    messageHandler(message, metadata);
+  });
 }
