@@ -6,15 +6,15 @@ scripts
 node_modules
 npm-debug.log
 
-# code files 
-./src
-
 # Data & stats
 demoData
 coverage
 
 # Dockerfiles 
 .dockerignore
+
+# Code files 
+dist
 
 # Dev 
 Dockerfile.dev
@@ -23,9 +23,6 @@ docker-compose.dev.yaml
 # Prod
 Dockerfile
 docker-compose.yaml
-
-# Typescript
-tsconfig.json
 
 # Git
 .gitignore

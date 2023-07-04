@@ -35,10 +35,7 @@ jobs:
         # performing linting, or building artifacts.
         uses: actions/checkout@v3.5.3
 
-      - name: Transcompile Typescript
-        run: npm run build
-
-      - name: Build Docker Image
+      - name: Build Development Docker Image
         # Building the Docker image using the provided Dockerfile
         run: docker build -f Dockerfile.dev -t project-image .
 

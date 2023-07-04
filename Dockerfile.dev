@@ -1,24 +1,26 @@
 # Use the Node.js 16-alpine base image
 FROM node:16-alpine
 
+# Create a new user inside the container
+RUN addgroup -S myuser && adduser -S -G myuser myuser
+
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy the package.json file to the working directory
-COPY ./package.json .
+# Copy the package.json and package-lock.json files to the working directory
+COPY package.json package-lock.json ./
 
 # Install the dependencies
-RUN npm install
+RUN npm install -g npm@latest && npm install
 
 # Copy all remaining files to the working directory
-COPY ./ .
-
-# Create a new user inside the container
-# When creating a system user with the -S flag, no password is set for the user
-RUN addgroup -S myuser && adduser -S -G myuser myuser
+COPY . .
 
 # Set the ownership of the working directory to the new user
 RUN chown -R myuser:myuser /app
+
+# Build Production version / dist
+RUN npm run build
 
 # Switch to the new user
 USER myuser
@@ -27,5 +29,4 @@ USER myuser
 EXPOSE 3000
 
 # Set the command to run the entry point script
-# Start nodemon 
-CMD npm run jest && npm run dev
+CMD npm run test && npm run dev
