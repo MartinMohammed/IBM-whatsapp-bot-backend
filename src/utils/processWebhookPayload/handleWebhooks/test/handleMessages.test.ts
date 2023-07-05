@@ -3,6 +3,8 @@ import { IMessage, MessageType, MessageTypes } from "../../types/message";
 import { handleMessages } from "../handleMessages";
 import * as messageHandler from "../../messageHandler";
 import * as SendTextMessageModule from "../../../messagingFeatures/sendTextMessage";
+import * as DevelopmentLoggerModule from "../../../../logger/developmentLogger";
+import winston from "winston";
 
 describe("Given a bunch of messages", () => {
   let mockMessageHandler: jest.SpyInstance<
@@ -19,6 +21,17 @@ describe("Given a bunch of messages", () => {
 
   beforeAll(() => {
     jest.spyOn(console, "log").mockImplementation(() => {});
+    // Create a mock logger object that satisfies the Logger type
+    const mockLogger: unknown = {
+      error: jest.fn(),
+      warn: jest.fn(),
+      http: jest.fn(),
+      info: jest.fn(),
+      // Add other methods from the Logger type if needed
+    };
+    jest
+      .spyOn(DevelopmentLoggerModule, "developmentLogger")
+      .mockReturnValue(mockLogger as winston.Logger);
   });
 
   beforeEach(() => {

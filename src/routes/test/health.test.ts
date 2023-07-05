@@ -1,10 +1,10 @@
 import supertest from "supertest";
 import app from "../../app";
-
-// Import supertest library for making HTTP requests
+import winston from "winston";
+import logger from "../../logger";
 
 // Describe the test suite for the '/health' endpoint
-describe("Given the endpoint '/health': ", () => {
+describe("Given the endpoint '/health':", () => {
   beforeAll(() => {
     jest.spyOn(console, "log").mockImplementation(() => {});
   });
@@ -22,6 +22,7 @@ describe("Given the endpoint '/health': ", () => {
       status: "OK",
     });
   });
+
   afterAll(() => {
     jest.restoreAllMocks();
   });

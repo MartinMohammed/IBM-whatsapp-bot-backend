@@ -11,6 +11,6 @@ declare namespace NodeJS {
     // The ID of the phone number associated with the application
     PHONE_NUMBER_ID: string;
     // The current environment (either "production" or "development")
-    NODE_ENV: "production" | undefined;
+    NODE_ENV: "production" | "test" | undefined;
   }
 }

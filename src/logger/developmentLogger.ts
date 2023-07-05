@@ -1,6 +1,6 @@
 import winston from "winston";
 
-function developmentLogger() {
+export function developmentLogger() {
   const { combine, timestamp, label, prettyPrint, printf, colorize, json } =
     winston.format;
 
@@ -39,5 +39,3 @@ function developmentLogger() {
 
   return logger;
 }
-
-export default developmentLogger;

@@ -4,6 +4,8 @@ import { Services } from "../../types/service";
 import { sendTextMessage } from "../sendTextMessage";
 import { IMessagesEndpointError } from "../types/error";
 import { IMessageResponseData, ITextObject } from "../types/textMessage";
+import winston from "winston";
+import * as DevelopmentLoggerModule from "../../../logger/developmentLogger";
 import axios from "axios";
 
 describe("sendMessage Test", () => {
@@ -44,6 +46,17 @@ describe("sendMessage Test", () => {
   beforeAll(() => {
     // Mock console.log
     jest.spyOn(console, "log").mockImplementation(() => {});
+    // Create a mock logger object that satisfies the Logger type
+    const mockLogger: unknown = {
+      error: jest.fn(),
+      warn: jest.fn(),
+      http: jest.fn(),
+      info: jest.fn(),
+      // Add other methods from the Logger type if needed
+    };
+    jest
+      .spyOn(DevelopmentLoggerModule, "developmentLogger")
+      .mockReturnValue(mockLogger as winston.Logger);
   });
 
   beforeEach(() => {

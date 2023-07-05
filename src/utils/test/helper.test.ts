@@ -1,8 +1,24 @@
+import * as DevelopmentLoggerModule from "../../logger/developmentLogger";
+import winston from "winston";
 import Constants from "../Constants";
 import Helper from "../Helper";
 import { ServiceType, Services } from "../types/service";
 
 describe("Meta Cloud API Service Endpoint Tests", () => {
+  beforeAll(() => {
+    // Create a mock logger object that satisfies the Logger type
+    const mockLogger: unknown = {
+      error: jest.fn(),
+      warn: jest.fn(),
+      http: jest.fn(),
+      info: jest.fn(),
+      // Add other methods from the Logger type if needed
+    };
+    jest
+      .spyOn(DevelopmentLoggerModule, "developmentLogger")
+      .mockReturnValue(mockLogger as winston.Logger);
+  });
+
   it("should throw an error if the endpoint does not exist", () => {
     const unknownServiceEndpoint = "unknown_service_endpoint";
     expect(() =>
@@ -25,5 +41,9 @@ describe("Meta Cloud API Service Endpoint Tests", () => {
     const { FacebookBaseUrl, MetaGraphAPIVersion, PhoneNumberID } = Constants;
     const expectedUrl = `${FacebookBaseUrl}/${MetaGraphAPIVersion}/${PhoneNumberID}/${Services.MESSAGES}`;
     expect(result).toBe(expectedUrl);
+  });
+
+  afterAll(() => {
+    jest.resetAllMocks();
   });
 });

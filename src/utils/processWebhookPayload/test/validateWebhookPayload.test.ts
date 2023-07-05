@@ -5,9 +5,24 @@ import Mutable from "../../types/mutable";
 import _ from "lodash";
 import { demoChangesPayload } from "../../../demoData/webhookPayload";
 import { IChange } from "../types/change";
+import winston = require("winston");
+import * as DevelopmentLoggerModule from "../../../logger/developmentLogger";
 
 describe("Given sample WebhookPayload: ", () => {
   // Define the demo changes payload
+  beforeAll(() => {
+    // Create a mock logger object that satisfies the Logger type
+    const mockLogger: unknown = {
+      error: jest.fn(),
+      warn: jest.fn(),
+      http: jest.fn(),
+      info: jest.fn(),
+      // Add other methods from the Logger type if needed
+    };
+    jest
+      .spyOn(DevelopmentLoggerModule, "developmentLogger")
+      .mockReturnValue(mockLogger as winston.Logger);
+  });
 
   // Test to check if the payload is not of type 'whatsapp_business_account'
   it("should return false if the payload is not of type 'whatsapp_business_account'.", async () => {

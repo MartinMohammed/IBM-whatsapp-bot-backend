@@ -1,6 +1,6 @@
 import winston from "winston";
 
-function productionLogger() {
+export function productionLogger() {
   // Destructure the format methods from winston.format
   const { combine, timestamp, label, prettyPrint, printf, colorize, json } =
     winston.format;
@@ -34,5 +34,3 @@ function productionLogger() {
 
   return logger; // Return the created logger instance
 }
-
-export default productionLogger;

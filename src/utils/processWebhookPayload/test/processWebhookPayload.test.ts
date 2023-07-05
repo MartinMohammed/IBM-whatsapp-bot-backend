@@ -7,7 +7,8 @@ import { Field, FieldTypes, IChange } from "../types/change";
 import { IValue } from "../types/change";
 import * as ValidateWebhookPayloadModule from "../validateWebhookPayload";
 import * as SendTextMessageModule from "../../messagingFeatures/sendTextMessage";
-
+import * as DevelopmentLoggerModule from "../../../logger/developmentLogger";
+import winston = require("winston");
 describe("Given a webhook payload: ", () => {
   // Mock the console.log function
   beforeAll(() => {
@@ -15,6 +16,17 @@ describe("Given a webhook payload: ", () => {
     jest
       .spyOn(SendTextMessageModule, "sendTextMessage")
       .mockImplementation((textObject) => Promise.resolve());
+    // Create a mock logger object that satisfies the Logger type
+    const mockLogger: unknown = {
+      error: jest.fn(),
+      warn: jest.fn(),
+      http: jest.fn(),
+      info: jest.fn(),
+      // Add other methods from the Logger type if needed
+    };
+    jest
+      .spyOn(DevelopmentLoggerModule, "developmentLogger")
+      .mockReturnValue(mockLogger as winston.Logger);
   });
 
   beforeEach(() => {
