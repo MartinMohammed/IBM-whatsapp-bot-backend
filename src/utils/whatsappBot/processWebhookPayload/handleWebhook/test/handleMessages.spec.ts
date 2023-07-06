@@ -10,8 +10,8 @@ describe("Given a bunch of messages", () => {
     [
       message: IMessage,
       metadata: {
-        readonly display_phone_number: string;
-        readonly phone_number_id: string;
+        display_phone_number: string;
+        phone_number_id: string;
       }
     ],
     any

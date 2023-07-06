@@ -1,7 +1,6 @@
 // Import the necessary dependencies and types
 import { validateWebhookPayload } from "../validateWebhookPayload";
 import { IWebhookMessagesPayload } from "../types/webhookMessagesPayload";
-import Mutable from "../../../types/mutable";
 import _ from "lodash";
 import { whatsappDemoWebhookPayload } from "../../../../testing/data/whatsapp/whatsappDemoWebhookPayload";
 import { IChange } from "../types/change";
@@ -12,8 +11,9 @@ describe("Given sample WebhookPayload: ", () => {
 
   // Test to check if the payload is not of type 'whatsapp_business_account'
   it("should return false if the payload is not of type 'whatsapp_business_account'.", async () => {
-    const copyOfwhatsappDemoWebhookPayload: Mutable<IWebhookMessagesPayload> =
-      _.cloneDeep(whatsappDemoWebhookPayload);
+    const copyOfwhatsappDemoWebhookPayload = _.cloneDeep(
+      whatsappDemoWebhookPayload
+    );
 
     // Change the object type to a non-whatsapp_business_account type for testing
     copyOfwhatsappDemoWebhookPayload.object =
@@ -30,8 +30,9 @@ describe("Given sample WebhookPayload: ", () => {
 
   // Test to check if the payload does not contain the 'entry' object
   it("should return false if first entry of the payload is not defined and if it does not contain 'entry' object.", async () => {
-    const copyOfwhatsappDemoWebhookPayload: Mutable<IWebhookMessagesPayload> =
-      _.cloneDeep(whatsappDemoWebhookPayload);
+    const copyOfwhatsappDemoWebhookPayload = _.cloneDeep(
+      whatsappDemoWebhookPayload
+    );
 
     copyOfwhatsappDemoWebhookPayload.entry[0] = undefined!;
 
@@ -55,11 +56,11 @@ describe("Given sample WebhookPayload: ", () => {
 
   // Test to check if the payload first entry does not contain changes
   it("should return false if the payload first entry and first change does not have .value property.", async () => {
-    let copyOfwhatsappDemoWebhookPayload: Mutable<IWebhookMessagesPayload> =
-      _.cloneDeep(whatsappDemoWebhookPayload);
+    let copyOfwhatsappDemoWebhookPayload = _.cloneDeep(
+      whatsappDemoWebhookPayload
+    );
 
-    let changes: Mutable<IChange>[] =
-      copyOfwhatsappDemoWebhookPayload.entry[0].changes;
+    let changes = copyOfwhatsappDemoWebhookPayload.entry[0].changes;
 
     changes[changes.length - 1].value = undefined!;
 
@@ -76,7 +77,7 @@ describe("Given sample WebhookPayload: ", () => {
     // Call the validateWebhookPayload function with the original whatsappDemoWebhookPayload
     const isValidPayload = validateWebhookPayload(whatsappDemoWebhookPayload);
 
-    // Expect the function to return true for a valid payload
+    // Expect the function to return true for a validpayload
     expect(isValidPayload).toBe(true);
   });
 

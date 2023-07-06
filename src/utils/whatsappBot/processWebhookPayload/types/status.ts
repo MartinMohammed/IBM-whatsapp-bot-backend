@@ -5,25 +5,25 @@ import { IErrorMessage } from "./error";
  * statuses: Represents the status updates of messages, such as "sent", "delivered", or "read".
  */
 export interface IStatus {
-  readonly id: string;
+  id: string;
   /**
    * The following notification is received when a business sends a message as part of
    * a user-initiated conversation (if that conversation did not originate in a free entry point)
    */
-  readonly status: Statuses.SEND | Statuses.READ | Statuses.DELIVERED;
-  readonly timestamp: string;
-  readonly recipient_id: string;
-  readonly conversation?: {
-    readonly id: string;
-    readonly origin: {
-      readonly type: string;
+  status: Statuses.SEND | Statuses.READ | Statuses.DELIVERED;
+  timestamp: string;
+  recipient_id: string;
+  conversation?: {
+    id: string;
+    origin: {
+      type: string;
     };
-    readonly expiration_timestamp?: string;
+    expiration_timestamp?: string;
   };
-  readonly pricing?: {
-    readonly billable: boolean;
-    readonly pricing_model: string;
-    readonly category: string;
+  pricing?: {
+    billable: boolean;
+    pricing_model: string;
+    category: string;
   };
   /**
    * Status: Message Failed

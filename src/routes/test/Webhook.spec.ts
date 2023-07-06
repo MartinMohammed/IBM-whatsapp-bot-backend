@@ -1,8 +1,7 @@
 import supertestRequest from "supertest";
 import { cloneDeep } from "lodash";
 import app from "../../app";
-import Mutable from "../../utils/types/mutable";
-import { IWebhookMessagesPayload } from "../../utils/whatsappBot/processWebhookPayload/types/webhookMessagesPayload";
+import _ from "lodash";
 import { whatsappDemoWebhookPayload } from "../../testing/data/whatsapp/whatsappDemoWebhookPayload";
 
 /**
@@ -60,8 +59,9 @@ describe("Endpoint: /webhook", () => {
     // Define the demo changes payload
 
     it("should respond with status code '404' if the payload is not of type 'whatsapp_business_account'.", async () => {
-      const copyOfwhatsappDemoWebhookPayload: Mutable<IWebhookMessagesPayload> =
-        cloneDeep(whatsappDemoWebhookPayload);
+      const copyOfwhatsappDemoWebhookPayload = cloneDeep(
+        whatsappDemoWebhookPayload
+      );
       copyOfwhatsappDemoWebhookPayload.object =
         "not_whatsapp_business_account" as "whatsapp_business_account"; // type casting
 
@@ -73,8 +73,9 @@ describe("Endpoint: /webhook", () => {
     });
 
     it("should respond with status code '404' if the payload does not contain 'entry' object.", async () => {
-      const copyOfwhatsappDemoWebhookPayload: Mutable<IWebhookMessagesPayload> =
-        cloneDeep(whatsappDemoWebhookPayload);
+      const copyOfwhatsappDemoWebhookPayload = _.cloneDeep(
+        whatsappDemoWebhookPayload
+      );
       copyOfwhatsappDemoWebhookPayload.entry = undefined!;
 
       const response = await supertestRequest(app)
@@ -91,6 +92,10 @@ describe("Endpoint: /webhook", () => {
 
       expect(response.statusCode).toBe(200);
     });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
   afterAll(() => {
     jest.restoreAllMocks();

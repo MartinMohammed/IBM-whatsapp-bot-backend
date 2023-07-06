@@ -10,8 +10,8 @@ import { IChange } from "./change";
  * Represents the payload received from WhatsApp's webhook.
  */
 export interface IWebhookMessagesPayload {
-  readonly object: "whatsapp_business_account"; // Identifies the entity type (WhatsApp business account)
-  readonly entry: IEntry[];
+  object: "whatsapp_business_account"; // Identifies the entity type (WhatsApp business account)
+  entry: IEntry[];
 }
 
 /**
@@ -19,6 +19,6 @@ export interface IWebhookMessagesPayload {
  */
 export interface IEntry {
   // The WhatsApp Business Account ID for the business that is subscribed to the webhook.
-  readonly id: string;
-  readonly changes: IChange[];
+  id: string;
+  changes: IChange[];
 }

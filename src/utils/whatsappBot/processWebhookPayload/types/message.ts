@@ -4,14 +4,19 @@ import { IErrorMessage } from "./error";
  * Represents a message object within the value object.
  */
 export interface IMessage {
-  readonly from: string;
-  readonly id: string;
-  readonly timestamp: string;
-  readonly type: MessageType;
-  // From represents the point of time the message was sent.
-  // context, information about the message that was replied to.
-  readonly context?: {
+  /** The sender of the message. */
+  from: string;
+  /** The unique identifier of the message. */
+  id: string;
+  /** The timestamp when the message was sent. */
+  timestamp: string;
+  /** The type of the message. */
+  type: MessageType;
+  /** Additional context information about the replied message, if any. */
+  context?: {
+    /** The unique identifier of the replied message. */
     message_id: string;
+    /** The sender of the replied message. */
     from: string;
   };
 }
@@ -20,19 +25,24 @@ export interface IMessage {
  * Represents a text message object within the value object.
  */
 export interface ITextMessage extends IMessage {
-  readonly type: MessageTypes.TEXT;
-  readonly text: { readonly body: string };
+  /** The type of the message (must be 'text'). */
+  type: MessageTypes.TEXT;
+  /** The text content of the message. */
+  text: { body: string };
 }
 
 /**
  * Represents a reaction message object within the value object.
- * Yes, when you react to a WhatsApp message with an emoji, it can be referred to as a "reaction object."
  */
 export interface IReactionMessage extends IMessage {
-  readonly type: MessageTypes.REACTION;
-  readonly reaction: {
-    readonly message_id: string;
-    readonly emoji: string;
+  /** The type of the message (must be 'reaction'). */
+  type: MessageTypes.REACTION;
+  /** The reaction details of the message. */
+  reaction: {
+    /** The unique identifier of the reacted message. */
+    message_id: string;
+    /** The emoji used for the reaction. */
+    emoji: string;
   };
 }
 
@@ -40,59 +50,93 @@ export interface IReactionMessage extends IMessage {
  * Represents an image message object within the value object.
  */
 export interface IImageMessage extends IMessage {
-  readonly type: MessageTypes.IMAGE;
-  readonly image: {
-    readonly caption: string;
-    readonly mime_type: string;
-    readonly sha256: string;
-    readonly id: string;
-  };
-}
-
-export interface IStickerMessage extends IMessage {
-  readonly type: MessageTypes.STICKER;
-  readonly sticker: {
+  /** The type of the message (must be 'image'). */
+  type: MessageTypes.IMAGE;
+  /** The details of the image. */
+  image: {
+    /** The caption of the image. */
+    caption: string;
+    /** The MIME type of the image. */
     mime_type: string;
+    /** The SHA256 hash of the image. */
     sha256: string;
+    /** The unique identifier of the image. */
     id: string;
   };
 }
 
-export interface IUnkownMessage extends IMessage {
-  readonly type: MessageTypes.UNKOWN;
-  readonly?: IErrorMessage[];
-}
-
-// e.g.  Currently, the Cloud API does not support webhook status updates for deleted messages.
-// If a user deletes a message, you will receive a webhook with an error code for an unsupported message type:
-export interface IUnsupportedMessage extends IMessage {
-  readonly type: MessageTypes.UNSUPPORTED;
-  readonly errors?: IErrorMessage[];
-}
-
-export interface ILocationMessage extends IMessage {
-  // Somehow does not have a type
-  readonly location: {
-    readonly latitude: number;
-    readonly longitude: number;
-    readonly name: string;
-    readonly address: string;
+/**
+ * Represents a sticker message object within the value object.
+ */
+export interface IStickerMessage extends IMessage {
+  /** The type of the message (must be 'sticker'). */
+  type: MessageTypes.STICKER;
+  /** The details of the sticker. */
+  sticker: {
+    /** The MIME type of the sticker. */
+    mime_type: string;
+    /** The SHA256 hash of the sticker. */
+    sha256: string;
+    /** The unique identifier of the sticker. */
+    id: string;
   };
 }
 
+/**
+ * Represents an unknown message object within the value object.
+ */
+export interface IUnkownMessage extends IMessage {
+  /** The type of the message (must be 'unknown'). */
+  type: MessageTypes.UNKOWN;
+  /** The error messages associated with the unknown message. */
+  errors?: IErrorMessage[];
+}
+
+/**
+ * Represents an unsupported message object within the value object.
+ */
+export interface IUnsupportedMessage extends IMessage {
+  /** The type of the message (must be 'unsupported'). */
+  type: MessageTypes.UNSUPPORTED;
+  /** The error messages associated with the unsupported message. */
+  errors?: IErrorMessage[];
+}
+
+/**
+ * Represents a location message object within the value object.
+ */
+export interface ILocationMessage extends IMessage {
+  /** The details of the location. */
+  location: {
+    /** The latitude of the location. */
+    latitude: number;
+    /** The longitude of the location. */
+    longitude: number;
+    /** The name of the location. */
+    name: string;
+    /** The address of the location. */
+    address: string;
+  };
+}
+
+/**
+ * Represents a quick reply button message objectwithin the value object.
+ */
 export interface IQuickReplyButtonMessage extends IMessage {
-  readonly type: MessageTypes.BUTTON;
+  /** The type of the message (must be 'button'). */
+  type: MessageTypes.BUTTON;
+  /** The details of the button. */
   button: {
-    // Required for URL buttons.
+    /** The text displayed on the button. */
     text: String;
-    // Developer-defined payload that is returned when the button is clicked in addition to the display text on the button.
+    /** The payload returned when the button is clicked. */
     payload: String;
   };
 }
 
 /**
  * Represents the different types of messages as named constants.
- * Contains some Types that are only available when receiving messanges.
+ * Contains some types that are only available when receiving messages.
  */
 export enum MessageTypes {
   TEXT = "text",

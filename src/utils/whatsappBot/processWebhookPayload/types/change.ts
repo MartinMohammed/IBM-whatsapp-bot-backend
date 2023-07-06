@@ -9,12 +9,12 @@ export interface IChange {
   /**
    * The value object within a change object.
    */
-  readonly value: IValue;
+  value: IValue;
   /**
    * The field property in the webhook payload refers to the type of webhook event or notification being received.
    * It indicates the specific category or type of change that is being notified.
    */
-  readonly field: Field;
+  field: Field;
 }
 
 /**
@@ -24,32 +24,32 @@ export interface IValue {
   /**
    * The product used to send the message.
    */
-  readonly messaging_product: "whatsapp";
+  messaging_product: "whatsapp";
   /**
    * A metadata object describing the business subscribed to the webhook.
    */
-  readonly metadata: {
+  metadata: {
     /**
      * The display phone number associated with the change.
      */
-    readonly display_phone_number: string;
+    display_phone_number: string;
     /**
      * The phone number ID associated with the change.
      */
-    readonly phone_number_id: string;
+    phone_number_id: string;
   };
   /**
    * An array of contact objects with information for the customer who sent a message to the business.
    */
-  readonly contacts: IContact[];
+  contacts: IContact[];
   /**
    * Status object for a message that was sent by the business that is subscribed to the webhook.
    */
-  readonly statuses?: IStatus[];
+  statuses?: IStatus[];
   /**
    * Information about a message received by the business that is subscribed to the webhook.
    */
-  readonly messages?: (ITextMessage | IImageMessage | IReactionMessage)[];
+  messages?: (ITextMessage | IImageMessage | IReactionMessage)[];
 }
 
 /**
