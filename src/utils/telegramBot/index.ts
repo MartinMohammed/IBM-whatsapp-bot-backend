@@ -1,9 +1,9 @@
 import TelegramBot from "node-telegram-bot-api";
-import { onMessageHandler } from "./listenerHandlers/onMessageHandler/onMessageHandler";
-import { onInlineQueryHandler } from "./listenerHandlers/onInlineQueryHandler/onInlineQueryHandler";
-import { onCallBackQueryHandler } from "./listenerHandlers/onCallbackQueryHandler/onCallbackQueryHandler";
-import { onErrorHandler } from "./listenerHandlers/ErrorHandlers/onErrorHandler";
-import { onPollingErrorHandler } from "./listenerHandlers/ErrorHandlers/onPollingErrorHandler";
+import onMessageHandler from "./listenerHandlers/onMessageHandler";
+import onInlineQueryHandler from "./listenerHandlers/onInlineQueryHandler";
+import onCallBackQueryHandler from "./listenerHandlers/onCallbackQueryHandler";
+import onErrorHandler from "./listenerHandlers/onErrorHandlers/onErrorHandler";
+import onPollingErrorHandler from "./listenerHandlers/onErrorHandlers/onPollingErrorHandler";
 import { fetchBotCommands } from "./util/fetchBotCommands";
 
 let telegramBot: TelegramBot | undefined;

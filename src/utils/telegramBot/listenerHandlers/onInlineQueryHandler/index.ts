@@ -11,7 +11,7 @@ inline query. The bot can then process the query and respond with relevant
 results that appear inline within the chat interface, usually in the form of 
 selectable options.
 */
-export function onInlineQueryHandler(query: TelegramBot.InlineQuery) {
+function onInlineQueryHandler(query: TelegramBot.InlineQuery) {
   logger.info("Received an inline query:", query);
   const senderIsUnauthorized = !authorizeSender(
     query.from,
@@ -23,3 +23,5 @@ export function onInlineQueryHandler(query: TelegramBot.InlineQuery) {
 
   // Process the inline query and provide relevant results if needed.
 }
+
+export default onInlineQueryHandler;

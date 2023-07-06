@@ -1,5 +1,5 @@
 import TelegramBot from "node-telegram-bot-api";
-import Constants from "../../../Constants";
+import Constants from "../../../../Constants";
 
 /**
  * Check if the given message is a bot command

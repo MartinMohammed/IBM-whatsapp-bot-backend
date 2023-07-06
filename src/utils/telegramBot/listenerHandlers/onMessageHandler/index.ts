@@ -1,13 +1,13 @@
 import TelegramBot from "node-telegram-bot-api";
 import { authorizeSender } from "../../util/authorizeSender";
 import { processMessage } from "./processMessage";
-import { validateReceivedMessage } from "./validateReceivedMessage";
+import { validateReceivedMessage } from "./util/validateReceivedMessage";
 
 /**
  * Handles incoming messages and performs the necessary actions.
  * @param message The received message.
  */
-export function onMessageHandler(message: TelegramBot.Message) {
+function onMessageHandler(message: TelegramBot.Message) {
   // Validate the sent message.
   if (!validateReceivedMessage(message)) {
     return; // Stop further processing
@@ -17,6 +17,7 @@ export function onMessageHandler(message: TelegramBot.Message) {
   // Authorize the sender.
   const senderIsUnauthorized = !authorizeSender(message.from);
   if (senderIsUnauthorized) return; // Stop further processing
-
   processMessage(message);
 }
+
+export default onMessageHandler;

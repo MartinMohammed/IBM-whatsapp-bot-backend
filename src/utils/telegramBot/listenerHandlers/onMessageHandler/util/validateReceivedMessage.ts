@@ -1,4 +1,4 @@
-import logger from "../../../../logger";
+import logger from "../../../../../logger";
 import TelegramBot from "node-telegram-bot-api";
 
 /**
