@@ -5,6 +5,8 @@ import bodyParser from "body-parser";
 import webhookRouter from "./routes/Webhook";
 import healthRouter from "./routes/Health";
 
+// Initialize the telegram bot to listen for new messages.
+import "./utils/telegramBot";
 // ----------------- Requirements ----------------- //
 
 // ----------------- CONSTANTS ----------------- //

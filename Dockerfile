@@ -31,12 +31,11 @@ RUN addgroup -S myuser && adduser -S -G myuser myuser
 # Set the environment to production.
 ENV NODE_ENV="production"
 
-
 # Search for and remove all "test" directories within the project.
 RUN find /app/dist -type d -name "test" -prune -exec rm -rf {} \;
 
-# Remove the demoData folder
-RUN rm -rf /app/dist/demoData
+# Remove testing utilities
+RUN rm -rf /app/dist/testing
 
 # Set the ownership of the working directory to the new user
 RUN chown -R myuser:myuser /app

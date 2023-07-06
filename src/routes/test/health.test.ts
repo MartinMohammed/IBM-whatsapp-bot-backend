@@ -1,14 +1,8 @@
 import supertest from "supertest";
 import app from "../../app";
-import winston from "winston";
-import logger from "../../logger";
 
 // Describe the test suite for the '/health' endpoint
 describe("Given the endpoint '/health':", () => {
-  beforeAll(() => {
-    jest.spyOn(console, "log").mockImplementation(() => {});
-  });
-
   // Test the endpoint with a GET request
   it("should respond with '200' HTTP status code and an empty JSON object when making a GET request", async () => {
     // Send a GET request to the '/health' endpoint using supertest
@@ -21,6 +15,10 @@ describe("Given the endpoint '/health':", () => {
     expect(response.body).toEqual({
       status: "OK",
     });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   afterAll(() => {
