@@ -1,9 +1,7 @@
 // Import the necessary dependencies and types
 import { validateWebhookPayload } from "../validateWebhookPayload";
-import { IWebhookMessagesPayload } from "../types/webhookMessagesPayload";
 import _ from "lodash";
 import { whatsappDemoWebhookPayload } from "../../../../testing/data/whatsapp/whatsappDemoWebhookPayload";
-import { IChange } from "../types/change";
 
 describe("Given sample WebhookPayload: ", () => {
   // Define the demo changes payload

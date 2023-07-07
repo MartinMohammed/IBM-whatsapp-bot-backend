@@ -34,7 +34,26 @@ function processChanges(changes: IChange[]) {
     const { field, value } = change;
     // Currently only supported 'messages'
     switch (field) {
+      // ------------------- NOT HANDLED YET -------------------
+      case FieldTypes.AccountAlerts:
+      case FieldTypes.AccountReviewUpdate:
+      case FieldTypes.AccountUpdate:
+      case FieldTypes.BusinessCapabilityUpdate:
+      case FieldTypes.BusinessStatusUpdate:
+      case FieldTypes.CampaignStatusUpdate:
+      case FieldTypes.MessageTemplateQualityUpdate:
+      case FieldTypes.MessageTemplateStatusUpdate:
+      case FieldTypes.Name:
+      case FieldTypes.PhoneNumberNameUpdate:
+      case FieldTypes.PhoneNumberQualityUpdate:
+      case FieldTypes.Security:
+      case FieldTypes.Subscribe:
+      case FieldTypes.TemplateCategoryUpdate:
+      case FieldTypes.Test:
+        break;
       case FieldTypes.Messages:
+        // ------------------- NOT HANDLED YET -------------------
+
         // field — String. Notification type.
 
         // Extract the objects we're interested in from the 'value' object.
@@ -48,6 +67,7 @@ function processChanges(changes: IChange[]) {
         break;
       default:
         logger.warn(`Unhandled webhook field: '${field}'`);
+        const _exhaustiveCheck: never = field;
         throw new Error(`Unhandled webhook field: '${field}'`);
     }
   });
