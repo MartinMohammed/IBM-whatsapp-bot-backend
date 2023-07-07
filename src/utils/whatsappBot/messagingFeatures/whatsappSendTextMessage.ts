@@ -10,7 +10,9 @@ import logger from "../../../logger";
  * @param textObject The text message object to be sent.
  * @throws Error if sending the message to Meta fails.
  */
-export async function sendTextMessage(textObject: ITextObject): Promise<void> {
+export async function telegramSendTextMessage(
+  textObject: ITextObject
+): Promise<void> {
   // Make a POST request to the Meta Cloud API
   const url = Helper.constructUrlPathToMetaService(Services.MESSAGES);
   logger.verbose(

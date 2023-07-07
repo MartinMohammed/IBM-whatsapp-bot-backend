@@ -4,5 +4,5 @@ export enum SupportedTelegramActions {
 }
 
 /** Represents a supported action in a Telegram message */
-export type SupportedTelegramAction =
+export type SupportedTelegramActionType =
   SupportedTelegramActions.SEND_WHATSAPP_MESSAGE;

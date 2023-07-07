@@ -1,4 +1,4 @@
-import telegramBot from "..";
+import telegramBot from "../init";
 /**
  * Test suite to verify the instantiation and setup of the Telegram bot.
  */

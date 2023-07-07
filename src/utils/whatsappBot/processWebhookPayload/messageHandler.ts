@@ -1,4 +1,4 @@
-import { sendTextMessage } from "../messagingFeatures/sendTextMessage";
+import { telegramSendTextMessage } from "../messagingFeatures/whatsappSendTextMessage";
 import { ITextObject } from "../messagingFeatures/types/textMessage";
 import { IValue } from "./types/change";
 import { IMessage, ITextMessage, MessageTypes } from "./types/message";
@@ -91,7 +91,7 @@ function sendResponseMessage(recipient: string, text: string) {
       body: text,
     },
   };
-  sendTextMessage(textObject);
+  telegramSendTextMessage(textObject);
 }
 
 /**

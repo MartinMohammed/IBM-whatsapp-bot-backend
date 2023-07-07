@@ -5,7 +5,7 @@ import {
   SupportedBotCommands,
   SupportedBotCommandType,
 } from "./types/supportedBotCommands";
-import { sendTextMessage } from "../../../messagingFeatures/sendTextMessage";
+import { sendTextMessage } from "../../../messagingFeatures/telegramSendTextMessage";
 
 // TODO: integrate to a Content Management system
 
@@ -13,7 +13,7 @@ import { sendTextMessage } from "../../../messagingFeatures/sendTextMessage";
  * Handles a validated bot command and performs an action based on it.
  * Retrieves the command from the Constants array of bot commands.
  */
-export function commandHandler(message: TelegramBot.Message, index: number) {
+function commandHandler(message: TelegramBot.Message, index: number) {
   const botCommandObject = Constants.BOT_COMMANDS[index];
 
   let botCommand: SupportedBotCommandType | undefined;
@@ -53,3 +53,5 @@ export function commandHandler(message: TelegramBot.Message, index: number) {
       );
   }
 }
+
+export default commandHandler;

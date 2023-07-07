@@ -1,6 +1,3 @@
-import { validateReceivedMessage } from "../validateReceivedMessage";
-import { telegramDemoMessageLean } from "../../../../../../testing/data/telegram/telegramDemoMessages";
-import TelegramBot = require("node-telegram-bot-api");
 // Mock the logger module
 jest.mock("../../../../../../logger", () => ({
   error: jest.fn(),
@@ -11,6 +8,11 @@ jest.mock("../../../../../../logger", () => ({
   debug: jest.fn(),
   silly: jest.fn(),
 }));
+
+import { validateReceivedMessage } from "../validateReceivedMessage";
+import { telegramDemoMessageLean } from "../../../../../../testing/data/telegram/telegramDemoMessages";
+import TelegramBot = require("node-telegram-bot-api");
+
 import logger from "../../../../../../logger";
 
 describe("test the validateReceivedMessage method: ", () => {

@@ -1,13 +1,3 @@
-import Helper from "../../utils/Helper";
-import { MessageTypes } from "../../processWebhookPayload/types/message";
-import { Services } from "../../types/service";
-import { sendTextMessage } from "../sendTextMessage";
-import { IMessagesEndpointError } from "../types/error";
-import { IMessageResponseData } from "../types/textMessage";
-import whatsappDemoUser from "../../../../testing/data/whatsapp/whatsappDemoUser";
-import whatsappDemoTextObject from "../../../../testing/data/whatsapp/whatsappDemoTextObject";
-import axios from "axios";
-
 // Mock the logger module
 jest.mock("../../../../logger", () => ({
   error: jest.fn(),
@@ -18,6 +8,15 @@ jest.mock("../../../../logger", () => ({
   debug: jest.fn(),
   silly: jest.fn(),
 }));
+
+import Helper from "../../utils/Helper";
+import { Services } from "../../types/service";
+import { telegramSendTextMessage } from "../whatsappSendTextMessage";
+import { IMessagesEndpointError } from "../types/error";
+import { IMessageResponseData } from "../types/textMessage";
+import whatsappDemoUser from "../../../../testing/data/whatsapp/whatsappDemoUser";
+import whatsappDemoTextObject from "../../../../testing/data/whatsapp/whatsappDemoTextObject";
+import axios from "axios";
 
 import logger from "../../../../logger";
 
@@ -55,7 +54,7 @@ describe("sendMessage Test", () => {
 
     // Call the sendTextMessage function and expect it not to throw an error
     await expect(
-      sendTextMessage(whatsappDemoTextObject)
+      telegramSendTextMessage(whatsappDemoTextObject)
     ).resolves.not.toThrowError();
     expect(logger.verbose).toBeCalledWith(
       `Received the task to send a whatsapp message: ${JSON.stringify(
@@ -87,7 +86,7 @@ describe("sendMessage Test", () => {
       new axios.AxiosError(demoAxiosErrorMessage)
     );
     await expect(
-      sendTextMessage(whatsappDemoTextObject)
+      telegramSendTextMessage(whatsappDemoTextObject)
     ).resolves.toBeUndefined();
     expect(logger.error).toHaveBeenCalledWith(
       `Failed to send WhatsApp text message. Axios error: ${demoAxiosErrorMessage}`
@@ -99,9 +98,9 @@ describe("sendMessage Test", () => {
     mockAxiosRequest.mockResolvedValue({ status: 404, data: demoResponseData });
 
     // Expect sendTextMessage to throw an error when called
-    await expect(sendTextMessage(whatsappDemoTextObject)).rejects.toThrowError(
-      "Failed to send message to Meta."
-    );
+    await expect(
+      telegramSendTextMessage(whatsappDemoTextObject)
+    ).rejects.toThrowError("Failed to send message to Meta.");
     expect(logger.error).toHaveBeenCalledWith(
       "Failed to send message to Meta."
     );
@@ -112,9 +111,9 @@ describe("sendMessage Test", () => {
     mockAxiosRequest.mockResolvedValue({ status: 200 });
 
     // Expect sendTextMessage to throw an error when called
-    await expect(sendTextMessage(whatsappDemoTextObject)).rejects.toThrowError(
-      "Failed to send message to Meta."
-    );
+    await expect(
+      telegramSendTextMessage(whatsappDemoTextObject)
+    ).rejects.toThrowError("Failed to send message to Meta.");
     expect(logger.error).toBeCalledWith("Failed to send message to Meta.");
   });
 
@@ -140,9 +139,9 @@ describe("sendMessage Test", () => {
 
     // Expect sendTextMessage to throw an error containing the error message
     const errorMessage = `Failed to send message to Meta. Error: ${messageEndpointError.error.message}`;
-    await expect(sendTextMessage(whatsappDemoTextObject)).rejects.toThrowError(
-      new Error(errorMessage)
-    );
+    await expect(
+      telegramSendTextMessage(whatsappDemoTextObject)
+    ).rejects.toThrowError(new Error(errorMessage));
     expect(logger.error).toBeCalledWith(errorMessage);
   });
 

@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { commandHandler } from "../commandHandler";
+import commandHandler from "../commandHandler";
 import {
   BotCommandsWithTemplate,
   BotCommandWithTemplateType,
@@ -16,9 +16,9 @@ jest.mock("../../../../../../logger", () => ({
   silly: jest.fn(),
 }));
 
-import * as SendTextMessageModule from "../../../../messagingFeatures/sendTextMessage";
+import * as TelegramSendTextMessageModule from "../../../../messagingFeatures/telegramSendTextMessage";
 jest
-  .spyOn(SendTextMessageModule, "sendTextMessage")
+  .spyOn(TelegramSendTextMessageModule, "sendTextMessage")
   .mockImplementation((chatId, text, options) => Promise.resolve());
 
 import logger from "../../../../../../logger";
@@ -50,7 +50,7 @@ describe("Given a Telegram message", () => {
         );
 
         // For every supported command, there should be a message template.
-        expect(SendTextMessageModule.sendTextMessage).toBeCalledWith(
+        expect(TelegramSendTextMessageModule.sendTextMessage).toBeCalledWith(
           telegramDemoBotCommandMessage.chat.id,
 
           Constants.BOT_COMMAND_MESSAGE_TEMPLATES[supportedBotCommand]
@@ -85,7 +85,7 @@ describe("Given a Telegram message", () => {
       Constants.BOT_COMMAND_MESSAGE_TEMPLATES[supportedBotCommand] =
         botCommandMessageTemplate;
     }
-    expect(SendTextMessageModule.sendTextMessage).not.toBeCalled();
+    expect(TelegramSendTextMessageModule.sendTextMessage).not.toBeCalled();
   });
 
   it("should log an error if the provided message is not a bot command", () => {

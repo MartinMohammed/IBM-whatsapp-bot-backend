@@ -1,5 +1,5 @@
 import TelegramBot from "node-telegram-bot-api";
-import telegramBot from "..";
+import telegramBot from "../init";
 import logger from "../../../logger";
 
 export async function sendTextMessage(

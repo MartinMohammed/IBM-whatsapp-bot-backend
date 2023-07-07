@@ -1,6 +1,3 @@
-import { sendTextMessage } from "../sendTextMessage";
-import TelegramBot from "node-telegram-bot-api";
-
 // Mock the logger module
 jest.mock("../../../../logger", () => ({
   error: jest.fn(),
@@ -12,7 +9,7 @@ jest.mock("../../../../logger", () => ({
   silly: jest.fn(),
 }));
 
-jest.mock("../..", () => ({
+jest.mock("../../init", () => ({
   sendMessage: jest
     .fn()
     .mockImplementationOnce(
@@ -31,8 +28,11 @@ jest.mock("../..", () => ({
     ),
 }));
 
+import { sendTextMessage } from "../telegramSendTextMessage";
+import TelegramBot from "node-telegram-bot-api";
+
 import logger from "../../../../logger";
-import telegramBot from "../..";
+import telegramBot from "../../init";
 
 describe("Test the sendMessage feature of the telegram bot", () => {
   const demoChatId = 12345;

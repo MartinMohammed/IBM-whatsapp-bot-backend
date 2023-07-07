@@ -2,7 +2,7 @@ import { whatsappDemoWebhookPayload } from "../../../../../testing/data/whatsapp
 import { IMessage } from "../../types/message";
 import { handleMessages } from "../handleMessages";
 import * as messageHandler from "../../messageHandler";
-import * as SendTextMessageModule from "../../../messagingFeatures/sendTextMessage";
+import * as SendTextMessageModule from "../../../messagingFeatures/whatsappSendTextMessage";
 
 describe("Given a bunch of messages", () => {
   let mockMessageHandler: jest.SpyInstance<
@@ -19,7 +19,7 @@ describe("Given a bunch of messages", () => {
 
   beforeEach(() => {
     jest
-      .spyOn(SendTextMessageModule, "sendTextMessage")
+      .spyOn(SendTextMessageModule, "telegramSendTextMessage")
       .mockImplementation((_) => Promise.resolve());
     // Mock the messageHandler function
     mockMessageHandler = jest

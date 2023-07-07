@@ -1,17 +1,15 @@
 import { whatsappDemoWebhookPayload } from "../../../../testing/data/whatsapp/whatsappDemoWebhookPayload";
 import _ from "lodash";
-import { IWebhookMessagesPayload } from "../types/webhookMessagesPayload";
 import { processWebhookPayload } from "../processWebhookPayload";
-import { Field, IChange } from "../types/change";
-import { IValue } from "../types/change";
+import { Field } from "../types/change";
 import * as ValidateWebhookPayloadModule from "../validateWebhookPayload";
-import * as SendTextMessageModule from "../../messagingFeatures/sendTextMessage";
+import * as SendTextMessageModule from "../../messagingFeatures/whatsappSendTextMessage";
 
 describe("Given a webhook payload: ", () => {
   // Mock the console.log function
   beforeAll(() => {
     jest
-      .spyOn(SendTextMessageModule, "sendTextMessage")
+      .spyOn(SendTextMessageModule, "telegramSendTextMessage")
       .mockImplementation((textObject) => Promise.resolve());
   });
 

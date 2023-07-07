@@ -4,6 +4,8 @@ import { IWebhookMessagesPayload } from "../utils/whatsappBot/processWebhookPayl
 import logger from "../logger";
 import { MetaVerificationFields } from "../utils/whatsappBot/types/metaWebhookVerification";
 
+// Initialize the whatsapp bot to listen for new messages
+
 /**
  * Verify the webhook URL with WhatsApp.
  * @param req - Express Request object.

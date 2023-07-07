@@ -3,8 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
   // Other Jest configuration options
   coveragePathIgnorePatterns: [
-    "../node_modules/",
-    "/logger/",
+    "./node_modules/",
+    "./dist/logger",
+    "./dist/types",
     "./dist/utils/telegramBot/listenerHandlers/ErrorHandlers",
   ],
   collectCoverage: true,

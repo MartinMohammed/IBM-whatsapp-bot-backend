@@ -1,7 +1,3 @@
-import { processMessage } from "../processMessage";
-import { telegramDemoMessageLean } from "../../../../../testing/data/telegram/telegramDemoMessages";
-import * as CommandHandlerModule from "../textMessageHandler/commandHandler";
-
 // Mock the logger module
 jest.mock("../../../../../logger", () => ({
   error: jest.fn(),
@@ -12,14 +8,31 @@ jest.mock("../../../../../logger", () => ({
   debug: jest.fn(),
   silly: jest.fn(),
 }));
+
+// Default Export return a mocked function
+jest.mock("../textMessageHandler/commandHandler", () => jest.fn());
+jest.mock("../textMessageHandler/actionHandler", () => jest.fn());
+
+import { processMessage } from "../processMessage";
+import { telegramDemoMessageLean } from "../../../../../testing/data/telegram/telegramDemoMessages";
+
+import commandHandler from "../textMessageHandler/commandHandler";
+
 import logger from "../../../../../logger";
 import TelegramBot from "node-telegram-bot-api";
 import { telegramDemoBotCommandMessage } from "../../../../../testing/data/telegram/telegramDemoMessages";
 import Constants from "../../../../Constants";
 import telegramDemoBotCommands from "../../../../../testing/data/telegram/telegramDemoBotCommands";
+import { SupportedTelegramActions } from "../types/supportedTelegramActions";
+import actionHandler from "../textMessageHandler/actionHandler";
 
 describe("test the processMessage method: ", () => {
   describe("start and end of the function: ", () => {
+    afterAll(() => {
+      // Mock the commandHandler
+      expect(commandHandler).not.toBeCalled();
+      expect(actionHandler).not.toBeCalled();
+    });
     /**
      * Test the processMessage method.
      * It should log if it returned a valid message.
@@ -48,14 +61,13 @@ describe("test the processMessage method: ", () => {
         )}. It's type was not handled.`
       );
     });
-
-    // Mock the commandHandler
-    jest.spyOn(CommandHandlerModule, "commandHandler");
-    expect(CommandHandlerModule.commandHandler).not.toBeCalled();
   });
   describe("test 'checkIfMessageIsBotCommand': ", () => {
     beforeAll(() => {
       expect(Constants.BOT_COMMANDS).toEqual([]); // Verify the initial value
+    });
+    afterEach(() => {
+      expect(actionHandler).not.toBeCalled();
     });
 
     beforeEach(() => {
@@ -99,9 +111,25 @@ describe("test the processMessage method: ", () => {
     });
   });
   describe("test 'checkIfMessageIsWhatsappAction': ", () => {
-    it.todo(
-      "should call the telegram action handler if the message is whatsapp action: "
-    );
+    afterEach(() => {
+      // Mock the commandHandler
+      expect(commandHandler).not.toBeCalled();
+    });
+    it("should call the telegram action handler if the message is whatsapp action: ", () => {
+      const demoMessageAsAction = `${SupportedTelegramActions.SEND_WHATSAPP_MESSAGE} Hi`;
+      const demoMessage = {
+        ...telegramDemoMessageLean,
+        text: demoMessageAsAction,
+      };
+      processMessage(demoMessage);
+      expect(logger.verbose).toBeCalledWith(
+        `${demoMessageAsAction} is a telegram action.`
+      );
+      expect(actionHandler).toBeCalledWith(
+        demoMessage,
+        SupportedTelegramActions.SEND_WHATSAPP_MESSAGE
+      );
+    });
   });
 
   afterEach(() => {

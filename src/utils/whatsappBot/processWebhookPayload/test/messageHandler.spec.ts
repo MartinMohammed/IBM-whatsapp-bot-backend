@@ -2,14 +2,14 @@ import { whatsappDemoWebhookPayload } from "../../../../testing/data/whatsapp/wh
 import { messageHandler } from "../messageHandler";
 import { IMessage, MessageTypes } from "../types/message";
 import * as MessageHandlerModule from "../messageHandler";
-import * as SendTextMessageModule from "../../messagingFeatures/sendTextMessage";
+import * as SendTextMessageModule from "../../messagingFeatures/whatsappSendTextMessage";
 
 describe("Given messages from Changes:", () => {
   let mockedRepliedToMessage: jest.SpyInstance<boolean, [message: IMessage]>;
 
   beforeAll(() => {
     jest
-      .spyOn(SendTextMessageModule, "sendTextMessage")
+      .spyOn(SendTextMessageModule, "telegramSendTextMessage")
       .mockImplementation((textObject) => Promise.resolve());
   });
 

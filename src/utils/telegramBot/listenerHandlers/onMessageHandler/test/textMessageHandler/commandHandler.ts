@@ -5,7 +5,7 @@ import {
   SupportedBotCommands,
   SupportedBotCommandType,
 } from "../../textMessageHandler/types/supportedBotCommands";
-import { sendTextMessage } from "../../../../messagingFeatures/sendTextMessage";
+import { sendTextMessage } from "../../../../messagingFeatures/telegramSendTextMessage";
 
 // TODO: integrate to a Content Management system
 
