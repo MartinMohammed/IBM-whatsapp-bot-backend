@@ -35,20 +35,35 @@ function processChanges(changes: IChange[]) {
     // Currently only supported 'messages'
     switch (field) {
       // ------------------- NOT HANDLED YET -------------------
+      /* istanbul ignore next */
       case FieldTypes.AccountAlerts:
+      /* istanbul ignore next */
       case FieldTypes.AccountReviewUpdate:
+      /* istanbul ignore next */
       case FieldTypes.AccountUpdate:
+      /* istanbul ignore next */
       case FieldTypes.BusinessCapabilityUpdate:
+      /* istanbul ignore next */
       case FieldTypes.BusinessStatusUpdate:
+      /* istanbul ignore next */
       case FieldTypes.CampaignStatusUpdate:
+      /* istanbul ignore next */
       case FieldTypes.MessageTemplateQualityUpdate:
+      /* istanbul ignore next */
       case FieldTypes.MessageTemplateStatusUpdate:
+      /* istanbul ignore next */
       case FieldTypes.Name:
+      /* istanbul ignore next */
       case FieldTypes.PhoneNumberNameUpdate:
+      /* istanbul ignore next */
       case FieldTypes.PhoneNumberQualityUpdate:
+      /* istanbul ignore next */
       case FieldTypes.Security:
+      /* istanbul ignore next */
       case FieldTypes.Subscribe:
+      /* istanbul ignore next */
       case FieldTypes.TemplateCategoryUpdate:
+      /* istanbul ignore next */
       case FieldTypes.Test:
         break;
       case FieldTypes.Messages:

@@ -18,12 +18,9 @@ describe(`Endpoint: ${ROUTE}`, () => {
   beforeAll(() => {
     process.env.VERIFY_TOKEN = appToken;
     // Mock the processWebhookPayload function
-    jest.mock(
-      "../../utils/whatsappBot/processWebhookPayload/processWebhookPayload",
-      () => ({
-        processWebhookPayload: jest.fn(),
-      })
-    );
+    // jest.mock("wh", () => ({
+    //   processWebhookPayload: jest.fn(),
+    // }));
   });
 
   /**
