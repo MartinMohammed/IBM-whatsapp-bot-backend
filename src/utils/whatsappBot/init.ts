@@ -1,5 +1,6 @@
-import WhatsappBot from "whatsapp-cloud-api-bot-express";
-import { SupportedWhatsappMessageTypes } from "whatsapp-cloud-api-bot-express";
+import WhatsappBot, {
+  SupportedWhatsappMessageTypes,
+} from "node-whatsapp-bot-api";
 
 // Create a new instance of WhatsappBot
 // using the provided user access token and phone number ID.
