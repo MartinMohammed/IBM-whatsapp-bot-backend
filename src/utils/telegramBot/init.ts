@@ -6,21 +6,19 @@ import onErrorHandler from "./listenerHandlers/onErrorHandlers/onErrorHandler";
 import onPollingErrorHandler from "./listenerHandlers/onErrorHandlers/onPollingErrorHandler";
 import { fetchBotCommands } from "./util/fetchBotCommands";
 
-let telegramBot: TelegramBot | undefined;
+/**
+ * Create a Telegram Bot instance using the provided API token and configure polling options.
+ * The bot will listen for updates by making periodic long polling requests to the Telegram server.
+ * Each long polling request stays open for a certain period of time, and if there are no updates during that time, the server responds with an empty response.
+ */
+let telegramBot: TelegramBot = new TelegramBot(process.env.TELEGRAM_API_TOKEN, {
+  // You can customize the polling options to control the polling behavior
+  polling: {
+    interval: 2000, // Set the interval between polls to 2000 milliseconds (2 seconds)
+  },
+});
 
 if (process.env.NODE_ENV !== "test") {
-  /**
-   * Create a Telegram Bot instance using the provided API token and configure polling options.
-   * The bot will listen for updates by making periodic long polling requests to the Telegram server.
-   * Each long polling request stays open for a certain period of time, and if there are no updates during that time, the server responds with an empty response.
-   */
-  telegramBot = new TelegramBot(process.env.TELEGRAM_API_TOKEN, {
-    // You can customize the polling options to control the polling behavior
-    polling: {
-      interval: 2000, // Set the interval between polls to 2000 milliseconds (2 seconds)
-    },
-  });
-
   // Listen for incoming messages
   telegramBot.on("message", onMessageHandler);
 
