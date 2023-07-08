@@ -29,7 +29,7 @@ declare namespace NodeJS {
     /**
      * The verify token for verification purposes.
      */
-    VERIFY_TOKEN: string;
+    HUB_VERIFY_TOKEN: string;
 
     /**
      * The ID of the phone number associated with the application.
