@@ -1,4 +1,4 @@
-Sure! Here's the updated version of the webhook API documentation based on our conversation:
+[![Checks](https://github.com/body-culture/webhook-api/actions/workflows/checks.yaml/badge.svg)](https://github.com/body-culture/webhook-api/actions/workflows/checks.yaml)
 
 ## Webhook API Documentation
 
