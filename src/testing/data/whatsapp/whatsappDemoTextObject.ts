@@ -3,7 +3,7 @@ import demoUser from "./whatsappDemoUser";
 
 /** Import the MessageTypes enum from the specified path */
 /** Import the ITextObject interface from the specified path */
-import { AllMessageTypes, ITextObject } from "whatsapp-cloud-api-bot-express";
+import { AllMessageTypes, ITextObject } from "node-whatsapp-bot-api";
 
 /**
  * Demo text object that is sent to the user.

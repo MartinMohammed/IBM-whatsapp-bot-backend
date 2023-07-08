@@ -6,7 +6,7 @@ import {
   AllMessageTypes,
   AllFieldTypes,
   AllMessagingProductTypes,
-} from "whatsapp-cloud-api-bot-express";
+} from "node-whatsapp-bot-api";
 
 /**
  * Represents a demo Webhook payload sent by Meta to '/webhook' for change in 'messages' field
