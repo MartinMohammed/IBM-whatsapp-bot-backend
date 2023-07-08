@@ -3,6 +3,7 @@ import {
   verifyWebhook,
   receiveChanges,
 } from "../controllers/webhookController";
+import whatsappBot from "../utils/whatsappBot/init";
 
 const router = express.Router();
 
@@ -11,6 +12,12 @@ const router = express.Router();
 router.get("/", verifyWebhook);
 
 // Handle events, e.g., receive messages.
-router.post("/", receiveChanges);
+router.post(
+  "/",
+  (req, res, next) =>
+    // ! bind this
+    whatsappBot.middlewareHandlerForWebhookMessagesPayload(req, res, next)
+  // Next middleware if there is one .
+);
 
 export default router;
