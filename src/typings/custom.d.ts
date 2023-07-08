@@ -14,7 +14,7 @@ declare namespace NodeJS {
     /**
      * The user access token for authentication.
      */
-    USER_ACCESS_TOKEN: string;
+    META_API_TOKEN: string;
 
     /**
      * Holds the telegram id's of the users that are whitelisted to interact (',' sep).

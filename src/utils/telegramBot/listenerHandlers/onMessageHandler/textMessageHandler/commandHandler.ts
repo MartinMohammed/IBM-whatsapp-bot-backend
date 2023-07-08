@@ -5,7 +5,7 @@ import {
   SupportedBotCommands,
   SupportedBotCommandType,
 } from "./types/supportedBotCommands";
-import { sendTextMessage } from "../../../messagingFeatures/telegramSendTextMessage";
+import sendTextMessageWrapper from "../../../messagingFeatures/telegramSendTextMessageWrapper";
 
 // TODO: integrate to a Content Management system
 
@@ -37,7 +37,7 @@ function commandHandler(message: TelegramBot.Message, index: number) {
     case SupportedBotCommands.HELP:
       logger.verbose("Received bot command: /help");
       // Perform action for the "help" command
-      sendTextMessage(
+      sendTextMessageWrapper(
         message.chat.id,
         Constants.BOT_COMMAND_MESSAGE_TEMPLATES[SupportedBotCommands.HELP]
       );

@@ -28,7 +28,7 @@ jest.mock("../../init", () => ({
     ),
 }));
 
-import { sendTextMessage } from "../telegramSendTextMessage";
+import sendTextMessageWrapper from "../telegramSendTextMessageWrapper";
 import TelegramBot from "node-telegram-bot-api";
 
 import logger from "../../../../logger";
@@ -41,7 +41,7 @@ describe("Test the sendMessage feature of the telegram bot", () => {
 
   it("should send the message successfully if there is no error while sending the message", async () => {
     await expect(
-      sendTextMessage(demoChatId, demoText, demoSendMessageOptions)
+      sendTextMessageWrapper(demoChatId, demoText, demoSendMessageOptions)
     ).resolves.toBeUndefined();
 
     // Expect that sendMessage is called with the correct arguments
@@ -58,7 +58,7 @@ describe("Test the sendMessage feature of the telegram bot", () => {
   });
 
   it("should log an error if sending a message failed", async () => {
-    await sendTextMessage(demoChatId, demoText, demoSendMessageOptions);
+    await sendTextMessageWrapper(demoChatId, demoText, demoSendMessageOptions);
 
     // Expect that logger.error is called with the correct message
     expect(logger.error).toHaveBeenCalledWith(

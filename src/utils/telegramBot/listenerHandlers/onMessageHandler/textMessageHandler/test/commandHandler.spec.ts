@@ -1,10 +1,3 @@
-import _ from "lodash";
-import commandHandler from "../commandHandler";
-import {
-  BotCommandsWithTemplate,
-  BotCommandWithTemplateType,
-} from "../types/supportedBotCommands";
-
 // Mock the logger module
 jest.mock("../../../../../../logger", () => ({
   error: jest.fn(),
@@ -16,11 +9,19 @@ jest.mock("../../../../../../logger", () => ({
   silly: jest.fn(),
 }));
 
-import * as TelegramSendTextMessageModule from "../../../../messagingFeatures/telegramSendTextMessage";
-jest
-  .spyOn(TelegramSendTextMessageModule, "sendTextMessage")
-  .mockImplementation((chatId, text, options) => Promise.resolve());
+jest.mock("../../../../messagingFeatures/telegramSendTextMessageWrapper", () =>
+  jest.fn((chatId, text, options) => Promise.resolve())
+);
 
+import _ from "lodash";
+import commandHandler from "../commandHandler";
+import {
+  BotCommandsWithTemplate,
+  BotCommandWithTemplateType,
+} from "../types/supportedBotCommands";
+
+import * as TelegramSendTextMessageModule from "../../../../messagingFeatures/telegramSendTextMessageWrapper";
+import mockSendTextMessageWrapper from "../../../../messagingFeatures/telegramSendTextMessageWrapper";
 import logger from "../../../../../../logger";
 import telegramDemoBotCommands from "../../../../../../testing/data/telegram/telegramDemoBotCommands";
 import { telegramDemoBotCommandMessage } from "../../../../../../testing/data/telegram/telegramDemoMessages";
@@ -50,7 +51,7 @@ describe("Given a Telegram message", () => {
         );
 
         // For every supported command, there should be a message template.
-        expect(TelegramSendTextMessageModule.sendTextMessage).toBeCalledWith(
+        expect(mockSendTextMessageWrapper).toBeCalledWith(
           telegramDemoBotCommandMessage.chat.id,
 
           Constants.BOT_COMMAND_MESSAGE_TEMPLATES[supportedBotCommand]
@@ -85,7 +86,7 @@ describe("Given a Telegram message", () => {
       Constants.BOT_COMMAND_MESSAGE_TEMPLATES[supportedBotCommand] =
         botCommandMessageTemplate;
     }
-    expect(TelegramSendTextMessageModule.sendTextMessage).not.toBeCalled();
+    expect(mockSendTextMessageWrapper).not.toBeCalled();
   });
 
   it("should log an error if the provided message is not a bot command", () => {

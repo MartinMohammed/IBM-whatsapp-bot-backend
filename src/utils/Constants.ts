@@ -10,11 +10,11 @@ import {
 
 // ------------------------- RELATED TO META -------------------------
 /** Base URL for Facebook Graph API */
-const FacebookBaseUrl = "https://graph.facebook.com";
-/** Phone number ID */
-const PhoneNumberID = process.env.PHONE_NUMBER_ID;
+const metaGraphBaseUrl = "https://graph.facebook.com";
 /** Version of the Facebook Graph API */
-const MetaGraphAPIVersion = "v17.0";
+const metaGraphAPIVersion = "v17.0";
+/** Phone number ID */
+const phoneNumberId = process.env.PHONE_NUMBER_ID;
 
 // ------------------------- RELATED TO META -------------------------
 
@@ -52,9 +52,9 @@ const BOT_COMMAND_MESSAGE_TEMPLATES: BotCommandWithTemplateType = {
  */
 export default {
   BOT_COMMAND_MESSAGE_TEMPLATES,
-  FacebookBaseUrl,
-  PhoneNumberID,
-  MetaGraphAPIVersion,
+  metaGraphBaseUrl,
+  phoneNumberId,
+  metaGraphAPIVersion,
   MESSAGE_WHITE_LIST,
   BOT_COMMANDS,
 };
