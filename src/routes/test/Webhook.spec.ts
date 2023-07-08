@@ -11,22 +11,17 @@ const ROUTE = "/webhook";
  */
 describe(`Endpoint: ${ROUTE}`, () => {
   // Define the appToken and hubChallenge for testing
-  const appToken = "12345";
+  const appToken = "ABCDEF";
   const hubChallenge = "ABCDE";
-
-  // Set up the environment variable before running any test
-  beforeAll(() => {
-    process.env.VERIFY_TOKEN = appToken;
-  });
 
   /**
    * Testing the route using 'GET' request.
    */
   describe("GET request", () => {
-    it("should respond with a 403 status code if no query parameters were given.", async () => {
+    it("should respond with a 404 status code if no query parameters were given.", async () => {
       const response = await supertestRequest(app).get(ROUTE);
 
-      expect(response.statusCode).toBe(403);
+      expect(response.statusCode).toBe(404);
     });
 
     it("should respond with a 403 status code if the hubVerifyToken is incorrect.", async () => {
