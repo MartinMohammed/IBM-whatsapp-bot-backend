@@ -4,12 +4,13 @@
   "description": "",
   "main": "./dist/server.js",
   "scripts": {
-    "start": "TELEGRAM_WHITELIST=5852758118 node ./dist/server.js",
+    "start": "env $(cat .env) node ./dist/server.js",
     "dev": "env $(cat .env) nodemon ./dist/server.js",
     "build": "tsc;",
     "build:watch": "tsc --watch",
     "test": "jest --verbose",
-    "test:watch": "jest --config ./jest.config.js --watchAll"
+    "test:watch": "jest --config ./jest.config.js --watchAll",
+    "coverage": "jest --coverage --verbose"
   },
   "keywords": [],
   "author": "",
