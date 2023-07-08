@@ -4,8 +4,6 @@ import {
   receiveChanges,
 } from "../controllers/webhookController";
 import whatsappBot from "../utils/whatsappBot/init";
-import { SupportedWhatsappMessages } from "../utils/whatsappBot/types/supportedWhatsappMessages";
-import { IWebhookMessagesPayload } from "whatsapp-cloud-api-bot-express/dist/types/customTypes/webhookPayload/webhookMessagesPayload";
 
 const router = express.Router();
 
@@ -16,20 +14,10 @@ router.get("/", verifyWebhook);
 // Handle events, e.g., receive messages.
 router.post(
   "/",
-  (
-    request: express.Request,
-    response: express.Response,
-    next: express.NextFunction
-  ) => {
-    // Custom validation if needed.
-    if (request.body) {
-      whatsappBot?.middlewareHandlerForWebhookMessagesPayload(
-        request.body as IWebhookMessagesPayload
-      );
-    }
-    next();
-  },
-  receiveChanges
+  (req, res, next) =>
+    // ! bind this
+    whatsappBot.middlewareHandlerForWebhookMessagesPayload(req, res, next)
+  // Next middleware if there is one .
 );
 
 export default router;
