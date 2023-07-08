@@ -1,9 +1,12 @@
 /**
  * Declare a namespace to extend the existing import
  */
-import { IWebhookMessagesPayload } from "../../../utils/whatsappBot/processWebhookPayload/types/webhookMessagesPayload";
-import { MessageTypes } from "../../../utils/whatsappBot/processWebhookPayload/types/message";
-import { FieldTypes } from "../../../utils/whatsappBot/processWebhookPayload/types/change";
+import {
+  IWebhookMessagesPayload,
+  AllMessageTypes,
+  AllFieldTypes,
+  AllMessagingProductTypes,
+} from "whatsapp-cloud-api-bot-express";
 
 /**
  * Represents a demo Webhook payload sent by Meta to '/webhook' for change in 'messages' field
@@ -34,7 +37,7 @@ export let whatsappDemoWebhookPayload: IWebhookMessagesPayload = {
             /**
              * The messaging product associated with the change
              */
-            messaging_product: "whatsapp",
+            messaging_product: AllMessagingProductTypes.WHATSAPP,
             /**
              * Metadata related to the change
              */
@@ -97,14 +100,14 @@ export let whatsappDemoWebhookPayload: IWebhookMessagesPayload = {
                 /**
                  * The type of the message
                  */
-                type: MessageTypes.TEXT,
+                type: AllMessageTypes.TEXT,
               },
             ],
           },
           /**
            * The field property in the webhook payload refers to the type of webhook event or notification being received.
            */
-          field: FieldTypes.Messages,
+          field: AllFieldTypes.MESSAGES,
         },
       ],
     },

@@ -1,8 +1,5 @@
 import express from "express";
-import {
-  verifyWebhook,
-  receiveChanges,
-} from "../controllers/webhookController";
+import { verifyWebhook } from "../controllers/webhookController";
 import whatsappBot from "../utils/whatsappBot/init";
 
 const router = express.Router();
