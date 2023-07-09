@@ -32,6 +32,16 @@ declare namespace NodeJS {
     HUB_VERIFY_TOKEN: string;
 
     /**
+     * The username used to connect to mongo db on mongo atlas
+     */
+    MONGO_ATLAS_DB_USERNAME: string;
+
+    /**
+     * The password used to connect to mongo db on mongo atlas
+     */
+    MONGO_ATLAS_DB_PASSWORD: string;
+
+    /**
      * The ID of the phone number associated with the application.
      */
     PHONE_NUMBER_ID: string;

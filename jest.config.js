@@ -6,6 +6,7 @@ exports.default = {
     "./node_modules/",
     "./dist/logger",
     "./dist/types",
+    "./dist/utils/Constants.js",
     "./dist/utils/telegramBot/listenerHandlers/ErrorHandlers",
   ],
   collectCoverage: true,
