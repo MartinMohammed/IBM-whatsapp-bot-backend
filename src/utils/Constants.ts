@@ -8,7 +8,7 @@ import {
  * Represents constant values that can be used throughout the application for production.
  */
 
-const SERVER_URL = "https://gymdo.net/";
+const SERVER_URL = "https://gymdo.net";
 
 // ------------------------- RELATED TO META -------------------------
 /** Base URL for Facebook Graph API */
