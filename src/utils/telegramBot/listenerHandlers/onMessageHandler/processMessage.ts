@@ -27,6 +27,7 @@ export function processMessage(message: TelegramBot.Message) {
     if (action) {
       logger.verbose(`${message.text} is a telegram action.`);
       actionHandler(message, action);
+      return;
     }
 
     // No match

@@ -6,6 +6,7 @@ import onErrorHandler from "./listenerHandlers/onErrorHandlers/onErrorHandler";
 import onPollingErrorHandler from "./listenerHandlers/onErrorHandlers/onPollingErrorHandler";
 import { fetchBotCommands } from "./util/fetchBotCommands";
 import logger from "../../logger";
+import Constants from "../Constants";
 
 let telegramBot: TelegramBot | undefined;
 
@@ -18,11 +19,15 @@ if (process.env.NODE_ENV !== "test") {
    * Each long polling request stays open for a certain period of time, and if there are no updates during that time, the server responds with an empty response.
    */
   telegramBot = new TelegramBot(process.env.TELEGRAM_API_TOKEN, {
-    // You can customize the polling options to control the polling behavior
-    polling: {
-      interval: 2000, // Set the interval between polls to 2000 milliseconds (2 seconds)
+    webHook: {
+      port: 443, // traffic via https.
     },
   });
+
+  // Instead of polling, use webook to retrieve new changes.
+  telegramBot?.setWebHook(
+    `${Constants.SERVER_URL}/webhook/telegram/bot${process.env.TELEGRAM_API_TOKEN}`
+  );
 
   // Listen for incoming messages
   /* instabul ignore next */

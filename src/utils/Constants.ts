@@ -8,6 +8,8 @@ import {
  * Represents constant values that can be used throughout the application for production.
  */
 
+const SERVER_URL = "https://gymdo.net/";
+
 // ------------------------- RELATED TO META -------------------------
 /** Base URL for Facebook Graph API */
 const metaGraphBaseUrl = "https://graph.facebook.com";
@@ -51,6 +53,7 @@ const BOT_COMMAND_MESSAGE_TEMPLATES: BotCommandWithTemplateType = {
  * make sure to reset them back as in beginning..
  */
 export default {
+  SERVER_URL,
   BOT_COMMAND_MESSAGE_TEMPLATES,
   metaGraphBaseUrl,
   phoneNumberId,
