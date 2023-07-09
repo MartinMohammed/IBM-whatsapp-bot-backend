@@ -1,6 +1,5 @@
-// Initialize the telegram bot to listen for new messages.
+// Initialize the whatsapp bot to listen for new messages.
 import "./utils/whatsappBot/init";
-import "./utils/telegramBot/init";
 
 // Import the necessary libraries: express and body-parser.
 import express from "express";

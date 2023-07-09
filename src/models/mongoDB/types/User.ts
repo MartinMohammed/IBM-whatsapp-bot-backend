@@ -1,5 +1,5 @@
 import IWhatsappMessage from "./WhatsappMessage";
-import { Document } from "node-telegram-bot-api";
+import { Document } from "mongoose";
 
 /**
  * Interface representing a User document.

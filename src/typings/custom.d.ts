@@ -17,16 +17,6 @@ declare namespace NodeJS {
     META_API_TOKEN: string;
 
     /**
-     * Holds the telegram id's of the users that are whitelisted to interact (',' sep).
-     */
-    TELEGRAM_WHITELIST: string;
-
-    /**
-     * HTTP Access API token for Telegram Bot.
-     */
-    TELEGRAM_API_TOKEN: string;
-
-    /**
      * The verify token for verification purposes.
      */
     HUB_VERIFY_TOKEN: string;

@@ -7,7 +7,6 @@ exports.default = {
     "./dist/logger",
     "./dist/types",
     "./dist/utils/Constants.js",
-    "./dist/utils/telegramBot/listenerHandlers/ErrorHandlers",
   ],
   collectCoverage: true,
   verbose: true,
