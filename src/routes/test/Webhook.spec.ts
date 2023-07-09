@@ -4,7 +4,7 @@ import app from "../../app";
 import _ from "lodash";
 import { whatsappDemoWebhookPayload } from "../../testing/data/whatsapp/whatsappDemoWebhookPayload";
 
-const ROUTE = "/webhook";
+const ROUTE = "/webhook/whatsapp";
 
 /**
  * Test suite for the '/webhook' endpoint.
