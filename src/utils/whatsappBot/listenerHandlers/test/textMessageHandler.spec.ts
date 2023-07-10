@@ -1,45 +1,86 @@
-// Mock the logger module
-jest.mock("../../../../logger", () => ({
-  error: jest.fn(),
-  warn: jest.fn(),
-  info: jest.fn(),
-  http: jest.fn(),
-  verbose: jest.fn(),
-  debug: jest.fn(),
-  silly: jest.fn(),
-}));
-
-import { AllMessageTypes, IListenerTextMessage } from "node-whatsapp-bot-api";
+import mongoose from "mongoose";
+import { MongoMemoryServer } from "mongodb-memory-server";
 import mockLogger from "../../../../logger";
 import User from "../../../../models/mongoDB/schemas/User";
-import IUser from "../../../../models/mongoDB/types/User";
 import { textMessageHandler } from "../textMessageHandler";
+import IUser from "../../../../models/mongoDB/types/User";
+import {
+  demoUser,
+  demoListenerTextMessage,
+  demoWhatsappMessage,
+} from "../../../../testing/data/whatsapp/whatsappDemoWebhookPayload";
 
-describe("Given is a Whatsapp Message received from Meta emitted by whatsapp bot: ", () => {
-  beforeEach(() => {
+describe("textMessageHandler", () => {
+  // Before starting the tests, make sure a db connection has been established.
+  beforeAll(async () => {
+    // Establish connection to db for this test suite
+    const mongoServer = await MongoMemoryServer.create();
+    await mongoose.connect(mongoServer.getUri());
+  });
+
+  beforeEach(async () => {
+    // Wipe out the 'users' collection.
+    await User.deleteMany();
+    const userRefs = await User.find();
+    expect(userRefs.length).toBe(0);
     jest.clearAllMocks();
   });
 
-  const demoListenerTextMessage: IListenerTextMessage = {
-    type: AllMessageTypes.TEXT,
-    text: {
-      body: "HI",
-    },
-    from: "SENDER",
-  } as unknown as IListenerTextMessage;
+  describe("when a new user is encountered", () => {
+    it("should create a new user in the database", async () => {
+      // User should not exist yet.
+      let expectedUserRef = await User.findOne({ wa_id: demoUser.wa_id });
+      expect(expectedUserRef).toBeNull();
 
-  const demoUser = {
-    name: "John Doe",
-    wa_id: "1234567890",
-    whatsapp_messages: [],
-    save: jest.fn(),
-  } as unknown as IUser;
+      await textMessageHandler(demoListenerTextMessage);
+      expectedUserRef = await User.findOne({ wa_id: demoUser.wa_id });
 
-  it.todo(
-    "should create a new user when one wasn't fond in the db collection."
-  );
+      expect(expectedUserRef).not.toBeNull();
+      expect(expectedUserRef?.wa_id).toBe(demoUser.wa_id);
+      expect(mockLogger.info).toBeCalledWith(
+        `Successful created a new user(${demoUser.wa_id}) in the database users collection`
+      );
+    });
+  });
 
-  afterAll(() => {
+  describe("when an existing user is encountered", () => {
+    it("should append the new message to the user's array of messages", async () => {
+      // The user should be created inside the db.
+      const user: IUser = new User({
+        whatsapp_messages: [demoWhatsappMessage],
+        name: demoUser.name,
+        wa_id: demoUser.wa_id,
+      });
+
+      // Save the user in the db.
+      await user.save();
+
+      const userRef = await User.findOne({ wa_id: demoUser.wa_id });
+
+      // The user should already exist.
+      expect(userRef).not.toBeNull();
+
+      await textMessageHandler(demoListenerTextMessage);
+
+      expect(userRef?.whatsapp_messages.length).toBe(1);
+      expect(userRef?.whatsapp_messages[0].wam_id).toBe(
+        demoListenerTextMessage.message_id
+      );
+      expect(mockLogger.info).toBeCalledWith(
+        `User ${demoUser.wa_id} does already exists.`
+      );
+    });
+  });
+
+  afterEach(async () => {
+    // Wipe out the 'users' collection.
+    await User.deleteMany();
+  });
+
+  afterAll(async () => {
+    // Close the connection
+    await mongoose.disconnect();
+    await mongoose.connection.close();
     jest.restoreAllMocks();
   });
 });

@@ -1,3 +1,6 @@
+import { ITextMessage, IListenerTextMessage } from "node-whatsapp-bot-api";
+import IWhatsappMessage from "../../../models/mongoDB/types/WhatsappMessage";
+
 /**
  * Declare a namespace to extend the existing import
  */
@@ -112,4 +115,35 @@ export let whatsappDemoWebhookPayload: IWebhookMessagesPayload = {
       ],
     },
   ],
+};
+
+export const { messaging_product, metadata, contacts, messages } =
+  whatsappDemoWebhookPayload["entry"][0].changes[0].value;
+const message = messages![0] as ITextMessage;
+
+export const demoUser = {
+  name: "John Doe",
+  wa_id: "1234567890",
+};
+
+export const demoListenerTextMessage: IListenerTextMessage = {
+  type: AllMessageTypes.TEXT,
+  contact: {
+    wa_id: demoUser.wa_id,
+    profile: {
+      name: demoUser.name,
+    },
+  },
+  metadata,
+  text: message.text,
+  message_id: message.id,
+  timestamp: +message.timestamp,
+  messaging_product,
+};
+
+export const demoWhatsappMessage: IWhatsappMessage = {
+  wa_id: demoUser.wa_id,
+  text: demoListenerTextMessage.text.body,
+  timestamp: demoListenerTextMessage.timestamp,
+  wam_id: demoListenerTextMessage.message_id,
 };

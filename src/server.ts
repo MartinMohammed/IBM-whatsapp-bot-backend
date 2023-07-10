@@ -6,10 +6,12 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
 const connectToDatabase = async (): Promise<void> => {
   try {
-    const uri = `mongodb+srv://${process.env.MONGO_ATLAS_DB_USERNAME}:${process.env.MONGO_ATLAS_DB_PASSWORD}@cluster0.pqvdc.mongodb.net/${process.env.MONGO_ATLAS_DB_NAME}?retryWrites=true&w=majority`;
-    await mongoose.connect(uri);
+    if (process.env.NODE_ENV !== "test") {
+      const uri = `mongodb+srv://${process.env.MONGO_ATLAS_DB_USERNAME}:${process.env.MONGO_ATLAS_DB_PASSWORD}@cluster0.pqvdc.mongodb.net/${process.env.MONGO_ATLAS_DB_NAME}?retryWrites=true&w=majority`;
+      await mongoose.connect(uri);
 
-    logger.info("Successfully connected to MongoDB Atlas database.");
+      logger.info("Successfully connected to MongoDB Atlas database.");
+    }
 
     app.listen(PORT, () => {
       logger.info(`Server started listening on Port: ${PORT}.`);
