@@ -16,13 +16,8 @@ RUN npm install
 # Copy all remaining files to the working directory
 COPY . .
 
-RUN rm -rf ./dist/*
-
 # Set the ownership of the working directory to the new user
 RUN chown -R myuser:myuser /app
-
-# Modify permissions for the /app/dist directory
-RUN chmod -R 777 /app/dist
 
 # Build Production version / dist
 RUN npm run build
