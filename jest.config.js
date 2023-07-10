@@ -11,4 +11,5 @@ exports.default = {
   collectCoverage: true,
   verbose: true,
   moduleFileExtensions: ["js"],
+  testTimeout: 10000,
 };

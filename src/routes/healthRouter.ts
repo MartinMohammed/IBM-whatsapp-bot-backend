@@ -1,10 +1,10 @@
 import express from "express";
 import { respondToHealthCheck } from "../controllers/healthController";
 
-const router = express.Router();
+const healthRouter = express.Router();
 
 // Handle the GET request by the Elastic Load Balancer
 // To make a health check
-router.get("/health", respondToHealthCheck);
+healthRouter.get("/health", respondToHealthCheck);
 
-export default router;
+export default healthRouter;

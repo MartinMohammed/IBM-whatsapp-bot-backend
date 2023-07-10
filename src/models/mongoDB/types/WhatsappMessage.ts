@@ -4,7 +4,7 @@
  */
 interface IWhatsappMessage {
   text: string; // Represents the text message content
-  sender: string; // Represents the sender of the message (phone number)
+  wa_id: string; // Represents the sender of the message (phone number)
   wam_id: string; // Represents the unique WhatsApp message ID
   timestamp?: number; // Represents the timestamp of the message  (auto generated if not provided)
 }

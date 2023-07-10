@@ -30,11 +30,20 @@ declare namespace NodeJS {
      * The password used to connect to mongo db on mongo atlas
      */
     MONGO_ATLAS_DB_PASSWORD: string;
+    /**
+     * Represents the db name
+     */
+    MONGO_ATLAS_DB_NAME: string;
 
     /**
      * The ID of the phone number associated with the application.
      */
     PHONE_NUMBER_ID: string;
+
+    /**
+     * Represents the phone number associated with the application.
+     */
+    PHONE_NUMBER: string;
 
     /**
      * The current environment (either "production" or "development").

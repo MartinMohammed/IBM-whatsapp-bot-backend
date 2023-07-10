@@ -11,8 +11,15 @@ jest.mock("../../../../logger", () => ({
 
 import { AllMessageTypes, IListenerTextMessage } from "node-whatsapp-bot-api";
 import mockLogger from "../../../../logger";
+import User from "../../../../models/mongoDB/schemas/User";
+import IUser from "../../../../models/mongoDB/types/User";
+import { textMessageHandler } from "../textMessageHandler";
 
 describe("Given is a Whatsapp Message received from Meta emitted by whatsapp bot: ", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   const demoListenerTextMessage: IListenerTextMessage = {
     type: AllMessageTypes.TEXT,
     text: {
@@ -21,5 +28,18 @@ describe("Given is a Whatsapp Message received from Meta emitted by whatsapp bot
     from: "SENDER",
   } as unknown as IListenerTextMessage;
 
-  it.todo("Add testing");
+  const demoUser = {
+    name: "John Doe",
+    wa_id: "1234567890",
+    whatsapp_messages: [],
+    save: jest.fn(),
+  } as unknown as IUser;
+
+  it.todo(
+    "should create a new user when one wasn't fond in the db collection."
+  );
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
 });

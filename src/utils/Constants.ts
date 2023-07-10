@@ -11,6 +11,8 @@ const metaGraphBaseUrl = "https://graph.facebook.com";
 const metaGraphAPIVersion = "v17.0";
 /** Phone number ID */
 const phoneNumberId = process.env.PHONE_NUMBER_ID;
+/** Phone number */
+const phoneNumber = process.env.PHONE_NUMBER;
 
 // ------------------------- RELATED TO META -------------------------
 
@@ -20,6 +22,7 @@ const phoneNumberId = process.env.PHONE_NUMBER_ID;
  */
 export default {
   SERVER_URL,
+  phoneNumber,
   metaGraphBaseUrl,
   phoneNumberId,
   metaGraphAPIVersion,

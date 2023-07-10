@@ -6,14 +6,15 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 // ----------------- Router ----------------- //
-import webhookRouter from "./routes/Webhook";
-import healthRouter from "./routes/Health";
+import webhookRouter from "./routes/webhookRouter";
+import healthRouter from "./routes/healthRouter";
 // ----------------- Router ----------------- //
 
 // ----------------- Custom Middleware ----------------- //
 import errorHandler from "./middlewares/errorHandler";
 import notFoundError from "./middlewares/notFoundError";
 import logRequest from "./middlewares/logRequest";
+import apiRouter from "./routes/api";
 // ----------------- Custom Middleware ----------------- //
 
 // ----------------- CONSTANTS ----------------- //
@@ -35,6 +36,7 @@ app.use(bodyParser.json());
 // Sign in the router
 app.use("/", healthRouter);
 app.use("/webhook", webhookRouter);
+app.use("/api", apiRouter);
 
 // Apply for unmatched routes.
 app.use(notFoundError);
