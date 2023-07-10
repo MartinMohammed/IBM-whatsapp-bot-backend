@@ -16,7 +16,7 @@ RUN npm install
 # Copy all remaining files to the working directory
 COPY . .
 
-RUN rm -rf ./dist
+RUN rm -rf ./dist/*
 
 # Set the ownership of the working directory to the new user
 RUN chown -R myuser:myuser /app
