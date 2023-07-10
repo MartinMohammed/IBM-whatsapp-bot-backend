@@ -17,7 +17,7 @@ services:
 
     # Build, after removing the dist folder in Dockerfile.dev
     command: |
-      sh -c "npm run build && npm run test"
+      sh -c "npm run test"
   mongo:
     image: mongo
     restart: "no"
