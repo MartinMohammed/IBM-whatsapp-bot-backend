@@ -13,7 +13,7 @@ describe("Given the endpoint '/health':", () => {
 
     // Expect the response body to be an empty JSON object
     expect(response.body).toEqual({
-      status: "OK",
+      message: "OK",
     });
   });
 

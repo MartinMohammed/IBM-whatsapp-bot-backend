@@ -12,10 +12,10 @@ function errorHandler(
   err: Error,
   req: express.Request,
   res: express.Response,
-  next: express.NextFunction
+  _: express.NextFunction
 ) {
   logger.error("An error occurred: ", err);
-  res.status(500).json({ error: "Internal Server Error" });
+  res.status(500).json({ message: `Internal Server Error: ${err.message}` });
 }
 
 export default errorHandler;

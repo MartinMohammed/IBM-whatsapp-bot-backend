@@ -1,32 +1,42 @@
-// Initialize the telegram bot to listen for new messages.
+// Initialize the whatsapp bot to listen for new messages.
 import "./utils/whatsappBot/init";
-import "./utils/telegramBot/init";
 
 // Import the necessary libraries: express and body-parser.
 import express from "express";
 import bodyParser from "body-parser";
+import cors from "cors";
 // ----------------- Router ----------------- //
-import webhookRouter from "./routes/Webhook";
-import healthRouter from "./routes/Health";
+import webhookRouter from "./routes/webhookRouter";
+import healthRouter from "./routes/healthRouter";
 // ----------------- Router ----------------- //
 
 // ----------------- Custom Middleware ----------------- //
 import errorHandler from "./middlewares/errorHandler";
-// ----------------- Custom Middleware ----------------- //
-
 import notFoundError from "./middlewares/notFoundError";
+import logRequest from "./middlewares/logRequest";
+import apiRouter from "./routes/api";
+// ----------------- Custom Middleware ----------------- //
 
 // ----------------- CONSTANTS ----------------- //
 const app = express();
 // ----------------- CONSTANTS ----------------- //
 
 // ----------------- Register middleware ----------------- //
+
+// Enable CORS for all routes
+//  It allows requests from different origins and handles CORS headers and options.
+app.use(cors());
+
+// Middleware in which all requests go through
+app.use(logRequest);
+
 // Use body-parser middleware to parse JSON requests.
 app.use(bodyParser.json());
 
 // Sign in the router
 app.use("/", healthRouter);
 app.use("/webhook", webhookRouter);
+app.use("/api", apiRouter);
 
 // Apply for unmatched routes.
 app.use(notFoundError);

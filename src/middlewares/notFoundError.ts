@@ -14,7 +14,7 @@ function notFoundError(
   logger.warn(`Received an unmatched request to ${req.path}.`);
 
   // Send a JSON response with a 404 status code and an error message
-  res.status(404).json({ error: "Not found" });
+  res.status(404).json({ message: "Not found" });
 }
 
 export default notFoundError;

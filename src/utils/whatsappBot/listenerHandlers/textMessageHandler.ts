@@ -1,24 +1,47 @@
 import { IListenerTextMessage } from "node-whatsapp-bot-api";
-import Constants from "../../Constants";
 import logger from "../../../logger";
-import sendTextMessageWrapper from "../../telegramBot/messagingFeatures/telegramSendTextMessageWrapper";
+import User from "../../../models/mongoDB/schemas/User";
+import IWhatsappMessage from "../../../models/mongoDB/types/WhatsappMessage";
+import IUser from "../../../models/mongoDB/types/User";
 
 /**
  * Handles incoming text messages.
  * @param textMessage The incoming text message.
  */
-export function textMessageHandler(textMessage: IListenerTextMessage) {
-  logger.info(
-    "Now broadcasting the received WhatsApp message to whitelisted chats."
-  );
+export async function textMessageHandler(textMessage: IListenerTextMessage) {
+  try {
+    const { contact, message_id, text, timestamp } = textMessage;
 
-  /* istanbul ignore next */
-  Constants.MESSAGE_WHITE_LIST.forEach(async (telegramChatId) => {
-    // Includes built-in error handling.
+    // Save the message into the database
+    const whatsappMessage: IWhatsappMessage = {
+      text: text.body,
+      wa_id: contact.wa_id,
+      wam_id: message_id,
+      timestamp: timestamp,
+    };
 
-    await sendTextMessageWrapper(
-      telegramChatId,
-      `Hi, wir haben eine neue Nachricht von ${textMessage.from} erhalten.\n\nDie Nachricht lautet: '${textMessage.text.body}'.\n\nWenn du darauf antworten möchtest, swipe die Nachricht nach link und antworte.`
-    );
-  });
+    // Check if the user already exists in the database
+    const user = await User.findOne({ wa_id: contact.wa_id });
+
+    if (!user) {
+      // Create a new user and save their first message
+      const newUser: IUser = new User({
+        name: contact.profile.name,
+        wa_id: contact.wa_id,
+        whatsapp_messages: [whatsappMessage],
+      });
+      await newUser.save();
+      logger.info(
+        `Successful created a new user(${contact.wa_id}) in the database users collection`
+      );
+      return;
+    } else {
+      logger.info(`User ${contact.wa_id} does already exists.`);
+      // User already exists, push the new message to their array
+      user.whatsapp_messages.push(whatsappMessage);
+      await user.save();
+    }
+  } catch (error) {
+    logger.error(`Failed to handle incoming text message: ${error}`);
+  }
 }

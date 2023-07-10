@@ -9,43 +9,37 @@ jest.mock("../../../../logger", () => ({
   silly: jest.fn(),
 }));
 
-jest.mock(
-  "../../../telegramBot/messagingFeatures/telegramSendTextMessageWrapper",
-  () => jest.fn()
-);
-import mockedLogger from "../../../../logger";
-import { textMessageHandler } from "../textMessageHandler";
-import { IListenerTextMessage } from "node-whatsapp-bot-api";
-import Constants from "../../../Constants";
-import sendTextMessageWrapper from "../../../telegramBot/messagingFeatures/telegramSendTextMessageWrapper";
+import { AllMessageTypes, IListenerTextMessage } from "node-whatsapp-bot-api";
 import mockLogger from "../../../../logger";
+import User from "../../../../models/mongoDB/schemas/User";
+import IUser from "../../../../models/mongoDB/types/User";
+import { textMessageHandler } from "../textMessageHandler";
 
 describe("Given is a Whatsapp Message received from Meta emitted by whatsapp bot: ", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   const demoListenerTextMessage: IListenerTextMessage = {
+    type: AllMessageTypes.TEXT,
     text: {
       body: "HI",
     },
     from: "SENDER",
-  } as IListenerTextMessage;
-  const mockSendTextMessageWrapper = sendTextMessageWrapper as jest.Mock;
+  } as unknown as IListenerTextMessage;
 
-  /** It should be tested whether the broadcast of the received message worked or not */
-  it("broadcast the message to every telegram user that is whitelisted. ", async () => {
-    mockSendTextMessageWrapper.mockImplementationOnce((_: number, __: string) =>
-      Promise.reject(Error("Failed"))
-    );
-    textMessageHandler(demoListenerTextMessage);
-    Constants.MESSAGE_WHITE_LIST.forEach((telegramChatId) => {
-      expect(mockSendTextMessageWrapper).toBeCalledWith(
-        telegramChatId,
-        `Hi, wir haben eine neue Nachricht von ${demoListenerTextMessage.from} erhalten.\n\nDie Nachricht lautet: '${demoListenerTextMessage.text.body}'.\n\nWenn du darauf antworten möchtest, swipe die Nachricht nach link und antworte.`
-      );
-    });
-    expect(mockSendTextMessageWrapper).toBeCalledTimes(
-      Constants.MESSAGE_WHITE_LIST.length
-    );
-    expect(mockLogger.info).toBeCalledWith(
-      "Now broadcasting the received WhatsApp message to whitelisted chats."
-    );
+  const demoUser = {
+    name: "John Doe",
+    wa_id: "1234567890",
+    whatsapp_messages: [],
+    save: jest.fn(),
+  } as unknown as IUser;
+
+  it.todo(
+    "should create a new user when one wasn't fond in the db collection."
+  );
+
+  afterAll(() => {
+    jest.restoreAllMocks();
   });
 });

@@ -13,6 +13,6 @@ export function respondToHealthCheck(req: Request, res: Response) {
 
   // Send HTTP Status code 200, indicating the service is online.
   res.status(200).json({
-    status: "OK",
+    message: "OK",
   });
 }

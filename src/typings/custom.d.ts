@@ -17,24 +17,33 @@ declare namespace NodeJS {
     META_API_TOKEN: string;
 
     /**
-     * Holds the telegram id's of the users that are whitelisted to interact (',' sep).
-     */
-    TELEGRAM_WHITELIST: string;
-
-    /**
-     * HTTP Access API token for Telegram Bot.
-     */
-    TELEGRAM_API_TOKEN: string;
-
-    /**
      * The verify token for verification purposes.
      */
     HUB_VERIFY_TOKEN: string;
 
     /**
+     * The username used to connect to mongo db on mongo atlas
+     */
+    MONGO_ATLAS_DB_USERNAME: string;
+
+    /**
+     * The password used to connect to mongo db on mongo atlas
+     */
+    MONGO_ATLAS_DB_PASSWORD: string;
+    /**
+     * Represents the db name
+     */
+    MONGO_ATLAS_DB_NAME: string;
+
+    /**
      * The ID of the phone number associated with the application.
      */
     PHONE_NUMBER_ID: string;
+
+    /**
+     * Represents the phone number associated with the application.
+     */
+    PHONE_NUMBER: string;
 
     /**
      * The current environment (either "production" or "development").

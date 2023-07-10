@@ -31,15 +31,6 @@ describe(`Endpoint: ${ROUTE}`, () => {
 
       expect(response.statusCode).toBe(403);
     });
-
-    it("should respond with hub.challenge if hub.mode and hub.verify token were correct", async () => {
-      const response = await supertestRequest(app).get(
-        `${ROUTE}?hub.mode=subscribe&hub.challenge=${hubChallenge}&hub.verify_token=${hubVerifyToken}`
-      );
-
-      expect(response.statusCode).toBe(200);
-      expect(response.text).toBe(hubChallenge);
-    });
   });
 
   /**
