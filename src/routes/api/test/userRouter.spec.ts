@@ -9,7 +9,6 @@ jest.mock("../../../utils/whatsappBot/init", () => ({
 import supertestRequest from "supertest";
 import app from "../../../app";
 import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
 import User from "../../../models/mongoDB/schemas/User";
 import { demoWhatsappMessage } from "../../../testing/data/whatsapp/whatsappDemoWebhookPayload";
 import { demoUser } from "../../../testing/data/whatsapp/whatsappDemoWebhookPayload";
@@ -27,8 +26,8 @@ describe("Give the http requests to the 'userRouter'", () => {
 
   beforeAll(async () => {
     // Instantiate MongoMemorySever
-    const mongoServer = await MongoMemoryServer.create();
-    await mongoose.connect(mongoServer.getUri());
+    const mongoUri = `mongodb://test:test@mongo:27017/?authMechanism=DEFAULT`;
+    await mongoose.connect(mongoUri);
   });
 
   beforeEach(async () => {

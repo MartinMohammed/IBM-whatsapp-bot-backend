@@ -16,10 +16,9 @@ services:
       - ./logs:/app/logs # Mount the local 'logs' directory to the container's 'logs' directory
     depends_on:
       - mongo
-    # similar to the .spec variant, except that here is test:watch
-    # which is problematic for github actions when running tests, because it does not exit.
+    # Build, after removing the dist folder in Dockerfile.dev
     command: |
-      sh -c "npm run build && npm run test:watch"
+      sh -c "npm run build && npm run test"
   mongo:
     image: mongo
     restart: always

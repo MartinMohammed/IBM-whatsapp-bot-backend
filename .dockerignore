@@ -26,6 +26,9 @@ docker-compose.dev.yaml
 Dockerfile
 docker-compose.yaml
 
+# Test
+docker-compose.yaml
+
 # Git
 .gitignore
 .github

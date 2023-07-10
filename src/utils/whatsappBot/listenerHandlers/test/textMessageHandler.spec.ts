@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
 import mockLogger from "../../../../logger";
 import User from "../../../../models/mongoDB/schemas/User";
 import { textMessageHandler } from "../textMessageHandler";
@@ -14,8 +13,8 @@ describe("textMessageHandler", () => {
   // Before starting the tests, make sure a db connection has been established.
   beforeAll(async () => {
     // Establish connection to db for this test suite
-    const mongoServer = await MongoMemoryServer.create();
-    await mongoose.connect(mongoServer.getUri());
+    const mongoUri = `mongodb://test:test@mongo:27017/?authMechanism=DEFAULT`;
+    await mongoose.connect(mongoUri);
   });
 
   beforeEach(async () => {
