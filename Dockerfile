@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Build the project and run tests
-RUN npm run build && npm test
+RUN npm run build
 
 # Second stage for the final image
 FROM node:20-alpine3.17

@@ -11,7 +11,6 @@ const messageSchema: Schema<IWhatsappMessage> = new Schema<IWhatsappMessage>({
     type: String,
     required: true,
     immutable: true,
-    unique: true,
     validate: {
       validator: (value: string) => value.length > 0,
       message: "Whatsapp text message must have a length greater 0.",
