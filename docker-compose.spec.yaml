@@ -14,7 +14,7 @@ services:
     volumes:
       - ./dist:/app/dist # Mount the local "dist" directory to the container's "dist" directory
       - ./logs:/app/logs # Mount the local 'logs' directory to the container's 'logs' directory
-    restart: no
+    restart: "no"
     depends_on:
       - mongo
 
@@ -23,7 +23,7 @@ services:
       sh -c "npm run build && npm run test"
   mongo:
     image: mongo
-    restart: no
+    restart: "no"
     environment:
       MONGO_INITDB_ROOT_USERNAME: test
       MONGO_INITDB_ROOT_PASSWORD: test
