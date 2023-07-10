@@ -37,7 +37,8 @@ jobs:
 
       - name: Use docker-compose.spec.yaml file to rebuild app, and run Tests
         # Running the tests inside the project's Docker container
-        run: docker-compose -f docker-compose.spec.yaml up --build
+        # If the testing completes (exit 0 or 1), all other containers should shut down as well.
+        run: docker-compose -f docker-compose.spec.yaml up --abort-on-container-exit  --build
 
       # - name: Build and Push Docker production image
       #   # Building the new Docker image and pushing it to the Docker registry

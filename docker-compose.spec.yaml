@@ -14,14 +14,16 @@ services:
     volumes:
       - ./dist:/app/dist # Mount the local "dist" directory to the container's "dist" directory
       - ./logs:/app/logs # Mount the local 'logs' directory to the container's 'logs' directory
+    restart: no
     depends_on:
       - mongo
+
     # Build, after removing the dist folder in Dockerfile.dev
     command: |
       sh -c "npm run build && npm run test"
   mongo:
     image: mongo
-    restart: always
+    restart: no
     environment:
       MONGO_INITDB_ROOT_USERNAME: test
       MONGO_INITDB_ROOT_PASSWORD: test
