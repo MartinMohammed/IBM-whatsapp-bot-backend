@@ -19,7 +19,7 @@ services:
     # similar to the .spec variant, except that here is test:watch
     # which is problematic for github actions when running tests, because it does not exit.
     command: |
-      sh -c "npm run build && npm run test"
+      sh -c "npm run test:watch"
   mongo:
     image: mongo
     restart: always

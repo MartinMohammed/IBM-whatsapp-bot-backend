@@ -4,8 +4,8 @@
   "description": "",
   "main": "./dist/server.js",
   "scripts": {
-    "start": "env $(cat .env) node ./dist/server.js",
-    "dev": "env $(cat .env) nodemon ./dist/server.js",
+    "start": "node ./dist/server.js",
+    "dev": "nodemon ./dist/server.js",
     "build": "tsc;",
     "build:watch": "rm -rf ./dist && tsc --watch",
     "test": "jest",
@@ -25,12 +25,10 @@
     "winston": "^3.9.0"
   },
   "devDependencies": {
-    "@types/axios": "^0.14.0",
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
     "@types/jest": "^29.5.2",
     "@types/lodash": "^4.14.195",
-    "@types/mongoose": "^5.11.97",
     "@types/node": "^20.3.3",
     "@types/supertest": "^2.0.12",
     "jest": "^29.5.0",
