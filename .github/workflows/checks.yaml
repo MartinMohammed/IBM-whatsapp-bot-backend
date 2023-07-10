@@ -35,13 +35,9 @@ jobs:
         # performing linting, or building artifacts.
         uses: actions/checkout@v3.5.3
 
-      - name: Build Development Docker Image
-        # Building the Docker image using the provided Dockerfile
-        run: docker build -f Dockerfile.dev -t project-image .
-
-      - name: Run Tests
+      - name: Use docker-compose.spec.yaml file to rebuild app, and run Tests
         # Running the tests inside the project's Docker container
-        run: docker run project-image npm run coverage
+        run: docker-compose -f docker-compose.spec.yaml up --build
 
       # - name: Build and Push Docker production image
       #   # Building the new Docker image and pushing it to the Docker registry
