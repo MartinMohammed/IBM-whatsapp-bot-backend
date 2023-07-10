@@ -1,5 +1,6 @@
 import express from "express";
-import whatsappBot from "../utils/whatsappBot/init";
+import getWhatsappBot from "../utils/whatsappBot/init";
+const whatsappBot = getWhatsappBot();
 
 const webhookRouter = express.Router();
 
