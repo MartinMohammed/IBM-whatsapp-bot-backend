@@ -6,20 +6,12 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
-    environment:
-      - USER_ACCESS_TOKEN=EAADg0pPV2X0BAAF8XVGOQIVuJI0ormHxR1TeMZABV2ZCsUJwZAIktOmpwAnnnbII3OZAmUUTDsG8RxDdpmy5iBxzO3NWkpqo3yyDxmv4JMqZB1K2PdCyZBhEZCcf7DMn2fh2vzLcy0JRIkkOtTjJsDL3ZAgZAPMSxvZAXClHYJd5kI7Q8KZAMv7LdCf2lRlXynl7hsftBL29HyBUP8j5SpVpN9E6C5aS7YVQQJPkayUSj6gTAZDZD
-      - HUB_VERIFY_TOKEN=8f76f6840a48f64159f30c1ff659e7bd8220f1e4cf31bf44f241e24f
-      - PORT=3000
-      - PHONE_NUMBER_ID=112688608518505
     volumes:
-      - ./dist:/app/dist # Mount the local "dist" directory to the container's "dist" directory
+      - ./src:/app/src # Mount the local "dist" directory to the container's "dist" directory
       - ./logs:/app/logs # Mount the local 'logs' directory to the container's 'logs' directory
     depends_on:
       - mongo
-    # similar to the .spec variant, except that here is test:watch
-    # which is problematic for github actions when running tests, because it does not exit.
-    command: |
-      sh -c "npm run test:watch"
+  # For testing purposes
   mongo:
     image: mongo
     restart: always

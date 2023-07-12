@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 // Mock the logger module
 // Since every test runs in its own environment,
 // these scripts will be executed in the testing environment before executing setupFilesAfterEnv and before the test code itself.

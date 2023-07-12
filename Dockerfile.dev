@@ -16,11 +16,11 @@ RUN npm install
 # Copy all remaining files to the working directory
 COPY . .
 
-# Set the ownership of the working directory to the new user
-RUN chown -R myuser:myuser /app
-
 # Build Production version / dist
 RUN npm run build
+
+# Set the ownership of the working directory to the new user
+RUN chown -R myuser:myuser /app
 
 # Switch to the new user
 USER myuser
@@ -31,4 +31,6 @@ EXPOSE 3000
 # Set the command to run the entry point script
 # No testing, because (no mongo db is provided)
 # If testing use the docker-compose.dev file
+# concurrently  \"npm:build:watch\" \"npm:test:watch\" \"nodemon ./dist/server.js\" 
+# watch for changes -> test the changes -> restart the dev server
 CMD npm run dev

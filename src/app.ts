@@ -1,3 +1,6 @@
+// Load the env
+import "dotenv/config";
+
 // Initialize the whatsapp bot to listen for new messages.
 import "./utils/whatsappBot/init";
 

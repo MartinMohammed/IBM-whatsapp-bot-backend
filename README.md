@@ -100,7 +100,6 @@ The Webhook API is built using the following libraries and dependencies:
 - body-parser: Middleware for parsing JSON requests.
 - nodemon: Development tool that automatically restarts the server when code changes are detected.
 - TypeScript: A typed superset of JavaScript that compiles to plain JavaScript.
-- UglifyJS: A JavaScript parser, minifier, and mangler library.
 
 ### Development Workflow
 
