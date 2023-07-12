@@ -29,44 +29,36 @@ describe("Testing the websocket endpoint for the namespace: '/messages'", () => 
   });
 
   beforeAll((done) => {
-    // Set up Socket.IO server for managing connections and more.
+    // Set up Socket.io server for managing connections and co.
     io = new Server<DefaultEventsMap, DefaultEventsMap>(TARGET_PORT);
 
-    // Create a new namespace and set a listener for incoming connections.
+    // Create a new namespace and set a listener for incoming connection.
     io.of("/messages").on("connection", (socket) => {
       serverSocket = socket;
       messagesController(serverSocket);
-      // Verify that the logger.info function is called with the correct message.
       expect(logger.info).toBeCalledWith(
         `Received a socket connection: ${serverSocket.id}.`
       );
-      // Verify that the mockedBot.on function is called.
       expect(mockedBot.on).toHaveBeenCalled();
     });
 
     // Establish a connection to the server
     clientSocket = Client(`http://localhost:${TARGET_PORT}/messages`);
 
-    // Set up a listener for the 'connect' event, indicating that the connection to the server is established.
     clientSocket.on("connect", () => {
       done();
     });
   });
-
-  it("should call sendTextMessage with the bot when a message is emitted to the server", (done) => {
-    // Emit the 'message' event from the clientSocket and pass the demoWhatsappMessageFromClient data.
+  it("a message is emitted to the server, expect that sendTextMessage with the bot is called: ", (done) => {
+    // Mock the call with the collected serverSocket
     clientSocket.emit("message", demoWhatsappMessageFromClient);
 
-    // Create a Promise to handle the asynchronous expectation.
     new Promise((resolve, reject) => {
-      // Add a delay to allow time for the event handling and function invocation.
       setTimeout(() => {
-        // Verify that the mockedBot.sendTextMessage function is called with the correct arguments.
         expect(mockedBot.sendTextMessage).toBeCalledWith(
           demoWhatsappMessageFromClient.text,
           demoWhatsappMessageFromClient.wa_id
         );
-        // Verify that the logger.info function is called with the correct message.
         expect(logger.info).toBeCalledWith(
           `Received a whatsapp message from the client to send: ${demoWhatsappMessageFromClient.wa_id}.`
         );
@@ -77,18 +69,12 @@ describe("Testing the websocket endpoint for the namespace: '/messages'", () => 
   });
 
   afterAll((done) => {
-    // Close the Socket.IO server.
     io.close();
-
-    // Disconnect all the connected sockets.
+    clientSocket.close();
     io.disconnectSockets();
-
-    // Verify that the logger.info function is called with the correct message.
     expect(logger.info).toBeCalledWith(
       `${serverSocket.id} disconnected from the socket connection.`
     );
-
-    // Restore all mocked functions.
     jest.restoreAllMocks();
     done();
   });
