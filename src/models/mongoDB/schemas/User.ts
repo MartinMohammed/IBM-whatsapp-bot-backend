@@ -32,6 +32,7 @@ const messageSchema: Schema<IWhatsappMessage> = new Schema<IWhatsappMessage>({
     // Auto generate if not provided
     default: () => getUnixTimestamp(),
   },
+  // Set by meta or after we have sent the message to meta if the message originated before from client
   wam_id: {
     type: String,
     validate: {
