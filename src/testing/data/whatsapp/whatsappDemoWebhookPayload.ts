@@ -1,5 +1,5 @@
 import { ITextMessage, IListenerTextMessage } from "node-whatsapp-bot-api";
-import IWhatsappMessage from "../../../models/mongoDB/types/WhatsappMessage";
+import IWhatsappMessage from "../../../customTypes/models/WhatsappMessage";
 
 /**
  * Declare a namespace to extend the existing import

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import mockLogger from "../../../../logger";
 import User from "../../../../models/mongoDB/schemas/User";
 import { textMessageHandler } from "../textMessageHandler";
-import IUser from "../../../../models/mongoDB/types/User";
+import IUser from "../../../../customTypes/models/User";
 import {
   demoUser,
   demoListenerTextMessage,

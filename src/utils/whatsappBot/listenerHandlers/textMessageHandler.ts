@@ -1,8 +1,8 @@
 import { IListenerTextMessage } from "node-whatsapp-bot-api";
 import logger from "../../../logger";
 import User from "../../../models/mongoDB/schemas/User";
-import IWhatsappMessage from "../../../models/mongoDB/types/WhatsappMessage";
-import IUser from "../../../models/mongoDB/types/User";
+import IWhatsappMessage from "../../../customTypes/models/WhatsappMessage";
+import IUser from "../../../customTypes/models/User";
 
 /**
  * Handles incoming text messages.

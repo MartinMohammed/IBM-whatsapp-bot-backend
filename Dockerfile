@@ -16,6 +16,9 @@ COPY . .
 # Build the project and run tests
 RUN npm run build
 
+# Minfiy the code
+RUN npm run minify
+
 # Second stage for the final image
 FROM node:20-alpine3.17
 
@@ -36,6 +39,9 @@ RUN find /app/dist -type d -name "test" -prune -exec rm -rf {} \;
 
 # Remove testing utilities
 RUN rm -rf /app/dist/testing
+
+# Remove tsconfig.tsbuildinfo - for incremental compliation in ts.
+RUN rm -rf /app/dist/tsconfig.tsbuildinfo
 
 # Set the ownership of the working directory to the new user
 RUN chown -R myuser:myuser /app

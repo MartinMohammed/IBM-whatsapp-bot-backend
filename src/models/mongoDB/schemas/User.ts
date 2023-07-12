@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
-import IUser from "../types/User";
-import IWhatsappMessage from "../types/WhatsappMessage";
+import IUser from "../../../customTypes/models/User";
+import IWhatsappMessage from "../../../customTypes/models/WhatsappMessage";
 import getUnixTimestamp from "../../../utils/getUnixTimestamp";
 
 /**

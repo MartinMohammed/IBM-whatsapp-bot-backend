@@ -1,8 +1,8 @@
 import express from "express";
 import User from "../../models/mongoDB/schemas/User";
 import logger from "../../logger";
-import IUser from "../../models/mongoDB/types/User";
-import IWhatsappMessage from "../../models/mongoDB/types/WhatsappMessage";
+import IUser from "../../customTypes/models/User";
+import IWhatsappMessage from "../../customTypes/models/WhatsappMessage";
 import Constants from "../../utils/Constants";
 import getWhatsappBot from "../../utils/whatsappBot/init";
 const whatsappBot = getWhatsappBot();
@@ -77,7 +77,7 @@ export async function postMessageToUser(
   const wam_id = await whatsappBot.sendTextMessage(body.text, recipient);
 
   // Expect that the wam_id is provided if the whatsapp bot request was successful.
-  if (wam_id) {
+  if (wam_id && Constants.phoneNumber) {
     console.log("wmaid");
     const newWhatsappMessage: IWhatsappMessage = {
       text: body.text,

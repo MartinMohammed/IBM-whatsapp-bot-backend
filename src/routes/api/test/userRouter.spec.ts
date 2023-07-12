@@ -12,7 +12,7 @@ import mongoose from "mongoose";
 import User from "../../../models/mongoDB/schemas/User";
 import { demoWhatsappMessage } from "../../../testing/data/whatsapp/whatsappDemoWebhookPayload";
 import { demoUser } from "../../../testing/data/whatsapp/whatsappDemoWebhookPayload";
-import IUser from "../../../models/mongoDB/types/User";
+import IUser from "../../../customTypes/models/User";
 import getWhatsappBot from "../../../utils/whatsappBot/init";
 import logger from "../../../logger";
 
