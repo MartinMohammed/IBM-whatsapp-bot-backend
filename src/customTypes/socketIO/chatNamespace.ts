@@ -18,6 +18,8 @@ export type ServerToClientEventsMessagesType = {
 export type ClientToServerEventsMessagesType = {
   /** Triggered when a WhatsApp chat message is sent from the client and should be redirected to the server. */
   message: (text: IWhatsappTextMessageFromClient, cb: (wamid: string) => void) => void;
+  /** When the user switched the chat in the left pane, this change must be synchronized in order to update socket.data.currentChatUser */
+  chatSwitch: (text: IUser["wa_id"]) => void; 
 };
 
 /** Defines the event names and callback structures for inter-server events. */
