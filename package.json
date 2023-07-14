@@ -6,11 +6,12 @@
   "scripts": {
     "start": "node ./dist/server.js",
     "minify": "find ./dist -type f -name '*.js' -exec uglifyjs {} -c -m -o {} \\;",
-    "dev": "concurrently  \"npm:build:watch\" \"npm:test:watch\" \"nodemon ./dist/server.js\"",
+    "dev": "concurrently  \"npm:build:watch\" \"nodemon ./dist/server.js\"",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "test": "jest",
-    "test:watch": "jest --config ./jest.config.js --watchAll"
+    "test:watch": "concurrently  \"npm:build:watch\" \"jest --config ./jest.config.js --watchAll\""
+    
   },
   "keywords": [],
   "author": "",

@@ -2,9 +2,9 @@ import app from "./app";
 import logger from "./logger";
 import mongoose from "mongoose";
 import { Server } from "socket.io";
-import { MessagesNamespace } from "./customTypes/socketIO/messagesNamespace";
+import { ChatNamespace } from "./customTypes/socketIO/chatNamespace";
 import { AllNamespaces } from "./customTypes/socketIO/root";
-import messagesController from "./controllers/socketIO/messagesController";
+import messagesController from "./controllers/socketIO/chatController";
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
@@ -22,9 +22,14 @@ const connectToDatabase = async (): Promise<void> => {
     });
 
     // Create a new socket.io server based on the existing http server returned by app.listen()
-    const io = new Server(httpServer);
+    const io = new Server(httpServer, {
+      cors: {
+        // TODO: Trusted url
+        origin: "*"
+      }
+    });
     // Initialize the messages namespace
-    const messagesNamespace: MessagesNamespace = io.of(AllNamespaces.MESSAGES);
+    const messagesNamespace: ChatNamespace = io.of(AllNamespaces.CHAT);
     //   Listen for incoming connection requests.
     messagesNamespace.on("connection", messagesController);
   } catch (error) {

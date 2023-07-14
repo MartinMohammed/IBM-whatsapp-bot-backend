@@ -20,6 +20,21 @@ import logRequest from "./middlewares/logRequest";
 import apiRouter from "./routes/api";
 // ----------------- Custom Middleware ----------------- //
 
+// ----------------- EXPORT ALL TYPES FOR THE TYPE BUNDLER ----------------- //
+/* Models */
+export * from "./customTypes/models/User"
+export * from "./customTypes/models/WhatsappMessagesStored"
+/* SocketIO */
+export * from "./customTypes/socketIO/messages"
+export * from "./customTypes/socketIO/chatNamespace"
+export * from "./customTypes/socketIO/root"
+/* Rest */
+export * from "./customTypes/REST/ClientStoredMessage"
+export * from "./customTypes/REST/ClientStoredUser"
+// ----------------- EXPORT ALL TYPES FOR THE TYPE BUNDLER ----------------- //
+
+// ----------------- Router ----------------- //
+
 // ----------------- CONSTANTS ----------------- //
 const app = express();
 // ----------------- CONSTANTS ----------------- //

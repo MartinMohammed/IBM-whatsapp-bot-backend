@@ -1,9 +1,10 @@
 /** Import the demoUser from the specified path */
-import demoUser from "./whatsappDemoUser";
+
 
 /** Import the MessageTypes enum from the specified path */
 /** Import the ITextObject interface from the specified path */
 import { AllMessageTypes, ITextObject } from "node-whatsapp-bot-api";
+import { demoWhatsappContact } from "./whatsappDemoWebhookPayload";
 
 /**
  * Demo text object that is sent to the user.
@@ -14,7 +15,7 @@ const whatsappDemoTextObject: ITextObject = {
   /** Specify the recipient type as "individual" */
   recipient_type: "individual",
   /** Assign the recipient "to" value from the demoUser object */
-  to: demoUser.to,
+  to: demoWhatsappContact.wa_id,
   /** Specify the message type as TEXT using the MessageTypes.TEXT enum */
   type: AllMessageTypes.TEXT,
   /** Define the text object with the desired properties */

@@ -1,12 +1,12 @@
 import mongoose, { Schema } from "mongoose";
-import IUser from "../../../customTypes/models/User";
-import IWhatsappMessage from "../../../customTypes/models/WhatsappMessage";
+import UserModelType from "../../../customTypes/models/User";
 import getUnixTimestamp from "../../../utils/getUnixTimestamp";
+import { WhatsappMessageStoredType } from "../../../customTypes/models/WhatsappMessagesStored";
 
 /**
  * User Schema for a WhatsApp text message
  */
-const messageSchema: Schema<IWhatsappMessage> = new Schema<IWhatsappMessage>({
+const messageSchema: Schema<WhatsappMessageStoredType> = new Schema<WhatsappMessageStoredType>({
   text: {
     type: String,
     required: true,
@@ -15,7 +15,9 @@ const messageSchema: Schema<IWhatsappMessage> = new Schema<IWhatsappMessage>({
       validator: (value: string) => value.length > 0,
       message: "Whatsapp text message must have a length greater 0.",
     },
+    unique: false, 
   },
+
   wa_id: {
     type: String,
     required: true,
@@ -40,15 +42,23 @@ const messageSchema: Schema<IWhatsappMessage> = new Schema<IWhatsappMessage>({
       message: ({ value }) =>
         `${value} is not a valid WAMID with the length of 62.`,
     },
+    index: true, 
+    unique: true, 
     required: true,
     immutable: true,
   },
+  sentByClient: {
+    type: Boolean, 
+    required: true, 
+    immutable: true, 
+  },
 });
+
 
 /**
  * User schema for MongoDB.
  */
-const userSchema: Schema<IUser> = new Schema<IUser>({
+const userSchema: Schema<UserModelType> = new Schema<UserModelType>({
   name: { type: String, required: true, immutable: false, lowercase: true },
   wa_id: { type: String, required: true, immutable: true, unique: true }, // wa_id used to identify users (outside of document id)
   whatsapp_messages: {
@@ -60,6 +70,6 @@ const userSchema: Schema<IUser> = new Schema<IUser>({
 /**
  * User model for MongoDB.
  */
-const User = mongoose.model<IUser>("User", userSchema, "users");
+const User = mongoose.model<UserModelType>("User", userSchema, "users");
 
 export default User;

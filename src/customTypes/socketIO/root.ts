@@ -18,7 +18,7 @@ export type SocketDataType = {};
 export enum AllNamespaces {
   ROOT = "/root",
   /** Represents the socket namespace used for real-time transfer of WhatsApp messages. */
-  MESSAGES = "/messages",
+  CHAT = "/chatView",
 }
 
 /** The actions that can be applied to every namespace and room */
@@ -50,4 +50,4 @@ export type RootNamespace = Namespace<
 >;
 
 /** Represents the available namespaces in the application. */
-export type AllNamespacesType = AllNamespaces.ROOT | AllNamespaces.MESSAGES;
+export type AllNamespacesType = AllNamespaces.ROOT | AllNamespaces.CHAT;

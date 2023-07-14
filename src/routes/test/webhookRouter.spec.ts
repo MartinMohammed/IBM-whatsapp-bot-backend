@@ -2,7 +2,7 @@ import supertestRequest from "supertest";
 import { cloneDeep } from "lodash";
 import app from "../../app";
 import _ from "lodash";
-import { whatsappDemoWebhookPayload } from "../../testing/data/whatsapp/whatsappDemoWebhookPayload";
+import { whatsappDemoWebhookPayload } from "../../testing/data/whatsapp/REST/whatsappDemoWebhookPayload";
 
 const ROUTE = "/webhook/whatsapp";
 

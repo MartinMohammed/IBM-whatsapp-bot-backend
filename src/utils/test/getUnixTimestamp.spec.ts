@@ -10,6 +10,8 @@ describe("Test the 'getUnixTimestamp' utility function", () => {
 
     // Wait for the specified time and get the second Unix timestamp
     const result2 = await new Promise<number>((resolve, reject) => {
+
+      
       setTimeout(() => {
         resolve(getUnixTimestamp());
       }, timeToWaitInMs);

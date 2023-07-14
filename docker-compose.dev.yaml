@@ -7,7 +7,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./src:/app/src # Mount the local "dist" directory to the container's "dist" directory
+      - ./src:/app/src 
+      - ./dist:/app/dist # Mount the local "dist" directory to the container's "dist" directory
       - ./logs:/app/logs # Mount the local 'logs' directory to the container's 'logs' directory
     depends_on:
       - mongo
@@ -16,8 +17,6 @@ services:
     image: mongo
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: test
-      MONGO_INITDB_ROOT_PASSWORD: test
       MONGO_INITDB_DATABASE: users
     ports:
       - 27017:27017

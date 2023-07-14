@@ -10,35 +10,39 @@ import supertestRequest from "supertest";
 import app from "../../../app";
 import mongoose from "mongoose";
 import User from "../../../models/mongoDB/schemas/User";
-import { demoWhatsappMessage } from "../../../testing/data/whatsapp/whatsappDemoWebhookPayload";
-import { demoUser } from "../../../testing/data/whatsapp/whatsappDemoWebhookPayload";
-import IUser from "../../../customTypes/models/User";
+import demoWhatsappMessageFromClient from "../../../testing/data/whatsapp/SocketIO/whatsappDemoMessageFromClient";
+import demoWhatsappMessageStored from "../../../testing/data/whatsapp/Mongo/whatsappMessageStored";
+import {
+  demoWhatsappContact,
+  demoWamId,
+} from "../../../testing/data/whatsapp/REST/whatsappDemoWebhookPayload";
+import UserModelType from "../../../customTypes/models/User";
 import getWhatsappBot from "../../../utils/whatsappBot/init";
 import logger from "../../../logger";
 
 const BASE_URL = "/api/users";
 describe("Give the http requests to the 'userRouter'", () => {
-  let initialUser: IUser;
-  let userId: string;
+  let initialUser: UserModelType;
+  let waidOfUser: string;
   const mockedWhatsappBot = getWhatsappBot() as jest.Mocked<any>;
   const mockedSendTextMessage = jest.fn();
   mockedWhatsappBot.sendTextMessage.mockImplementation(mockedSendTextMessage);
 
   beforeAll(async () => {
     // Instantiate MongoMemorySever
-    const mongoUri = `mongodb://test:test@mongo:27017/?authMechanism=DEFAULT`;
+    const mongoUri = "mongodb://mongo:27017/users";
     await mongoose.connect(mongoUri);
   });
 
   beforeEach(async () => {
     //   Make sure some a demo user is created
     initialUser = new User({
-      whatsapp_messages: [demoWhatsappMessage],
-      name: demoUser.name,
-      wa_id: demoUser.wa_id,
+      whatsapp_messages: [demoWhatsappMessageStored],
+      name: demoWhatsappContact.profile.name,
+      wa_id: demoWhatsappContact.wa_id,
     });
     // Get the document id of the demo user.
-    userId = initialUser._id.toString();
+    waidOfUser = initialUser.wa_id.toString();
 
     await initialUser.save();
   });
@@ -47,7 +51,7 @@ describe("Give the http requests to the 'userRouter'", () => {
   describe(`Test the '${BASE_URL}' endpoint: `, () => {
     it("should respond with '200' HTTP status code and all the users that are stored in the users collection.", async () => {
       const response = await supertestRequest(app).get(BASE_URL);
-      let receivedUsers: IUser[] = response.body;
+      let receivedUsers: UserModelType[] = response.body;
 
       expect(response.status).toBe(200);
 
@@ -55,6 +59,9 @@ describe("Give the http requests to the 'userRouter'", () => {
         .select(["name", "wa_id", "whatsapp_messages", "_id"])
         .lean();
 
+      expect(logger.info).toBeCalledWith(
+        "Successfully retrieved all users from the database."
+      );
       receivedUsers.forEach((user, index) => {
         expect(user.wa_id).toBe(expectedUsers[index].wa_id);
       });
@@ -62,22 +69,28 @@ describe("Give the http requests to the 'userRouter'", () => {
   });
 
   describe("Test the '/api/users/:userId/messages' endpoint: ", () => {
-    const wamIdOfSentMessage =
-      "wamid.HBgMNDkxNzk0NjYxMzUwFQIAEhgUM0E1QzYyMjQ5OTcwOUI3RDg0Q0aa";
+    const wamIdOfSentMessage = demoWamId;
 
-    it("should a new message appended to the users whatsapp messages array: ", async () => {
+    it("should append a new whatsapp_message to the user's whatsapp message array.", async () => {
       mockedSendTextMessage.mockResolvedValueOnce(wamIdOfSentMessage);
 
       const response = await supertestRequest(app)
-        .post(`${BASE_URL}/${userId}/messages`)
+        .post(`${BASE_URL}/${waidOfUser}/messages`)
         .send({
-          text: demoWhatsappMessage.text,
+          text: demoWhatsappMessageFromClient.text,
         });
 
-      expect(mockedSendTextMessage).toBeCalledWith(
-        demoWhatsappMessage.text,
-        demoWhatsappMessage.wa_id
+      expect(logger.verbose).toHaveBeenCalledWith(
+        `Find one User with the given wa_id ${
+          demoWhatsappMessageFromClient.wa_id
+        } completed. Document is null: ${false}`
       );
+
+      expect(mockedSendTextMessage).toBeCalledWith(
+        demoWhatsappMessageFromClient.text,
+        demoWhatsappMessageFromClient.wa_id
+      );
+
       expect(logger.info).toHaveBeenLastCalledWith(
         `Successfully appended new whatsapp message to the users array.`
       );
@@ -86,7 +99,7 @@ describe("Give the http requests to the 'userRouter'", () => {
 
     it("should fail when trying to add a whatsapp message with the length of 0", async () => {
       const response = await supertestRequest(app)
-        .post(`${BASE_URL}/${userId}/messages`)
+        .post(`${BASE_URL}/${waidOfUser}/messages`)
         .send({
           text: "", // empty
         });
@@ -100,23 +113,28 @@ describe("Give the http requests to the 'userRouter'", () => {
       });
     });
 
-    it("should respond with status code 500, if the user document could not be found: ", async () => {
+    it("should respond with status code 500 if the user document could not be found", async () => {
       mockedSendTextMessage.mockResolvedValue(wamIdOfSentMessage);
 
-      const mockUserId = userId.replace("a", "b");
+      const mockUserId = waidOfUser.replace("1", "2");
       const response = await supertestRequest(app)
         .post(`${BASE_URL}/${mockUserId}/messages`)
         .send({
-          text: demoWhatsappMessage.text,
+          text: demoWhatsappMessageFromClient.text,
         });
 
-      expect(logger.error).toBeCalledWith(
-        `Document ${mockUserId} not found in the database.`
-      );
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          expect(logger.error).toBeCalledWith(
+            `Document of user with wa_id ${mockUserId} not found in the database.`
+          );
 
-      expect(response.statusCode).toBe(500);
-      expect(response.body).toEqual({
-        message: "Document not found in the database.",
+          expect(response.statusCode).toBe(500);
+          expect(response.body).toEqual({
+            message: "Document not found in the database.",
+          });
+          resolve(undefined);
+        }, 3000);
       });
     });
 
@@ -125,17 +143,19 @@ describe("Give the http requests to the 'userRouter'", () => {
 
       // Whatsapp bot didn't provide a wam_id but also didn't failed.
       const response = await supertestRequest(app)
-        .post(`${BASE_URL}/${userId}/messages`)
+        .post(`${BASE_URL}/${waidOfUser}/messages`)
         .send({
-          text: demoWhatsappMessage.text,
+          text: demoWhatsappMessageFromClient.text,
         });
 
       // it should find the user document
       expect(logger.verbose).toBeCalledWith(
-        `Successfully retrieved user document from db.`
+        `Find one User with the given wa_id ${
+          demoWhatsappMessageFromClient.wa_id
+        } completed. Document is null: ${false}`
       );
-      expect(logger.error).not.toBeCalledWith(
-        `Document ${userId} not found in the database.`
+      expect(logger.info).not.toBeCalledWith(
+        `Successfully appended new whatsapp message to the users array.`
       );
       expect(logger.warn).toBeCalledWith(
         "Whatsapp Bot has not provided a wam_id for the message it sent."
@@ -144,6 +164,11 @@ describe("Give the http requests to the 'userRouter'", () => {
       expect(response.body).toEqual({
         message: "Failed to send text message with whatsappbot.",
       });
+    });
+
+    afterEach(async () => {
+      await User.deleteMany();
+      jest.clearAllMocks();
     });
   });
 

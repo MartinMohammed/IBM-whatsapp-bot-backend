@@ -1,5 +1,5 @@
-import { ITextMessage, IListenerTextMessage } from "node-whatsapp-bot-api";
-import IWhatsappMessage from "../../../customTypes/models/WhatsappMessage";
+import { ITextMessage, IListenerTextMessage, IContact } from "node-whatsapp-bot-api";
+
 
 /**
  * Declare a namespace to extend the existing import
@@ -10,6 +10,8 @@ import {
   AllFieldTypes,
   AllMessagingProductTypes,
 } from "node-whatsapp-bot-api";
+
+export const demoWamId = "wamid.HBgMNDkxNzk0NjYxMzUwFQIAEhgUM0E1QzYyMjQ5OTcwOUI3RDg0Q0YB"
 
 /**
  * Represents a demo Webhook payload sent by Meta to '/webhook' for change in 'messages' field
@@ -71,7 +73,7 @@ export let whatsappDemoWebhookPayload: IWebhookMessagesPayload = {
                 /**
                  * The WhatsApp ID of the contact
                  */
-                wa_id: "987654321",
+                wa_id: "9876543211",
               },
             ],
             /**
@@ -86,7 +88,7 @@ export let whatsappDemoWebhookPayload: IWebhookMessagesPayload = {
                 /**
                  * The ID of the message
                  */
-                id: "wamid.HBgMNDkxNzk0NjYxMzUwFQIAEhgUM0E1QzYyMjQ5OTcwOUI3RDg0Q0YB",
+                id: demoWamId, 
                 /**
                  * The timestamp of the message (Unix timestamp)
                  */
@@ -117,21 +119,26 @@ export let whatsappDemoWebhookPayload: IWebhookMessagesPayload = {
   ],
 };
 
+/** The different fields that a whatsapp message has. */
 export const { messaging_product, metadata, contacts, messages } =
   whatsappDemoWebhookPayload["entry"][0].changes[0].value;
 const message = messages![0] as ITextMessage;
 
-export const demoUser = {
-  name: "John Doe",
-  wa_id: "1234567890",
+
+export const demoWhatsappContact: IContact = {
+  profile:{
+    name: "John Doe",
+  }, 
+  wa_id: whatsappDemoWebhookPayload.entry[0].changes[0].value.contacts[0].wa_id,
 };
 
+/** What we receive from the chat bot when listening on incoming text messages */
 export const demoListenerTextMessage: IListenerTextMessage = {
   type: AllMessageTypes.TEXT,
   contact: {
-    wa_id: demoUser.wa_id,
+    wa_id: demoWhatsappContact.wa_id,
     profile: {
-      name: demoUser.name,
+      name: demoWhatsappContact.profile.name,
     },
   },
   metadata,
@@ -141,9 +148,3 @@ export const demoListenerTextMessage: IListenerTextMessage = {
   messaging_product,
 };
 
-export const demoWhatsappMessage: IWhatsappMessage = {
-  wa_id: demoUser.wa_id,
-  text: demoListenerTextMessage.text.body,
-  timestamp: demoListenerTextMessage.timestamp,
-  wam_id: demoListenerTextMessage.message_id,
-};
