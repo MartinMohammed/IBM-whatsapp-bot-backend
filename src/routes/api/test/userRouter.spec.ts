@@ -19,6 +19,7 @@ import {
 import UserModelType from "../../../customTypes/models/User";
 import getWhatsappBot from "../../../utils/whatsappBot/init";
 import logger from "../../../logger";
+import demoUserStored from "../../../testing/data/whatsapp/Mongo/userStored";
 
 const BASE_URL = "/api/users";
 describe("Give the http requests to the 'userRouter'", () => {
@@ -48,7 +49,7 @@ describe("Give the http requests to the 'userRouter'", () => {
   });
 
   // Test the endpoint with a GET request
-  describe(`Test the '${BASE_URL}' endpoint: `, () => {
+  describe(`Test the '/api/users' endpoint: `, () => {
     it("should respond with '200' HTTP status code and all the users that are stored in the users collection.", async () => {
       const response = await supertestRequest(app).get(BASE_URL);
       let receivedUsers: UserModelType[] = response.body;
@@ -64,6 +65,50 @@ describe("Give the http requests to the 'userRouter'", () => {
       );
       receivedUsers.forEach((user, index) => {
         expect(user.wa_id).toBe(expectedUsers[index].wa_id);
+      });
+
+      expect(logger.verbose).toBeCalledWith(
+        `No field filters for the '/users' endpoint were provided.`
+      );
+    });
+
+    describe("Test the '/api/users' endpoint with custom field filter through 'fields' query parameter: ", () => {
+      it("should return only the requested fields including the Object id: ", async () => {
+        for (const key of Object.keys(demoUserStored)) {
+          const filterString = `${key},`;
+          const response = await supertestRequest(app).get(
+            `${BASE_URL}?fields=${filterString}`
+          );
+          const receivedUsers: UserModelType[] = response.body;
+
+          expect(Object.keys(receivedUsers[0]).length).toEqual(1 + 1); // Object id + requested field
+          expect(key in receivedUsers[0]).toBeTruthy();
+          expect(logger.verbose).toBeCalledWith(
+            `Field filters for the '/users' endpoint were provided: ${filterString}.`
+          );
+        }
+      });
+
+      it("should filter invalid filterItems and log error: ", async () => {
+        const filterString = `name,invalid_field`;
+        const response = await supertestRequest(app).get(
+          `${BASE_URL}?fields=${filterString}`
+        );
+        const receivedUsers: UserModelType[] = response.body;
+
+        // _id & name 
+        expect(Object.keys(receivedUsers[0]).length).toEqual(1 + 1); 
+        expect(logger.error).toBeCalledWith(
+          `A invalid filterItem was added when request to '/api/users: '${`invalid_field`}'.`
+        );
+        expect("name" in receivedUsers[0]).toBeTruthy()
+      })
+
+      afterEach(() => {
+        expect(logger.verbose).not.toBeCalledWith(
+          `No field filters for the /users endpoint were provided.`
+        );
+        jest.clearAllMocks();
       });
     });
   });

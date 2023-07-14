@@ -1,12 +1,12 @@
 import express from "express";
 import User from "../../models/mongoDB/schemas/User";
 import logger from "../../logger";
-import UserModelType, { IUser } from "../../customTypes/models/User";
 import Constants from "../../utils/Constants";
 import getWhatsappBot from "../../utils/whatsappBot/init";
 import { WhatsappMessageStoredType } from "../../customTypes/models/WhatsappMessagesStored";
 import getUnixTimestamp from "../../utils/getUnixTimestamp";
-import {getUser} from "../../models/mongoDB/UserRepository"
+import { getUser } from "../../models/mongoDB/UserRepository";
+import UserModelType, { IUser } from "../../customTypes/models/User";
 
 const whatsappBot = getWhatsappBot();
 
@@ -22,13 +22,49 @@ export async function getUsers(
   res: express.Response,
   next: express.NextFunction
 ) {
-  try {
-    const userRefs = await User.find({})
-      .select(["name", "wa_id", "whatsapp_messages", "_id"])
-      .lean();
+  const defaultFilterList: (keyof IUser)[] = [
+    "wa_id",
+    "whatsapp_messages",
+    "name",
+  ];
 
-    // Convert the _id field to string format:
-    userRefs.forEach((userRef) => (userRef._id = userRef._id.toString()));
+  // For narrowing the information the clients want,
+  // we add a query parameter called 'fields' which has comma seperated list.
+  // e.g. http://localhost:3000/api/users?fields=name,wa_id
+  const receivedFilterString: string = req.query.fields as string;
+  let receivedFilterList = receivedFilterString?.split(",") as
+    | (keyof IUser)[]
+    | undefined;
+
+  /** This filter contains all filters exclusive of invalid filters */
+  let actualFilterList: (keyof IUser)[] = [];
+
+  if (receivedFilterList === undefined) {
+    logger.verbose(`No field filters for the '/users' endpoint were provided.`);
+    actualFilterList = defaultFilterList;
+  } else {
+    logger.verbose(
+      `Field filters for the '/users' endpoint were provided: ${receivedFilterString}.`
+    );
+    // Check for invalid filterItems. 
+    receivedFilterList.forEach((filterItem) => {
+      // Check if that filterItem is valid:
+      const validFilters: (keyof IUser)[] = [
+        "name",
+        "wa_id",
+        "whatsapp_messages",
+      ];
+      if (!validFilters.includes(filterItem as keyof IUser)) {
+        // Item is not valid;
+        logger.error(
+          `A invalid filterItem was added when request to '/api/users: '${filterItem}'.`
+        );
+      } else actualFilterList.push(filterItem);
+    });
+  }
+
+  try {
+    const userRefs = await User.find({}).select(actualFilterList).lean();
 
     logger.info("Successfully retrieved all users from the database.");
     res.status(200).json(userRefs);
@@ -46,10 +82,16 @@ export async function getMessagesOfUser(
   const wa_id = req.params.userId;
   const userRef = await getUser(wa_id);
   if (!userRef) {
-    logger.error(`Document of user with wa_id ${wa_id} not found in the database.`);
-    return res.status(500).json({ message: "Document not found in the database." });
+    logger.error(
+      `Document of user with wa_id ${wa_id} not found in the database.`
+    );
+    return res
+      .status(500)
+      .json({ message: "Document not found in the database." });
   }
-  logger.verbose(`Document with wa_id ${wa_id} was fetched for receiving his whatsapp_messages.`);
+  logger.verbose(
+    `Document with wa_id ${wa_id} was fetched for receiving his whatsapp_messages.`
+  );
   res.status(200).json(userRef.whatsapp_messages);
 }
 
@@ -65,13 +107,19 @@ export async function postMessageToUser(
   const body: { text: string } = req.body;
   if (body.text.length === 0) {
     logger.warn(`Text message is not allowed to have a length of 0`);
-    return res.status(400).json({ message: "Text message is not allowed to have a length of 0" });
+    return res
+      .status(400)
+      .json({ message: "Text message is not allowed to have a length of 0" });
   }
 
-  let userRef = await getUser(wa_id)
+  let userRef = await getUser(wa_id);
   if (!userRef) {
-    logger.error(`Document of user with wa_id ${wa_id} not found in the database.`);
-    return res.status(500).json({ message: "Document not found in the database." });
+    logger.error(
+      `Document of user with wa_id ${wa_id} not found in the database.`
+    );
+    return res
+      .status(500)
+      .json({ message: "Document not found in the database." });
   }
   // Get the phone number of the whatsapp user:
   const recipient = userRef.whatsapp_messages[0].wa_id;
@@ -89,16 +137,26 @@ export async function postMessageToUser(
     };
     userRef.whatsapp_messages.push(newWhatsappMessage);
   } else {
-    logger.warn("Whatsapp Bot has not provided a wam_id for the message it sent.");
-    return res.status(500).json({ message: "Failed to send text message with whatsappbot." });
+    logger.warn(
+      "Whatsapp Bot has not provided a wam_id for the message it sent."
+    );
+    return res
+      .status(500)
+      .json({ message: "Failed to send text message with whatsappbot." });
   }
 
   try {
     await userRef.save();
-    logger.info(`Successfully appended new whatsapp message to the users array.`);
+    logger.info(
+      `Successfully appended new whatsapp message to the users array.`
+    );
   } catch (error) {
-    logger.error(`Failed to push new WhatsApp message to user document: ${error}.`);
-    return res.status(500).json({ message: "Failed to push new WhatsApp message to user document." });
+    logger.error(
+      `Failed to push new WhatsApp message to user document: ${error}.`
+    );
+    return res.status(500).json({
+      message: "Failed to push new WhatsApp message to user document.",
+    });
   }
 
   res.sendStatus(200);

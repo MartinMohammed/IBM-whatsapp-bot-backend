@@ -10,7 +10,6 @@ export async function getUser(wa_id: IUser["wa_id"]): Promise<UserModelType | nu
     let userRef: UserModelType | null;
     try {
       userRef = await User.findOne({ wa_id: wa_id });
-      console.log(userRef, "jasjdfjadfj")
       logger.verbose(
         `Find one User with the given wa_id ${wa_id} completed. Document is null: ${userRef === null}`
         );

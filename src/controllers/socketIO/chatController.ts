@@ -38,9 +38,12 @@ function messagesController(serverSocket: ChatSocket) {
         logger.verbose(
           `Received a text message but is not the currentChatUser.`
         );
+
+        // Get hold of the ObjectId of that particular message. 
         const clientStoredContact: IClientStoredContact = {
           wa_id: message.contact.wa_id,
           name: message.contact.profile.name,
+
         };
         serverSocket.emit("contact", clientStoredContact);
       }
