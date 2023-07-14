@@ -8,6 +8,7 @@ import logger from "../../logger";
 import getWhatsappBot from "../../utils/whatsappBot/init";
 import { IWhatsappTextMessageFromServer } from "../../customTypes/socketIO/messages";
 import { IClientStoredContact } from "../../customTypes/socketIO/contacts";
+import User from "../../models/mongoDB/schemas/User";
 
 const bot = getWhatsappBot();
 
@@ -36,19 +37,28 @@ function messagesController(serverSocket: ChatSocket) {
         return;
       } else {
         logger.verbose(
-          `Received a text message but is not the currentChatUser.`
+          `Received a text message but it is not the currentChatUser.`
         );
 
-        // Get hold of the ObjectId of that particular message. 
+        // Get hold of the ObjectId of that particular message.
         const clientStoredContact: IClientStoredContact = {
           wa_id: message.contact.wa_id,
           name: message.contact.profile.name,
-
         };
         serverSocket.emit("contact", clientStoredContact);
       }
     }
   );
+
+  /** Called when the user switched chat in the left pane */
+  serverSocket.on("chatSwitch", (wa_id) => {
+    // Update the currentChatUser stored in the serverSocket
+    // in order to send new messages only for this particular whatsapp user.
+    logger.info(
+      `Socket User ${serverSocket.id} has switched the chat from ${serverSocket.data.currentChatUser} to ${wa_id}.`
+    );
+    serverSocket.data.currentChatUser = wa_id;
+  });
 
   // Register event listener
   serverSocket.on("message", async (message, cb) => {
@@ -64,6 +74,32 @@ function messagesController(serverSocket: ChatSocket) {
         // Provide the wam_id back to the user.
         logger.info(`Wamid was provided back to the client.`);
         cb(wam_id);
+
+        /** Save the new message to the Clients whatsapp messages array: */
+        try {
+          const userRef = await User.findOne({ wa_id: message.wa_id });
+          // Store the message send by the whatsapp dashboard and add wamid
+          if (!userRef) {
+            logger.error(
+              `User with wa_id ${message.wa_id} was not found. Append new whatasapp message failed.`
+            );
+          } else {
+            // Append the new message.
+            userRef?.whatsapp_messages.push({
+              ...message,
+              wam_id,
+              sentByClient: false,
+            });
+            await userRef.save();
+            logger.verbose(
+              `New message was created and appended to ${message.wa_id}.`
+            );
+          }
+        } catch (error) {
+          logger.error(
+            `Failed to append a new whatsapp message to ${message.wa_id}.`
+          );
+        }
       } else {
         logger.error(
           `No wamid was provided when sending textMessage to client.`

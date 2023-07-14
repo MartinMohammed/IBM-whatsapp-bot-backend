@@ -46,7 +46,7 @@ export async function getUsers(
     logger.verbose(
       `Field filters for the '/users' endpoint were provided: ${receivedFilterString}.`
     );
-    // Check for invalid filterItems. 
+    // Check for invalid filterItems.
     receivedFilterList.forEach((filterItem) => {
       // Check if that filterItem is valid:
       const validFilters: (keyof IUser)[] = [
@@ -57,15 +57,15 @@ export async function getUsers(
       if (!validFilters.includes(filterItem as keyof IUser)) {
         // Item is not valid;
         logger.error(
-          `A invalid filterItem was added when request to '/api/users: '${filterItem}'.`
+          `An invalid filterItem was added when making a request to '/api/users': '${`invalid_field`}'.`
         );
       } else actualFilterList.push(filterItem);
     });
   }
 
+  // This part must be tested.
   try {
     const userRefs = await User.find({}).select(actualFilterList).lean();
-
     logger.info("Successfully retrieved all users from the database.");
     res.status(200).json(userRefs);
   } catch (error) {
@@ -138,7 +138,7 @@ export async function postMessageToUser(
     userRef.whatsapp_messages.push(newWhatsappMessage);
   } else {
     logger.warn(
-      "Whatsapp Bot has not provided a wam_id for the message it sent."
+      "WhatsApp Bot has not provided a wam_id for the message it sent."
     );
     return res
       .status(500)
@@ -148,7 +148,7 @@ export async function postMessageToUser(
   try {
     await userRef.save();
     logger.info(
-      `Successfully appended new whatsapp message to the users array.`
+      `Successfully appended new WhatsApp message to the user's array.`
     );
   } catch (error) {
     logger.error(
