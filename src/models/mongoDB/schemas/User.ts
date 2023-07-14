@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import UserModelType from "../../../customTypes/models/User";
 import getUnixTimestamp from "../../../utils/getUnixTimestamp";
 import { WhatsappMessageStoredType } from "../../../customTypes/models/WhatsappMessagesStored";
+import toTitleCase from "../../../utils/toTitleCase";
 
 /**
  * User Schema for a WhatsApp text message
@@ -59,13 +60,20 @@ const messageSchema: Schema<WhatsappMessageStoredType> = new Schema<WhatsappMess
  * User schema for MongoDB.
  */
 const userSchema: Schema<UserModelType> = new Schema<UserModelType>({
-  name: { type: String, required: true, immutable: false, lowercase: true },
+  name: { type: String, required: true, immutable: false },
   wa_id: { type: String, required: true, immutable: true, unique: true }, // wa_id used to identify users (outside of document id)
   whatsapp_messages: {
     type: [messageSchema],
     default: [],
   },
 });
+
+// Pre-save hook to automatically convert the name to lowercase (middleware)
+userSchema.pre('save', function (next) {
+  this.name = toTitleCase(this.name);
+  next();
+});
+
 
 /**
  * User model for MongoDB.

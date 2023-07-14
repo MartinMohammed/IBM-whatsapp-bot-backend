@@ -8,6 +8,7 @@ import {
   demoListenerTextMessage,
 } from "../../../../testing/data/whatsapp/REST/whatsappDemoWebhookPayload";
 import demoWhatsappMessageStored from "../../../../testing/data/whatsapp/Mongo/whatsappMessageStored";
+import toTitleCase from "../../../toTitleCase";
 
 describe("textMessageHandler", () => {
   // Before starting the tests, make sure a db connection has been established.
@@ -26,25 +27,35 @@ describe("textMessageHandler", () => {
   });
 
   describe("when a new user is encountered", () => {
-    it("should create a new user in the database and append the first message.", async () => {
+    it("should create a new user in the database with a title case name and append the first message", async () => {
       // User should not exist yet.
       let expectedUserRef = await User.findOne({ wa_id: demoWhatsappContact.wa_id });
       expect(expectedUserRef).toBeNull();
-
-      await textMessageHandler(demoListenerTextMessage);
-
-      // User should be created after sending message from a unstored user.
+  
+      const { contact } = demoListenerTextMessage;
+      const newContact = {
+        ...contact,
+        profile: {
+          name: toTitleCase(demoWhatsappContact.profile.name.toLocaleLowerCase()),
+        },
+      };
+  
+      await textMessageHandler({ ...demoListenerTextMessage, contact: newContact });
+  
+      // User should be created after sending a message from an unstored user.
       expectedUserRef = await User.findOne({ wa_id: demoWhatsappContact.wa_id });
-
+  
       expect(expectedUserRef).not.toBeNull();
       expect(expectedUserRef?.wa_id).toBe(demoWhatsappContact.wa_id);
-      expect(expectedUserRef?.whatsapp_messages.length).toBe(1)
-      expect(expectedUserRef?.whatsapp_messages[0].sentByClient).toEqual(true)
+      expect(expectedUserRef?.whatsapp_messages.length).toBe(1);
+      expect(expectedUserRef?.whatsapp_messages[0].sentByClient).toEqual(true);
       expect(mockLogger.info).toBeCalledWith(
-        `Successful created a new user(${demoWhatsappContact.wa_id}) in the database users collection`
+        `Successfully created a new user (${demoWhatsappContact.wa_id}) in the database users collection`
       );
+      expect(expectedUserRef?.name).toBe(toTitleCase(demoWhatsappContact.profile.name.toLocaleLowerCase()));
     });
   });
+  
 
   describe("when an existing user is encountered", () => {
     it("should append the new message to the user's array of messages", async () => {

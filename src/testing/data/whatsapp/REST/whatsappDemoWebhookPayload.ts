@@ -127,7 +127,7 @@ const message = messages![0] as ITextMessage;
 
 export const demoWhatsappContact: IContact = {
   profile:{
-    name: "John Doe",
+    name: whatsappDemoWebhookPayload.entry[0].changes[0].value.contacts[0].profile.name
   }, 
   wa_id: whatsappDemoWebhookPayload.entry[0].changes[0].value.contacts[0].wa_id,
 };

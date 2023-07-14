@@ -33,7 +33,7 @@ export async function textMessageHandler(textMessage: IListenerTextMessage) {
       });
       await newUser.save();
       logger.info(
-        `Successful created a new user(${contact.wa_id}) in the database users collection`
+        `Successfully created a new user (${contact.wa_id}) in the database users collection`
       );
       return;
     } else {
