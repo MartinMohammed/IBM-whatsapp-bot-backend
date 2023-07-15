@@ -7,6 +7,7 @@ import { WhatsappMessageStoredType } from "../../customTypes/models/WhatsappMess
 import getUnixTimestamp from "../../utils/getUnixTimestamp";
 import { getUser } from "../../models/mongoDB/UserRepository";
 import UserModelType, { IUser } from "../../customTypes/models/User";
+import { UsersFilterList } from "../../app";
 
 const whatsappBot = getWhatsappBot();
 
@@ -22,7 +23,7 @@ export async function getUsers(
   res: express.Response,
   next: express.NextFunction
 ) {
-  const defaultFilterList: (keyof IUser)[] = [
+  const defaultFilterList: UsersFilterList = [
     "wa_id",
     "whatsapp_messages",
     "name",
@@ -33,11 +34,11 @@ export async function getUsers(
   // e.g. http://localhost:3000/api/users?fields=name,wa_id
   const receivedFilterString: string = req.query.fields as string;
   let receivedFilterList = receivedFilterString?.split(",") as
-    | (keyof IUser)[]
+    | UsersFilterList
     | undefined;
 
   /** This filter contains all filters exclusive of invalid filters */
-  let actualFilterList: (keyof IUser)[] = [];
+  let actualFilterList: UsersFilterList = [];
 
   if (receivedFilterList === undefined) {
     logger.verbose(`No field filters for the '/users' endpoint were provided.`);
@@ -49,10 +50,11 @@ export async function getUsers(
     // Check for invalid filterItems.
     receivedFilterList.forEach((filterItem) => {
       // Check if that filterItem is valid:
-      const validFilters: (keyof IUser)[] = [
+      const validFilters: UsersFilterList = [
         "name",
         "wa_id",
         "whatsapp_messages",
+        "whatsappProfileImage",
       ];
       if (!validFilters.includes(filterItem as keyof IUser)) {
         // Item is not valid;

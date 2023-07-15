@@ -2,7 +2,7 @@ import { Socket, Namespace } from "socket.io";
 import { RootNamespace, RootSocket } from "./root";
 import { IWhatsappTextMessageFromClient, IWhatsappTextMessageFromServer } from "./messages";
 import { IUser } from "../models/User";
-import { IClientStoredContact } from "./contacts";
+import { IClientStoredContact } from "./contact";
 
 
 // ------------------------ FOR "/messages" ------------------------

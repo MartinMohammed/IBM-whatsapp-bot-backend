@@ -26,11 +26,13 @@ export * from "./customTypes/models/User"
 export * from "./customTypes/models/WhatsappMessagesStored"
 /* SocketIO */
 export * from "./customTypes/socketIO/messages"
+export * from "./customTypes/socketIO/contact"
 export * from "./customTypes/socketIO/chatNamespace"
 export * from "./customTypes/socketIO/root"
 /* Rest */
 export * from "./customTypes/REST/ClientStoredMessage"
 export * from "./customTypes/REST/ClientStoredUser"
+export * from "./customTypes/REST/UsersFilterList"
 // ----------------- EXPORT ALL TYPES FOR THE TYPE BUNDLER ----------------- //
 
 // ----------------- Router ----------------- //

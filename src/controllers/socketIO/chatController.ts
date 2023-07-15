@@ -7,8 +7,10 @@ import { ChatSocket } from "../../customTypes/socketIO/chatNamespace";
 import logger from "../../logger";
 import getWhatsappBot from "../../utils/whatsappBot/init";
 import { IWhatsappTextMessageFromServer } from "../../customTypes/socketIO/messages";
-import { IClientStoredContact } from "../../customTypes/socketIO/contacts";
+import { IClientStoredContact } from "../../customTypes/socketIO/contact";
 import User from "../../models/mongoDB/schemas/User";
+import { UsersFilterList } from "../../app";
+import { getUser } from "../../models/mongoDB/UserRepository";
 
 const bot = getWhatsappBot();
 
@@ -16,12 +18,15 @@ const bot = getWhatsappBot();
 function messagesController(serverSocket: ChatSocket) {
   logger.info(`Received a socket connection: ${serverSocket.id}.`);
   // Listen for incoming whatsapp messages.
+  logger.info(`Received a socket connection: ${serverSocket.id}.`);
+
+  // Listen for incoming whatsapp messages.
   bot.on(
     SupportedWhatsappMessageTypes.TEXT,
     (message: IListenerTextMessage) => {
-      // Only forward messages to the specific client if he is really interested in
+      // Only forward messages to the specific client if they are interested
       if (serverSocket.data.currentChatUser === message.contact.wa_id) {
-        // A whatsapp message should be emitted to the Client
+        // Prepare the whatsapp message to be emitted to the client
         const whatsappMessageFromServer: IWhatsappTextMessageFromServer = {
           wa_id: message.contact.wa_id,
           text: message.text.body,
@@ -31,22 +36,45 @@ function messagesController(serverSocket: ChatSocket) {
         };
 
         logger.verbose(
-          `Received a text message for the client watching on currentChatUser.`
+          `Received a text message for the client watching the currentChatUser.`
         );
         serverSocket.emit("message", whatsappMessageFromServer);
         return;
-      } else {
-        logger.verbose(
-          `Received a text message but it is not the currentChatUser.`
-        );
-
-        // Get hold of the ObjectId of that particular message.
-        const clientStoredContact: IClientStoredContact = {
-          wa_id: message.contact.wa_id,
-          name: message.contact.profile.name,
-        };
-        serverSocket.emit("contact", clientStoredContact);
       }
+
+      // Handle messages received from different users
+      logger.verbose(
+        `Received a text message, but it is not from the currentChatUser.`
+      );
+
+      // Get the ObjectId of the message
+      const queryFilter: UsersFilterList = ["whatsappProfileImage"];
+
+      getUser(message.contact.wa_id)
+
+        getUser(message.contact.wa_id, queryFilter)
+        .then((userRef) => {
+          if (userRef === null) {
+            throw new Error(`userRef is null while fetching the user whatsapp profile image.`);
+          }
+          if (userRef.whatsappProfileImage === undefined) {
+            throw new Error("Whatsapp Profile image is undefined.");
+          }
+
+          // Prepare the contact information to be emitted to the client
+          const clientStoredContact: IClientStoredContact = {
+            wa_id: message.contact.wa_id,
+            name: message.contact.profile.name,
+            // TODO: Set the whatsappProfileImage value
+            whatsappProfileImage: userRef.whatsappProfileImage,
+          };
+          serverSocket.emit("contact", clientStoredContact);
+        })
+        .catch((error) => {
+          logger.error(
+            `An error occurred while fetching the whatsapp profile image of ${message.contact.wa_id}. ${error}`
+          );
+        });
     }
   );
 

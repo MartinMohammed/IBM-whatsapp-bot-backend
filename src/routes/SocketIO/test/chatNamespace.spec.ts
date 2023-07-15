@@ -77,6 +77,7 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
       io.of(`${AllNamespaces.CHAT}`).on("connection", (socket) => {
         serverSocket = socket;
         // Identifies the chat the current client is in on their WhatsApp dashboard.
+        // Inital value for the currentChatUser...
         serverSocket.data.currentChatUser = demoUserWAID;
         messagesController(serverSocket);
         expect(logger.info).toBeCalledWith(
@@ -345,8 +346,9 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
         /** It should only create a new WhatsApp message from the server when the wa_id matches. */
         onMessageHandler(demoListenerTextMessage);
         expect(logger.verbose).toBeCalledWith(
-          `Received a text message but it is not the currentChatUser.`
+          `Received a text message, but it is not from the currentChatUser.`
         );
+
       });
 
       it("should emit to the client when the chat IDs match, indicating that the user is interested in receiving the new message", () => {
@@ -360,7 +362,7 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
         };
         onMessageHandler(_demoListenerTextMessage);
         expect(logger.verbose).toBeCalledWith(
-          `Received a text message for the client watching on currentChatUser.`
+          `Received a text message for the client watching the currentChatUser.`
         );
       });
     });

@@ -5,8 +5,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    ports:
-      - "3000:3000"
     restart: "no"
     depends_on:
       - mongo
@@ -20,4 +18,4 @@ services:
     environment:
       MONGO_INITDB_DATABASE: users
     ports:
-      - 27017:27017
+      - :27017

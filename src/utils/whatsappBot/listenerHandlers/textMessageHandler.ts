@@ -3,6 +3,7 @@ import logger from "../../../logger";
 import User from "../../../models/mongoDB/schemas/User";
 import UserModelType from "../../../customTypes/models/User";
 import { WhatsappMessageStoredType } from "../../../customTypes/models/WhatsappMessagesStored";
+import { getUser } from "../../../models/mongoDB/UserRepository";
 
 /**
  * Handles incoming text messages from whatsapp bot.
@@ -22,14 +23,21 @@ export async function textMessageHandler(textMessage: IListenerTextMessage) {
     };
 
     // Check if the user already exists in the database
-    const user = await User.findOne({ wa_id: contact.wa_id });
+    const user = await getUser(contact.wa_id)
 
+    // Instantiate a new user. 
     if (!user) {
+      // Represents the min & max that 'https://bootdey.com/img/Content/avatar/avatar1.png' support
+      const min = 1;
+      const max = 8;
+      const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+      
       // Create a new user and save their first message
       const newUser: UserModelType = new User({
         name: contact.profile.name,
         wa_id: contact.wa_id,
         whatsapp_messages: [whatsappMessage],
+        whatsappProfileImage: `https://bootdey.com/img/Content/avatar/avatar${randomNumber}.png`
       });
       await newUser.save();
       logger.info(
