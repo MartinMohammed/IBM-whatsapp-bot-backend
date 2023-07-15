@@ -9,4 +9,6 @@ export interface IClientStoredContact {
   wa_id: IUser["wa_id"]; // The WhatsApp ID of the contact
   name: IUser["name"]; // The name of the contact
   whatsappProfileImage: IUser["whatsappProfileImage"]; // The WhatsApp profile image of the contact
+  // TODO: set the unread messages to false
+  // hasUnreadMessages: boolean;  // Whether the user has unread messages with a given contact (in chat)
 }

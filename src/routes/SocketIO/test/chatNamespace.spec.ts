@@ -1,5 +1,5 @@
 // bot.on(..., messageHandler)
-let onMessageHandler: (message: IListenerTextMessage) => void;
+let onMessageHandler: (message: IListenerTextMessage) => Promise<void>;
 
 // Mock the User Model
 
@@ -30,7 +30,7 @@ import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { io as Client, Socket as ClientSocket } from "socket.io-client";
 import logger from "../../../logger";
 import messagesController from "../../../controllers/socketIO/chatController";
-import { ChatSocket, IUser } from "../../../app";
+import { ChatSocket, UsersFilterList } from "../../../app";
 import demoWhatsappMessageFromClient from "../../../testing/data/whatsapp/SocketIO/whatsappDemoMessageFromClient";
 import getWhatsappBot from "../../../utils/whatsappBot/init";
 import {
@@ -47,10 +47,16 @@ import {
   IListenerTextMessage,
   SupportedWhatsappMessageTypes,
 } from "node-whatsapp-bot-api";
+import UserModelType, { IUser } from "../../../customTypes/models/User";
+
+import * as UserRepositoryModule from "../../../models/mongoDB/UserRepository";
 import demoUserStored from "../../../testing/data/whatsapp/Mongo/userStored";
-import UserModelType from "../../../customTypes/models/User";
 
 describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
+  const mockedGetUser = jest
+    .spyOn(UserRepositoryModule, "getUser")
+    .mockImplementation(jest.fn());
+
   const TARGET_PORT = 4500;
 
   const mockedBot = getWhatsappBot();
@@ -285,7 +291,6 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
     afterAll(async () => {
       io.close();
       io.disconnectSockets();
-      jest.restoreAllMocks();
     });
   });
 
@@ -338,21 +343,97 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
     afterAll(async () => {
       io.close();
       io.disconnectSockets();
-      jest.restoreAllMocks();
     });
 
     describe("When receiving a message from the WhatsApp bot", () => {
-      it("should log an error if 'socket.data.currentChatUser' does not match the wa_id of the received message", () => {
+      beforeEach(() => {
+        jest.clearAllMocks();
+      });
+
+      it("should log verbose if 'socket.data.currentChatUser' does not match the wa_id of the received message & throw an error if userRef is not defined.", async () => {
+        const expectedError = new Error("EFATAL");
+        mockedGetUser.mockRejectedValueOnce(expectedError);
+        const mockSetTimeout = jest.spyOn(global, "setTimeout");
+        const demoQueryFilter: UsersFilterList = ["whatsappProfileImage"];
         /** It should only create a new WhatsApp message from the server when the wa_id matches. */
-        onMessageHandler(demoListenerTextMessage);
+        await onMessageHandler(demoListenerTextMessage);
+        expect(logger.verbose).toBeCalledWith(
+          `Received a text message, but it is not from the currentChatUser.`
+        );
+        expect(mockSetTimeout).toHaveBeenCalled();
+        expect(mockedGetUser).toHaveBeenCalledWith(
+          demoListenerTextMessage.contact.wa_id,
+          demoQueryFilter
+        );
+
+        /** It should throw an eror if the user document could not be found in the users collection*/
+        expect(logger.error).toBeCalledWith(
+          `An error occurred while fetching the whatsapp profile image of ${demoListenerTextMessage.contact.wa_id}. ${expectedError}`
+        );
+      });
+
+      it("should throw an error if the user fetched from the database has no whatsapp profile image value: ", async () => {
+        const expectedError = new Error("Whatsapp Profile image is undefined.");
+        const _demoUserWithoutProfileImage: IUser = {
+          ...demoUserStored,
+          whatsappProfileImage: undefined as unknown as string,
+        };
+        mockedGetUser.mockResolvedValueOnce(
+          _demoUserWithoutProfileImage as unknown as UserModelType
+        );
+        const mockSetTimeout = jest.spyOn(global, "setTimeout");
+        const demoQueryFilter: UsersFilterList = ["whatsappProfileImage"];
+        /** It should only create a new WhatsApp message from the server when the wa_id matches. */
+        await onMessageHandler(demoListenerTextMessage);
+        expect(logger.verbose).toBeCalledWith(
+          `Received a text message, but it is not from the currentChatUser.`
+        );
+        expect(mockSetTimeout).toHaveBeenCalled();
+        expect(mockedGetUser).toHaveBeenCalledWith(
+          demoListenerTextMessage.contact.wa_id,
+          demoQueryFilter
+        );
+
+        /** It should throw an eror if the user document could not be found in the users collection*/
+        expect(logger.error).toBeCalledWith(
+          `An error occurred while fetching the whatsapp profile image of ${demoListenerTextMessage.contact.wa_id}. ${expectedError}`
+        );
+      });
+
+      it("should now throw any errors if the fetched user from the database has a valid whatsapp profile image: ", async () => {
+        const expectedErrorForNoImage = new Error(
+          "Whatsapp Profile image is undefined."
+        );
+        const expectedErrorForFailedFetch = new Error("EFATAL");
+        mockedGetUser.mockResolvedValueOnce(demoUserStored as UserModelType);
+        const mockSetTimeout = jest.spyOn(global, "setTimeout");
+        const demoQueryFilter: UsersFilterList = ["whatsappProfileImage"];
+        /** It should only create a new WhatsApp message from the server when the wa_id matches. */
+        await onMessageHandler(demoListenerTextMessage);
         expect(logger.verbose).toBeCalledWith(
           `Received a text message, but it is not from the currentChatUser.`
         );
 
+        expect(mockSetTimeout).toHaveBeenCalled();
+
+        expect(mockedGetUser).toHaveBeenCalledWith(
+          demoListenerTextMessage.contact.wa_id,
+          demoQueryFilter
+        );
+
+        /** It should throw an eror if the user document could not be found in the users collection*/
+        expect(logger.error).not.toBeCalledWith(
+          `An error occurred while fetching the whatsapp profile image of ${demoListenerTextMessage.contact.wa_id}. ${expectedErrorForNoImage}`
+        );
+        /** It should throw an eror if the user document could not be found in the users collection*/
+        expect(logger.error).not.toBeCalledWith(
+          `An error occurred while fetching the whatsapp profile image of ${demoListenerTextMessage.contact.wa_id}. ${expectedErrorForFailedFetch}`
+        );
       });
 
       it("should emit to the client when the chat IDs match, indicating that the user is interested in receiving the new message", () => {
         /** It should only create a new WhatsApp message from the server when the wa_id matches. */
+
         const _demoListenerTextMessage: IListenerTextMessage = {
           ...demoListenerTextMessage,
           contact: {
@@ -361,15 +442,21 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
           },
         };
         onMessageHandler(_demoListenerTextMessage);
+
         expect(logger.verbose).toBeCalledWith(
           `Received a text message for the client watching the currentChatUser.`
         );
       });
     });
   });
+
   describe("When the user switches the chat", () => {
     it.todo(
       "should update the 'serverSocket.data.currentChatUser' when a chat switch event is emitted"
     );
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
   });
 });

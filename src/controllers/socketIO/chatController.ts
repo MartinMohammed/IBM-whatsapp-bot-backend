@@ -15,7 +15,7 @@ import { getUser } from "../../models/mongoDB/UserRepository";
 const bot = getWhatsappBot();
 
 /** Responsible for handling incoming connection for socket */
-function messagesController(serverSocket: ChatSocket) {
+async function messagesController(serverSocket: ChatSocket) {
   logger.info(`Received a socket connection: ${serverSocket.id}.`);
   // Listen for incoming whatsapp messages.
   logger.info(`Received a socket connection: ${serverSocket.id}.`);
@@ -23,7 +23,7 @@ function messagesController(serverSocket: ChatSocket) {
   // Listen for incoming whatsapp messages.
   bot.on(
     SupportedWhatsappMessageTypes.TEXT,
-    (message: IListenerTextMessage) => {
+    async (message: IListenerTextMessage) => {
       // Only forward messages to the specific client if they are interested
       if (serverSocket.data.currentChatUser === message.contact.wa_id) {
         // Prepare the whatsapp message to be emitted to the client
@@ -46,35 +46,42 @@ function messagesController(serverSocket: ChatSocket) {
       logger.verbose(
         `Received a text message, but it is not from the currentChatUser.`
       );
-
+      // --------------------- EMIT THAT ANOTHER CONTACT HAS MESSAGED ---------------------
       // Get the ObjectId of the message
       const queryFilter: UsersFilterList = ["whatsappProfileImage"];
 
-      getUser(message.contact.wa_id)
-
-        getUser(message.contact.wa_id, queryFilter)
-        .then((userRef) => {
-          if (userRef === null) {
-            throw new Error(`userRef is null while fetching the user whatsapp profile image.`);
-          }
-          if (userRef.whatsappProfileImage === undefined) {
-            throw new Error("Whatsapp Profile image is undefined.");
-          }
-
-          // Prepare the contact information to be emitted to the client
-          const clientStoredContact: IClientStoredContact = {
-            wa_id: message.contact.wa_id,
-            name: message.contact.profile.name,
-            // TODO: Set the whatsappProfileImage value
-            whatsappProfileImage: userRef.whatsappProfileImage,
-          };
-          serverSocket.emit("contact", clientStoredContact);
-        })
-        .catch((error) => {
-          logger.error(
-            `An error occurred while fetching the whatsapp profile image of ${message.contact.wa_id}. ${error}`
+      // wait 2 seconds.
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve(undefined);
+        }, 2000);
+      });
+      try {
+        const userRef = await getUser(message.contact.wa_id, queryFilter);
+        if (userRef === null) {
+          throw new Error(
+            `userRef is null while fetching the user whatsapp profile image.`
           );
-        });
+        }
+        if (userRef.whatsappProfileImage === undefined) {
+          throw new Error("Whatsapp Profile image is undefined.");
+        }
+
+        // Prepare the contact information to be emitted to the client
+        const clientStoredContact: IClientStoredContact = {
+          wa_id: message.contact.wa_id,
+          name: message.contact.profile.name,
+          // TODO: Set the whatsappProfileImage value
+          whatsappProfileImage: userRef.whatsappProfileImage,
+          // TODO: set the unread messages to false
+          // hasUnreadMessages: true,  // Received a message that is not from the currentChatUser. 
+        };
+        serverSocket.emit("contact", clientStoredContact);
+      } catch (error) {
+        logger.error(
+          `An error occurred while fetching the whatsapp profile image of ${message.contact.wa_id}. ${error}`
+        );
+      }
     }
   );
 

@@ -6,7 +6,7 @@ import getWhatsappBot from "../../utils/whatsappBot/init";
 import { WhatsappMessageStoredType } from "../../customTypes/models/WhatsappMessagesStored";
 import getUnixTimestamp from "../../utils/getUnixTimestamp";
 import { getUser } from "../../models/mongoDB/UserRepository";
-import UserModelType, { IUser } from "../../customTypes/models/User";
+import  { IUser } from "../../customTypes/models/User";
 import { UsersFilterList } from "../../app";
 
 const whatsappBot = getWhatsappBot();

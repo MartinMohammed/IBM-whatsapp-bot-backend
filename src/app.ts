@@ -31,7 +31,6 @@ export * from "./customTypes/socketIO/chatNamespace"
 export * from "./customTypes/socketIO/root"
 /* Rest */
 export * from "./customTypes/REST/ClientStoredMessage"
-export * from "./customTypes/REST/ClientStoredUser"
 export * from "./customTypes/REST/UsersFilterList"
 // ----------------- EXPORT ALL TYPES FOR THE TYPE BUNDLER ----------------- //
 
