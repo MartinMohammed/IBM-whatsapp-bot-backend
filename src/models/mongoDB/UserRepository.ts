@@ -23,9 +23,11 @@ export async function getUser(
         // This will ensure that the select operation is applied to the query before it is executed.
         userRef = await User.findOne({ wa_id: wa_id }).select(filterList);
       } else {
-        userRef = await User.findOne({ wa_id: wa_id })
+        userRef = await User.findOne({ wa_id })
           .select(filterList)
-          .limit(limit);
+          // -n means [..., n] fetch from right to left.
+          .slice("whatsapp_messages", limit)
+          .exec();
       }
     } else {
       // Without filter

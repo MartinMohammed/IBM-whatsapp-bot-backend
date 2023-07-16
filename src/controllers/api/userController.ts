@@ -86,9 +86,12 @@ export async function getMessagesOfUser(
    * Determines the limit for pagination
    * Each page is 10 items
    * */
-  const pageQP = req.query.limit;
 
-  const userRef = await getUser(wa_id, ["whatsapp_messages"]);
+  const pageQP: string = req.query.page as string;
+  const limit = Number.isInteger(parseInt(pageQP))
+    ? parseInt(pageQP) * 10
+    : undefined;
+  const userRef = await getUser(wa_id, ["whatsapp_messages"], limit);
   if (!userRef) {
     logger.error(
       `Document of user with wa_id ${wa_id} not found in the database.`
