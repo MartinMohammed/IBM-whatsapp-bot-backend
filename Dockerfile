@@ -4,6 +4,9 @@ FROM node:20-alpine3.17 AS builder
 # Set the working directory inside the container
 WORKDIR /app
 
+# Make sure a dir is created for logs
+RUN mkdir logs
+
 # Copy the package.json and package-lock.json files to the working directory
 COPY package.json package-lock.json ./
 

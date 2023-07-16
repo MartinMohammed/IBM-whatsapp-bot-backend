@@ -50,7 +50,6 @@ const accessLogStream = fs.createWriteStream(
 );
 
 // setup the logger
-
 app.use(
   morgan(process.env.NODE_ENV === "production" ? "combined" : "dev", {
     stream: accessLogStream,
