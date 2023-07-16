@@ -129,6 +129,7 @@ describe("Give the http requests to the 'userRouter'", () => {
         // Expect the valid field ('name') to be present in the received user object
         expect("name" in receivedUsers[0]).toBeTruthy();
       });
+
       it.todo(
         "should throw an error if fetching all users from the database throws an error"
       );
@@ -240,6 +241,25 @@ describe("Give the http requests to the 'userRouter'", () => {
         message: "Failed to send text message with whatsappbot.",
       });
     });
+
+    // it("should fetch only the amount of entires as the limitter has specified: ", async () => {
+    //   /**
+    //    * Per default one user is created already
+    //    * Create new users in the database.
+    //    *  */
+    //   // Append some new messages to the array of the default user
+    //   const userRef = await User.findOne({ wa_id: demoWhatsappContact.wa_id });
+    //   for (let i = 0; i < 9; i++) {
+    //     userRef?.whatsapp_messages.push({
+    //       ...demoWhatsappMessageStored,
+    //       wam_id: `waid.${i}`,
+    //     });
+    //     await userRef?.save();
+    //   }
+    //   // There should be know exactly 10 message Items inside his array.
+    //   const a = await User.findOne({ wa_id: demoWhatsappContact.wa_id });
+    //   console.log(a?.whatsapp_messages.length, "jsajdfjsadfj");
+    // });
 
     afterEach(async () => {
       await User.deleteMany();

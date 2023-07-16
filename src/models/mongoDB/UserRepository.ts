@@ -12,14 +12,21 @@ import { UsersFilterList } from "../../app";
  */
 export async function getUser(
   wa_id: IUser["wa_id"],
-  filterList?: UsersFilterList
+  filterList: UsersFilterList = [],
+  limit?: number
 ): Promise<UserModelType | null> {
   let userRef: UserModelType | null;
 
   try {
-    if (filterList !== undefined && filterList.length > 0) {
-      // This will ensure that the select operation is applied to the query before it is executed.
-      userRef = await User.findOne({ wa_id: wa_id }).select(filterList);
+    if (filterList.length > 0) {
+      if (!limit) {
+        // This will ensure that the select operation is applied to the query before it is executed.
+        userRef = await User.findOne({ wa_id: wa_id }).select(filterList);
+      } else {
+        userRef = await User.findOne({ wa_id: wa_id })
+          .select(filterList)
+          .limit(limit);
+      }
     } else {
       // Without filter
       userRef = await User.findOne({ wa_id: wa_id });

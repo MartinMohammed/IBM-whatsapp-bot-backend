@@ -74,7 +74,7 @@ async function messagesController(serverSocket: ChatSocket) {
           // TODO: Set the whatsappProfileImage value
           whatsappProfileImage: userRef.whatsappProfileImage,
           // TODO: set the unread messages to false
-          // hasUnreadMessages: true,  // Received a message that is not from the currentChatUser. 
+          // hasUnreadMessages: true,  // Received a message that is not from the currentChatUser.
         };
         serverSocket.emit("contact", clientStoredContact);
       } catch (error) {
@@ -112,7 +112,7 @@ async function messagesController(serverSocket: ChatSocket) {
 
         /** Save the new message to the Clients whatsapp messages array: */
         try {
-          const userRef = await User.findOne({ wa_id: message.wa_id });
+          const userRef = await getUser(message.wa_id);
           // Store the message send by the whatsapp dashboard and add wamid
           if (!userRef) {
             logger.error(

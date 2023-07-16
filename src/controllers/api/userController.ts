@@ -6,7 +6,7 @@ import getWhatsappBot from "../../utils/whatsappBot/init";
 import { WhatsappMessageStoredType } from "../../customTypes/models/WhatsappMessagesStored";
 import getUnixTimestamp from "../../utils/getUnixTimestamp";
 import { getUser } from "../../models/mongoDB/UserRepository";
-import  { IUser } from "../../customTypes/models/User";
+import { IUser } from "../../customTypes/models/User";
 import { UsersFilterList } from "../../app";
 
 const whatsappBot = getWhatsappBot();
@@ -82,7 +82,13 @@ export async function getMessagesOfUser(
   next: express.NextFunction
 ) {
   const wa_id = req.params.userId;
-  const userRef = await getUser(wa_id);
+  /**
+   * Determines the limit for pagination
+   * Each page is 10 items
+   * */
+  const pageQP = req.query.limit;
+
+  const userRef = await getUser(wa_id, ["whatsapp_messages"]);
   if (!userRef) {
     logger.error(
       `Document of user with wa_id ${wa_id} not found in the database.`
@@ -106,6 +112,7 @@ export async function postMessageToUser(
   next: express.NextFunction
 ) {
   const wa_id = req.params.userId;
+
   const body: { text: string } = req.body;
   if (body.text.length === 0) {
     logger.warn(`Text message is not allowed to have a length of 0`);
