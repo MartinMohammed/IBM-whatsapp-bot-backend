@@ -239,7 +239,7 @@ describe("Give the http requests to the 'userRouter'", () => {
         await new Promise((resolve, reject) => {
           setTimeout(() => {
             resolve(undefined);
-          }, 3000);
+          }, 2000);
 
           expect(logger.error).toBeCalledWith(
             `Document of user with wa_id ${mockUserId} not found in the database.`

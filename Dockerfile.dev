@@ -13,6 +13,9 @@ RUN mkdir logs
 # # Copy the package.json and package-lock.json files to the working directory
 COPY package.json package-lock.json ./
 
+# Upgrade npm
+RUN npm install -g npm@9.8.0
+
 # # Install the dependencies
 RUN npm ci
 

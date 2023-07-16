@@ -128,7 +128,7 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
       await new Promise((resolve, reject) => {
         setTimeout(() => {
           resolve(undefined);
-        }, 2000);
+        }, 1000);
       });
 
       expect(mockedBot.sendTextMessage).toBeCalledWith(
@@ -175,7 +175,7 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
       await new Promise((resolve, reject) => {
         setTimeout(() => {
           resolve(undefined);
-        }, 2000);
+        }, 1000);
       });
       expect(mockedBot.sendTextMessage).toBeCalledWith(
         demoWhatsappMessageFromClient.text,
@@ -225,7 +225,7 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
       await new Promise((resolve, reject) => {
         setTimeout(() => {
           resolve(undefined);
-        }, 2000);
+        }, 1000);
       });
 
       expect(mockedBot.sendTextMessage).toBeCalledWith(
