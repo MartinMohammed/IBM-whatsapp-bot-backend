@@ -1,3 +1,5 @@
+import createHttpError from "http-errors";
+import HTTPError from "../customTypes/REST/HTTPError";
 import logger from "../logger";
 import express from "express";
 
@@ -12,9 +14,7 @@ function notFoundError(
 ) {
   // Log a warning message indicating the unmatched request path
   logger.warn(`Received an unmatched request to ${req.path}.`);
-
-  // Send a JSON response with a 404 status code and an error message
-  res.status(404).json({ message: "Not found" });
+  next(createHttpError.NotFound("Not found."));
 }
 
 export default notFoundError;

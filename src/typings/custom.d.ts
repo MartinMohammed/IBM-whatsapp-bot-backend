@@ -46,8 +46,7 @@ declare namespace NodeJS {
     PHONE_NUMBER: string;
 
     /**
-     * The current environment (either "production" or "development").
-     * undefined = 'development'
+     * Undefined -> development
      */
     NODE_ENV: "production" | "test" | undefined;
   }

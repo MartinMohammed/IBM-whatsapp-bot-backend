@@ -23,16 +23,16 @@ export function productionLogger() {
     format: combine(timestamp(), prettyPrint(), customLoggerOutputFormat), // Use custom log format and include timestamp
     transports: [
       new winston.transports.Console(), // Output logs to the console
-      new winston.transports.File({
-        ...LoggerBaseConfig,
-        level: "error", // Only log error messages to the file
-        filename: "error.log", // Set the filename for the log file
-      }),
-      new winston.transports.File({
-        ...LoggerBaseConfig,
-        level: "http", // Only log error messages to the file
-        filename: "http.log", // Set the filename for the log file
-      }),
+      // new winston.transports.File({
+      //   ...LoggerBaseConfig,
+      //   level: "error", // Only log error messages to the file
+      //   filename: "error.log", // Set the filename for the log file
+      // }),
+      // new winston.transports.File({
+      //   ...LoggerBaseConfig,
+      //   level: "http", // Only log error messages to the file
+      //   filename: "http.log", // Set the filename for the log file
+      // }),
     ],
   });
 

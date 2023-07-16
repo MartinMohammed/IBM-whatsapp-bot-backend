@@ -8,6 +8,9 @@ import "./utils/whatsappBot/init";
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import morgan from "morgan";
+import path from "path";
+import fs from "fs";
 // ----------------- Router ----------------- //
 import webhookRouter from "./routes/webhookRouter";
 import healthRouter from "./routes/healthRouter";
@@ -16,22 +19,21 @@ import healthRouter from "./routes/healthRouter";
 // ----------------- Custom Middleware ----------------- //
 import errorHandler from "./middlewares/errorHandler";
 import notFoundError from "./middlewares/notFoundError";
-import logRequest from "./middlewares/logRequest";
 import apiRouter from "./routes/api";
 // ----------------- Custom Middleware ----------------- //
 
 // ----------------- EXPORT ALL TYPES FOR THE TYPE BUNDLER ----------------- //
 /* Models */
-export * from "./customTypes/models/User"
-export * from "./customTypes/models/WhatsappMessagesStored"
+export * from "./customTypes/models/User";
+export * from "./customTypes/models/WhatsappMessagesStored";
 /* SocketIO */
-export * from "./customTypes/socketIO/messages"
-export * from "./customTypes/socketIO/contact"
-export * from "./customTypes/socketIO/chatNamespace"
-export * from "./customTypes/socketIO/root"
+export * from "./customTypes/socketIO/messages";
+export * from "./customTypes/socketIO/contact";
+export * from "./customTypes/socketIO/chatNamespace";
+export * from "./customTypes/socketIO/root";
 /* Rest */
-export * from "./customTypes/REST/ClientStoredMessage"
-export * from "./customTypes/REST/UsersFilterList"
+export * from "./customTypes/REST/ClientStoredMessage";
+export * from "./customTypes/REST/UsersFilterList";
 // ----------------- EXPORT ALL TYPES FOR THE TYPE BUNDLER ----------------- //
 
 // ----------------- Router ----------------- //
@@ -42,12 +44,22 @@ const app = express();
 
 // ----------------- Register middleware ----------------- //
 
-// Enable CORS for all routes
-//  It allows requests from different origins and handles CORS headers and options.
-app.use(cors());
+/** Create a write stream in append mode */
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "../logs/access.log")
+);
 
-// Middleware in which all requests go through
-app.use(logRequest);
+// setup the logger
+
+app.use(
+  morgan(process.env.NODE_ENV === "production" ? "combined" : "dev", {
+    stream: accessLogStream,
+  })
+);
+
+// Enable CORS for all routes
+// It allows requests from different origins and handles CORS headers and options.
+app.use(cors());
 
 // Use body-parser middleware to parse JSON requests.
 app.use(bodyParser.json());

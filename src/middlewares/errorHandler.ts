@@ -1,5 +1,7 @@
 import express from "express";
 import logger from "../logger";
+import HTTPError from "../customTypes/REST/HTTPError";
+import createHttpError from "http-errors";
 
 /**
  * Error handler middleware.
@@ -9,13 +11,19 @@ import logger from "../logger";
  * @param next - The next middleware function.
  */
 function errorHandler(
-  err: Error,
+  err: HTTPError,
   req: express.Request,
   res: express.Response,
   _: express.NextFunction
 ) {
   logger.error("An error occurred: ", err);
-  res.status(500).json({ message: `Internal Server Error: ${err.message}` });
+  res.statusCode = err.statusCode;
+  res.json({
+    error: {
+      statusCode: err.statusCode || 500,
+      message: err.message || 500,
+    },
+  });
 }
 
 export default errorHandler;

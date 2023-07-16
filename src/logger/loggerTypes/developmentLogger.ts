@@ -29,16 +29,16 @@ export function developmentLogger() {
     ),
     transports: [
       new winston.transports.Console(),
-      new winston.transports.File({
-        ...LoggerBaseConfig,
-        level: "http", // Only log error messages to the file
-        filename: "http.log", // Set the filename for the log file
-      }),
-      new winston.transports.File({
-        ...LoggerBaseConfig,
-        level: "error", // Only log error messages to the file
-        filename: "error.log", // Set the filename for the log file
-      }),
+      // new winston.transports.File({
+      //   ...LoggerBaseConfig,
+      //   level: "http", // Only log error messages to the file
+      //   filename: "http.log", // Set the filename for the log file
+      // }),
+      // new winston.transports.File({
+      //   ...LoggerBaseConfig,
+      //   level: "error", // Only log error messages to the file
+      //   filename: "error.log", // Set the filename for the log file
+      // }),
     ], // Output logs to the console
   });
 

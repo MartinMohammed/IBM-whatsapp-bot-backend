@@ -8,6 +8,7 @@ import getUnixTimestamp from "../../utils/getUnixTimestamp";
 import { getUser } from "../../models/mongoDB/UserRepository";
 import { IUser } from "../../customTypes/models/User";
 import { UsersFilterList } from "../../app";
+import createHttpError from "http-errors";
 
 const whatsappBot = getWhatsappBot();
 
@@ -72,7 +73,11 @@ export async function getUsers(
     res.status(200).json(userRefs);
   } catch (error) {
     logger.error("Failed to retrieve users from the database.", error);
-    res.sendStatus(500);
+    next(
+      createHttpError.InternalServerError(
+        "Failed to retrieve users from the database."
+      )
+    );
   }
 }
 
@@ -166,9 +171,11 @@ export async function postMessageToUser(
     logger.error(
       `Failed to push new WhatsApp message to user document: ${error}.`
     );
-    return res.status(500).json({
-      message: "Failed to push new WhatsApp message to user document.",
-    });
+    return next(
+      createHttpError.InternalServerError(
+        "Failed to push new WhatsApp message to user document."
+      )
+    );
   }
 
   res.sendStatus(200);
