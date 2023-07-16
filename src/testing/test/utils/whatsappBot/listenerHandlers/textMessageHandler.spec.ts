@@ -1,24 +1,29 @@
 import mongoose from "mongoose";
-import mockLogger from "../../../../logger";
-import User from "../../../../models/mongoDB/schemas/User";
-import { textMessageHandler } from "../textMessageHandler";
-import IUser from "../../../../customTypes/models/User";
+import User from "../../../../../models/mongoDB/schemas/User";
+import { getUser } from "../../../../../models/mongoDB/UserRepository";
+import toTitleCase from "../../../../../utils/toTitleCase";
+import mockLogger from "../../../../../logger";
+import IUser from "../../../../../customTypes/models/User";
 import {
   demoWhatsappContact,
   demoListenerTextMessage,
-} from "../../../../testing/data/whatsapp/REST/whatsappDemoWebhookPayload";
-import demoWhatsappMessageStored from "../../../../testing/data/whatsapp/Mongo/whatsappMessageStored";
-import toTitleCase from "../../../toTitleCase";
-import { getUser } from "../../../../models/mongoDB/UserRepository";
+} from "../../../../data/whatsapp/REST/whatsappDemoWebhookPayload";
+import demoWhatsappMessageStored from "../../../../data/whatsapp/Mongo/whatsappMessageStored";
+import { textMessageHandler } from "../../../../../utils/whatsappBot/listenerHandlers/textMessageHandler";
 
 describe("textMessageHandler", () => {
-  // Before starting the tests, make sure a db connection has been established.
+  /**
+   * Before starting the tests, make sure a db connection has been established.
+   */
   beforeAll(async () => {
     // Establish connection to db for this test suite
     const mongoUri = `mongodb://mongo:27017/users`;
     await mongoose.connect(mongoUri);
   });
 
+  /**
+   * Clear the 'users' collection and reset mocks before each test.
+   */
   beforeEach(async () => {
     // Wipe out the 'users' collection.
     await User.deleteMany();
@@ -27,7 +32,13 @@ describe("textMessageHandler", () => {
     jest.clearAllMocks();
   });
 
+  /**
+   * Test suite: when a new user is encountered.
+   */
   describe("when a new user is encountered", () => {
+    /**
+     * Test case: should create a new user in the database with a title case name and append the first message.
+     */
     it("should create a new user in the database with a title case name and append the first message", async () => {
       // User should not exist yet.
       let expectedUserRef = await getUser(demoWhatsappContact.wa_id);
@@ -64,7 +75,13 @@ describe("textMessageHandler", () => {
     });
   });
 
+  /**
+   * Test suite: when an existing user is encountered.
+   */
   describe("when an existing user is encountered", () => {
+    /**
+     * Test case: should append the new message to the user's array of messages.
+     */
     it("should append the new message to the user's array of messages", async () => {
       // The user should be created inside the db.
       const user: IUser = new User({
@@ -82,7 +99,7 @@ describe("textMessageHandler", () => {
       // The user should already exist.
       expect(userRef).not.toBeNull();
 
-      // A new message should be appeneded to the users whatsapp messages list.
+      // A new message should be appended to the user's whatsapp messages list.
       await textMessageHandler(demoListenerTextMessage);
 
       const userRefUpdated = await getUser(demoWhatsappContact.wa_id);
@@ -95,11 +112,17 @@ describe("textMessageHandler", () => {
     });
   });
 
+  /**
+   * Clear the 'users' collection after each test.
+   */
   afterEach(async () => {
     // Wipe out the 'users' collection.
     await User.deleteMany();
   });
 
+  /**
+   * Close the connection and restore mocks after all tests.
+   */
   afterAll(async () => {
     // Close the connection
     await mongoose.disconnect();

@@ -19,15 +19,9 @@ coverage
 dist
 
 # Dev 
-Dockerfile.dev
-docker-compose.dev.yaml
+Dockerfile*
+docker-compose*
 
-# Prod
-Dockerfile
-docker-compose.yaml
-
-# Test
-docker-compose.yaml
 
 # Git
 .gitignore

@@ -1,9 +1,13 @@
 import supertest from "supertest";
-import app from "../../app";
+import app from "../../../app";
 
-// Describe the test suite for the '/health' endpoint
+/**
+ * Test suite for the '/health' endpoint.
+ */
 describe("Given the endpoint '/health':", () => {
-  // Test the endpoint with a GET request
+  /**
+   * Test case: should respond with '200' HTTP status code and an empty JSON object when making a GET request.
+   */
   it("should respond with '200' HTTP status code and an empty JSON object when making a GET request", async () => {
     // Send a GET request to the '/health' endpoint using supertest
     const response = await supertest(app).get("/health");
@@ -17,10 +21,16 @@ describe("Given the endpoint '/health':", () => {
     });
   });
 
+  /**
+   * Clean up after each test case.
+   */
   afterEach(() => {
     jest.clearAllMocks();
   });
 
+  /**
+   * Clean up after all test cases.
+   */
   afterAll(() => {
     jest.restoreAllMocks();
   });

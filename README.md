@@ -106,7 +106,7 @@ The Webhook API is built using the following libraries and dependencies:
 To set up the development environment and start the webhook API, follow these steps:
 
 1. Clone the repository: `git clone https://github.com/your-repo.git`
-2. Install dependencies: `npm install`
+2. Install dependencies: `npm ci`
 3. Start the development server: `npm run dev`
 
 ### Deployment

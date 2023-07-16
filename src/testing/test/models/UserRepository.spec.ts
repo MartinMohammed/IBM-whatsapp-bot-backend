@@ -1,4 +1,4 @@
-jest.mock("../schemas/User", () => ({
+jest.mock("../../../models/mongoDB/schemas/User", () => ({
   __esModule: true,
   default: {
     findOne: jest.fn(),
@@ -6,10 +6,10 @@ jest.mock("../schemas/User", () => ({
 }));
 
 import logger from "../../../logger";
-import { getUser } from "../UserRepository";
-import mockedUser from "../schemas/User";
-import demoUserStored from "../../../testing/data/whatsapp/Mongo/userStored";
 import { UsersFilterList } from "../../../app";
+import { getUser } from "../../../models/mongoDB/UserRepository";
+import mockedUser from "../../../models/mongoDB/schemas/User";
+import demoUserStored from "../../data/whatsapp/Mongo/userStored";
 
 describe("User Repository", () => {
   /**

@@ -11,16 +11,13 @@ RUN mkdir logs
 COPY package.json package-lock.json ./
 
 # Update npm && Install all dependencies
-RUN npm install
+RUN npm ci
 
 # Copy all remaining files to the working directory
 COPY . .
 
 # Build the project and run tests
-RUN npm run build
-
-# Minfiy the code
-RUN npm run minify
+RUN npm run build && npm run minify
 
 # Second stage for the final image
 FROM node:20-alpine3.17
@@ -37,8 +34,8 @@ RUN addgroup -S myuser && adduser -S -G myuser myuser
 # Set the environment to production.
 ENV NODE_ENV="production"
 
-# Search for and remove all "test" directories within the project.
-RUN find /app/dist -type d -name "test" -prune -exec rm -rf {} \;
+# # Search for and remove all "test" directories within the project.
+# RUN find /app/dist -type d -name "test" -prune -exec rm -rf {} \;
 
 # Remove testing utilities
 RUN rm -rf /app/dist/testing
@@ -53,7 +50,7 @@ RUN chown -R myuser:myuser /app
 USER myuser
 
 # Install only production dependencies
-RUN npm install --omit=dev
+RUN npm ci --omit=dev
 
 # Indicate that port 3000 will be opened in this application
 EXPOSE 3000

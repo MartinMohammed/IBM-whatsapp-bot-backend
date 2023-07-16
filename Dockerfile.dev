@@ -10,17 +10,17 @@ WORKDIR /app
 # Make sure a dir is created for logs
 RUN mkdir logs
 
-# Copy the package.json and package-lock.json files to the working directory
+# # Copy the package.json and package-lock.json files to the working directory
 COPY package.json package-lock.json ./
 
-# Install the dependencies
-RUN npm install
+# # Install the dependencies
+RUN npm ci
 
 # Copy all remaining files to the working directory
 COPY . .
 
 # Build Production version / dist
-RUN npm run build
+RUN npm run build 
 
 # Set the ownership of the working directory to the new user
 RUN chown -R myuser:myuser /app

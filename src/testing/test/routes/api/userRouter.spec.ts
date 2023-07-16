@@ -1,25 +1,25 @@
 // Mock the whatsappBot module
-jest.mock("../../../utils/whatsappBot/init", () => ({
+jest.mock("../../../../utils/whatsappBot/init", () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue({
     sendTextMessage: jest.fn(),
   }),
 }));
 
-import supertestRequest from "supertest";
-import app, { IWhatsappMessage } from "../../../app";
 import mongoose from "mongoose";
-import User from "../../../models/mongoDB/schemas/User";
-import demoWhatsappMessageFromClient from "../../../testing/data/whatsapp/SocketIO/whatsappDemoMessageFromClient";
-import demoWhatsappMessageStored from "../../../testing/data/whatsapp/Mongo/whatsappMessageStored";
+import supertestRequest from "supertest";
+import logger from "../../../../logger";
+import app, { IWhatsappMessage } from "../../../../app";
+import User from "../../../../models/mongoDB/schemas/User";
+import demoWhatsappMessageFromClient from "../../../data/whatsapp/SocketIO/whatsappDemoMessageFromClient";
+import demoWhatsappMessageStored from "../../../data/whatsapp/Mongo/whatsappMessageStored";
 import {
   demoWhatsappContact,
   demoWamId,
-} from "../../../testing/data/whatsapp/REST/whatsappDemoWebhookPayload";
-import UserModelType from "../../../customTypes/models/User";
-import getWhatsappBot from "../../../utils/whatsappBot/init";
-import logger from "../../../logger";
-import demoUserStored from "../../../testing/data/whatsapp/Mongo/userStored";
+} from "../../../data/whatsapp/REST/whatsappDemoWebhookPayload";
+import UserModelType from "../../../../customTypes/models/User";
+import getWhatsappBot from "../../../../utils/whatsappBot/init";
+import demoUserStored from "../../../data/whatsapp/Mongo/userStored";
 
 const BASE_URL = "/api/users";
 describe("Give the http requests to the 'userRouter'", () => {
@@ -238,16 +238,17 @@ describe("Give the http requests to the 'userRouter'", () => {
 
         await new Promise((resolve, reject) => {
           setTimeout(() => {
-            expect(logger.error).toBeCalledWith(
-              `Document of user with wa_id ${mockUserId} not found in the database.`
-            );
-
-            expect(response.statusCode).toBe(500);
-            expect(response.body).toEqual({
-              message: "Document not found in the database.",
-            });
             resolve(undefined);
           }, 3000);
+
+          expect(logger.error).toBeCalledWith(
+            `Document of user with wa_id ${mockUserId} not found in the database.`
+          );
+
+          expect(response.statusCode).toBe(500);
+          expect(response.body).toEqual({
+            message: "Document not found in the database.",
+          });
         });
       });
 

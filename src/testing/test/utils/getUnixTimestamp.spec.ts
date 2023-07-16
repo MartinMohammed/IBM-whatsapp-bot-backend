@@ -1,6 +1,12 @@
-import getUnixTimestamp from "../getUnixTimestamp";
+import getUnixTimestamp from "../../../utils/getUnixTimestamp";
 
+/**
+ * Test suite for the 'getUnixTimestamp' utility function.
+ */
 describe("Test the 'getUnixTimestamp' utility function", () => {
+  /**
+   * Test case: should return the correct Unix timestamps when called and when called again 5 seconds later.
+   */
   it("should return the correct Unix timestamps when called and when called again 5 seconds later", async () => {
     // Set the time to wait in milliseconds
     const timeToWaitInMs = 2 * 1000;
@@ -10,8 +16,6 @@ describe("Test the 'getUnixTimestamp' utility function", () => {
 
     // Wait for the specified time and get the second Unix timestamp
     const result2 = await new Promise<number>((resolve, reject) => {
-
-      
       setTimeout(() => {
         resolve(getUnixTimestamp());
       }, timeToWaitInMs);
