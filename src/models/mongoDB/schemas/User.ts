@@ -39,11 +39,11 @@ const messageSchema: Schema<WhatsappMessageStoredType> =
     // Set by meta or after we have sent the message to meta if the message originated before from client
     wam_id: {
       type: String,
-      validate: {
-        validator: (value: string) => value.length === 62,
-        message: ({ value }) =>
-          `${value} is not a valid WAMID with the length of 62.`,
-      },
+      // validate: {
+      //   validator: (value: string) => value.length === 62,
+      //   message: ({ value }) =>
+      //     `${value} is not a valid WAMID with the length of 62.`,
+      // },
       index: true,
       unique: true,
       required: true,
