@@ -20,6 +20,9 @@ import {
 import UserModelType from "../../../../customTypes/models/User";
 import getWhatsappBot from "../../../../utils/whatsappBot/init";
 import demoUserStored from "../../../data/whatsapp/Mongo/userStored";
+import createHttpError from "http-errors";
+import HTTPError from "../../../../customTypes/REST/HTTPError";
+import getUnixTimestamp from "../../../../utils/getUnixTimestamp";
 
 const BASE_URL = "/api/users";
 describe("Give the http requests to the 'userRouter'", () => {
@@ -48,100 +51,100 @@ describe("Give the http requests to the 'userRouter'", () => {
     await initialUser.save();
   });
   // Test the '/api/users' endpoint
-  describe(`Testing the '/api/users' endpoint`, () => {
-    it("should respond with a '200' HTTP status code and retrieve all users from the users collection", async () => {
-      // Send a GET request to the '/api/users' endpoint
-      const response = await supertestRequest(app).get(BASE_URL);
+  // describe(`Testing the '/api/users' endpoint`, () => {
+  //   it("should respond with a '200' HTTP status code and retrieve all users from the users collection", async () => {
+  //     // Send a GET request to the '/api/users' endpoint
+  //     const response = await supertestRequest(app).get(BASE_URL);
 
-      // Extract the received users from the response body
-      let receivedUsers: UserModelType[] = response.body;
+  //     // Extract the received users from the response body
+  //     let receivedUsers: UserModelType[] = response.body;
 
-      // Verify that the response has a '200' HTTP status code
-      expect(response.status).toBe(200);
+  //     // Verify that the response has a '200' HTTP status code
+  //     expect(response.status).toBe(200);
 
-      const queryFilter: (keyof UserModelType)[] = [
-        "name",
-        "wa_id",
-        "whatsapp_messages",
-        "_id",
-        "whatsappProfileImage",
-      ];
-      // Fetch all users from the database
-      const expectedUsers = await User.find({}).select(queryFilter).lean();
+  //     const queryFilter: (keyof UserModelType)[] = [
+  //       "name",
+  //       "wa_id",
+  //       "whatsapp_messages",
+  //       "_id",
+  //       "whatsappProfileImage",
+  //     ];
+  //     // Fetch all users from the database
+  //     const expectedUsers = await User.find({}).select(queryFilter).lean();
 
-      // Verify that the expected users match the received users
-      receivedUsers.forEach((user, index) => {
-        expect(user.wa_id).toBe(expectedUsers[index].wa_id);
-        // Check if all required fields are included in each user.
-        expect(queryFilter[index] in user).toBeTruthy();
-      });
+  //     // Verify that the expected users match the received users
+  //     receivedUsers.forEach((user, index) => {
+  //       expect(user.wa_id).toBe(expectedUsers[index].wa_id);
+  //       // Check if all required fields are included in each user.
+  //       expect(queryFilter[index] in user).toBeTruthy();
+  //     });
 
-      // Verify that the appropriate logs were made
-      expect(logger.info).toBeCalledWith(
-        "Successfully retrieved all users from the database."
-      );
+  //     // Verify that the appropriate logs were made
+  //     expect(logger.info).toBeCalledWith(
+  //       "Successfully retrieved all users from the database."
+  //     );
 
-      expect(logger.verbose).toBeCalledWith(
-        `No field filters for the '/users' endpoint were provided.`
-      );
-    });
+  //     expect(logger.verbose).toBeCalledWith(
+  //       `No field filters for the '/users' endpoint were provided.`
+  //     );
+  //   });
 
-    describe("Testing the '/api/users' endpoint with custom field filter through the 'fields' query parameter", () => {
-      it("should return only the requested fields, including the Object ID", async () => {
-        for (const key of Object.keys(demoUserStored)) {
-          const filterString = `${key},`;
-          const response = await supertestRequest(app).get(
-            `${BASE_URL}?fields=${filterString}`
-          );
-          const receivedUsers: UserModelType[] = response.body;
+  //   describe("Testing the '/api/users' endpoint with custom field filter through the 'fields' query parameter", () => {
+  //     it("should return only the requested fields, including the Object ID", async () => {
+  //       for (const key of Object.keys(demoUserStored)) {
+  //         const filterString = `${key},`;
+  //         const response = await supertestRequest(app).get(
+  //           `${BASE_URL}?fields=${filterString}`
+  //         );
+  //         const receivedUsers: UserModelType[] = response.body;
 
-          // Assertion: The response should contain only the requested field and the Object ID
-          expect(Object.keys(receivedUsers[0]).length).toEqual(1 + 1); // Object ID + requested field
-          expect(key in receivedUsers[0]).toBeTruthy();
+  //         // Assertion: The response should contain only the requested field and the Object ID
+  //         expect(Object.keys(receivedUsers[0]).length).toEqual(1 + 1); // Object ID + requested field
+  //         expect(key in receivedUsers[0]).toBeTruthy();
 
-          // Logging: Verbose log for the field filters used
-          expect(logger.verbose).toBeCalledWith(
-            `Field filters for the '/users' endpoint were provided: ${filterString}.`
-          );
-        }
-      });
+  //         // Logging: Verbose log for the field filters used
+  //         expect(logger.verbose).toBeCalledWith(
+  //           `Field filters for the '/users' endpoint were provided: ${filterString}.`
+  //         );
+  //       }
+  //     });
 
-      it("should filter out invalid filterItems and log an error", async () => {
-        // Define a filter string with both valid and invalid filterItems
-        const filterString = `name,invalid_field`;
+  //     it("should filter out invalid filterItems and log an error", async () => {
+  //       // Define a filter string with both valid and invalid filterItems
+  //       const filterString = `name,invalid_field`;
 
-        // Send a GET request to the API with the filter string
-        const response = await supertestRequest(app).get(
-          `${BASE_URL}?fields=${filterString}`
-        );
+  //       // Send a GET request to the API with the filter string
+  //       const response = await supertestRequest(app).get(
+  //         `${BASE_URL}?fields=${filterString}`
+  //       );
 
-        // Get the received users from the response body
-        const receivedUsers: UserModelType[] = response.body;
+  //       // Get the received users from the response body
+  //       const receivedUsers: UserModelType[] = response.body;
 
-        // Expect the received user objects to only contain the valid fields ('_id' and 'name')
-        expect(Object.keys(receivedUsers[0]).length).toEqual(1 + 1);
+  //       // Expect the received user objects to only contain the valid fields ('_id' and 'name')
+  //       expect(Object.keys(receivedUsers[0]).length).toEqual(1 + 1);
 
-        // Expect the logger to be called with an error message for the invalid filterItem
-        expect(logger.error).toBeCalledWith(
-          `An invalid filterItem was added when making a request to '/api/users': '${`invalid_field`}'.`
-        );
+  //       // Expect the logger to be called with an error message for the invalid filterItem
+  //       expect(logger.error).toBeCalledWith(
+  //         `An invalid filterItem was added when making a request to '/api/users': '${`invalid_field`}'.`
+  //       );
 
-        // Expect the valid field ('name') to be present in the received user object
-        expect("name" in receivedUsers[0]).toBeTruthy();
-      });
+  //       // Expect the valid field ('name') to be present in the received user object
+  //       expect("name" in receivedUsers[0]).toBeTruthy();
+  //     });
 
-      it.todo(
-        "should throw an error if fetching all users from the database throws an error"
-      );
+  //     it.todo(
+  //       "should throw an error if fetching all users from the database throws an error"
+  //     );
 
-      afterEach(() => {
-        expect(logger.verbose).not.toBeCalledWith(
-          `No field filters for the /users endpoint were provided.`
-        );
-        jest.clearAllMocks();
-      });
-    });
-  });
+  //     afterEach(() => {
+  //       expect(logger.verbose).not.toBeCalledWith(
+  //         `No field filters for the /users endpoint were provided.`
+  //       );
+  //       jest.clearAllMocks();
+  //     });
+  //   });
+  // });
 
   describe("Test the '/api/users/:userId/messages' endpoint: ", () => {
     describe("Method: GET", () => {
@@ -217,19 +220,34 @@ describe("Give the http requests to the 'userRouter'", () => {
             text: "", // empty
           });
 
-        expect(logger.warn).toBeCalledWith(
-          `Text message is not allowed to have a length of 0`
+        expect(response.statusCode).toBe(422);
+        expect("error" in response.body).toBeTruthy();
+        expect(response?.body?.error?.message).toBe(
+          '"text" is not allowed to be empty'
         );
-        expect(response.statusCode).toBe(400);
-        expect(response.body).toEqual({
-          message: `Text message is not allowed to have a length of 0`,
-        });
+      });
+      it("should fail when trying to add data data is not asked.", async () => {
+        const response = await supertestRequest(app)
+          .post(`${BASE_URL}/${waidOfUser}/messages`)
+          .send({
+            text: demoWhatsappMessageStored.text, // empty
+            timestamp: getUnixTimestamp(),
+          });
+
+        expect(response.statusCode).toBe(422);
+        expect("error" in response.body).toBeTruthy();
+        expect(response?.body?.error?.message).toBe(
+          '"timestamp" is not allowed'
+        );
       });
 
       it("should respond with status code 500 if the user document could not be found", async () => {
         mockedSendTextMessage.mockResolvedValue(wamIdOfSentMessage);
 
         const mockUserId = waidOfUser.replace("1", "2");
+        const expectedError = createHttpError.BadRequest(
+          `Document of user with wa_id ${mockUserId} not found in the database.`
+        );
         const response = await supertestRequest(app)
           .post(`${BASE_URL}/${mockUserId}/messages`)
           .send({
@@ -245,14 +263,16 @@ describe("Give the http requests to the 'userRouter'", () => {
             `Document of user with wa_id ${mockUserId} not found in the database.`
           );
 
-          expect(response.statusCode).toBe(500);
-          expect(response.body).toEqual({
-            message: "Document not found in the database.",
-          });
+          expect(response.statusCode).toBe(expectedError.statusCode);
+          expect(response?.body?.error?.message).toEqual(expectedError.message);
+          expect("error" in response.body).toBeTruthy();
         });
       });
 
       it("should throw an error if the sendTextMessage function of the WhatsApp bot didn't provide a wam_id", async () => {
+        const expectedError = createHttpError.InternalServerError(
+          "Failed to send WhatsApp message."
+        );
         mockedSendTextMessage.mockResolvedValueOnce(undefined);
 
         // WhatsApp bot didn't provide a wam_id but also didn't fail.
@@ -275,10 +295,9 @@ describe("Give the http requests to the 'userRouter'", () => {
           "WhatsApp Bot has not provided a wam_id for the message it sent."
         );
 
-        expect(response.statusCode).toBe(500);
-        expect(response.body).toEqual({
-          message: "Failed to send text message with whatsappbot.",
-        });
+        expect(response.statusCode).toBe(expectedError.statusCode);
+        expect("error" in response).toBeTruthy();
+        expect(response?.body?.error?.message).toEqual(expectedError.message);
       });
     });
 

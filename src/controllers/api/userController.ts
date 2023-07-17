@@ -9,6 +9,8 @@ import { getUser } from "../../models/mongoDB/UserRepository";
 import { IUser } from "../../customTypes/models/User";
 import { UsersFilterList } from "../../app";
 import createHttpError from "http-errors";
+import messageSchema from "../../utils/validation/messageSchema";
+import HTTPError from "../../customTypes/REST/HTTPError";
 
 const whatsappBot = getWhatsappBot();
 
@@ -87,6 +89,7 @@ export async function getMessagesOfUser(
   next: express.NextFunction
 ) {
   const wa_id = req.params.userId;
+
   /**
    * Determines the limit for pagination
    * Each page is 10 items
@@ -110,7 +113,6 @@ export async function getMessagesOfUser(
   );
   res.status(200).json(userRef.whatsapp_messages);
 }
-
 /**
  * Add a new message to a user's messages array.
  */
@@ -120,52 +122,58 @@ export async function postMessageToUser(
   next: express.NextFunction
 ) {
   const wa_id = req.params.userId;
+  const body = req.body;
+  body.wa_id = wa_id;
 
-  const body: { text: string } = req.body;
-  if (body.text.length === 0) {
-    logger.warn(`Text message is not allowed to have a length of 0`);
-    return res
-      .status(400)
-      .json({ message: "Text message is not allowed to have a length of 0" });
+  let sanitizedBody = null;
+  try {
+    // Validate and sanitize the input.
+    sanitizedBody = await messageSchema.validateAsync(body);
+  } catch (error) {
+    // Create a custom error object and set the statusCode property
+    const validationError: HTTPError = {
+      message: (error as { message: string }).message,
+      statusCode: 422,
+    };
+    return next(validationError);
   }
 
   let userRef = await getUser(wa_id);
   if (!userRef) {
-    logger.error(
-      `Document of user with wa_id ${wa_id} not found in the database.`
-    );
-    return res
-      .status(500)
-      .json({ message: "Document not found in the database." });
+    const errorMessage = `Document of user with wa_id ${wa_id} not found in the database.`;
+    logger.error(errorMessage);
+    return next(createHttpError.BadRequest(errorMessage));
   }
-  // Get the phone number of the whatsapp user:
-  const recipient = userRef.whatsapp_messages[0].wa_id;
-  const wam_id = await whatsappBot.sendTextMessage(body.text, recipient);
 
-  // Expect that the wam_id is provided if the whatsapp bot request was successful.
-  if (wam_id && Constants.phoneNumber) {
-    // Message sent by us.
-    const newWhatsappMessage: WhatsappMessageStoredType = {
-      text: body.text,
-      wa_id: Constants.phoneNumber,
-      wam_id,
-      sentByClient: true,
-      timestamp: getUnixTimestamp(),
-    };
-    userRef.whatsapp_messages.push(newWhatsappMessage);
-  } else {
+  const recipient = userRef.whatsapp_messages[0].wa_id;
+  const wam_id = await whatsappBot.sendTextMessage(
+    sanitizedBody.text,
+    recipient
+  );
+
+  if (!wam_id || !Constants.phoneNumber) {
     logger.warn(
       "WhatsApp Bot has not provided a wam_id for the message it sent."
     );
-    return res
-      .status(500)
-      .json({ message: "Failed to send text message with whatsappbot." });
+    return next(
+      createHttpError.InternalServerError("Failed to send WhatsApp message.")
+    );
   }
+
+  const newWhatsappMessage: WhatsappMessageStoredType = {
+    text: sanitizedBody.text,
+    wa_id: Constants.phoneNumber,
+    wam_id,
+    sentByClient: true,
+    timestamp: getUnixTimestamp(),
+  };
+
+  userRef.whatsapp_messages.push(newWhatsappMessage);
 
   try {
     await userRef.save();
     logger.info(
-      `Successfully appended new WhatsApp message to the user's array.`
+      "Successfully appended new WhatsApp message to the user's array."
     );
   } catch (error) {
     logger.error(
