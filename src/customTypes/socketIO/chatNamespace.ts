@@ -1,9 +1,11 @@
 import { Socket, Namespace } from "socket.io";
 import { RootNamespace, RootSocket } from "./root";
-import { IWhatsappTextMessageFromClient, IWhatsappTextMessageFromServer } from "./messages";
+import {
+  IWhatsappTextMessageFromClient,
+  IWhatsappTextMessageFromServer,
+} from "./messages";
 import { IUser } from "../models/User";
 import { IClientStoredContact } from "./contact";
-
 
 // ------------------------ FOR "/messages" ------------------------
 /** Defines the event names and callback structures for server-to-client events. */
@@ -17,9 +19,12 @@ export type ServerToClientEventsMessagesType = {
 /** Defines the event names and callback structures for client-to-server events. */
 export type ClientToServerEventsMessagesType = {
   /** Triggered when a WhatsApp chat message is sent from the client and should be redirected to the server. */
-  message: (text: IWhatsappTextMessageFromClient, cb: (wamid: string) => void) => void;
+  message: (
+    text: IWhatsappTextMessageFromClient,
+    cb: (wamid: string) => void
+  ) => void;
   /** When the user switched the chat in the left pane, this change must be synchronized in order to update socket.data.currentChatUser */
-  chatSwitch: (text: IUser["wa_id"]) => void; 
+  chatSwitch: (waid: IUser["wa_id"]) => void;
 };
 
 /** Defines the event names and callback structures for inter-server events. */
@@ -38,7 +43,8 @@ export type ChatSocket = Socket<
   ServerToClientEventsMessagesType,
   InterServerEventsMessagesType,
   SocketDataMessagesType
-> & RootSocket;
+> &
+  RootSocket;
 
 /** Represents the specific namespace, including its event types and socket data payload. */
 export type ChatNamespace = Namespace<
@@ -46,4 +52,5 @@ export type ChatNamespace = Namespace<
   ServerToClientEventsMessagesType,
   InterServerEventsMessagesType,
   SocketDataMessagesType
-> & RootNamespace;
+> &
+  RootNamespace;

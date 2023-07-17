@@ -20,7 +20,11 @@ import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { io as Client, Socket as ClientSocket } from "socket.io-client";
 import logger from "../../../../logger";
 import messagesController from "../../../../controllers/socketIO/chatController";
-import { ChatSocket, UsersFilterList } from "../../../../app";
+import {
+  ChatSocket,
+  IWhatsappTextMessageFromClient,
+  UsersFilterList,
+} from "../../../../app";
 import demoWhatsappMessageFromClient from "../../../data/whatsapp/SocketIO/whatsappDemoMessageFromClient";
 import getWhatsappBot from "../../../../utils/whatsappBot/init";
 import {
@@ -61,7 +65,7 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
     ClientToServerEventsMessagesType
   >;
 
-  beforeAll(() => {
+  beforeAll((done) => {
     // Set up Socket.io server for managing connections and co.
     io = new Server<
       ClientToServerEventsMessagesType,
@@ -82,10 +86,7 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
 
       socket.on("messages", demoOnMessages);
     });
-  });
 
-  beforeEach((done) => {
-    jest.clearAllMocks();
     // Establish a brand new socket connection
     clientSocket = Client(
       `http://localhost:${TARGET_PORT}${AllNamespaces.CHAT}`
@@ -96,14 +97,36 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
     });
   });
 
-  afterEach((done) => {
-    clientSocket.close();
-    done();
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
   describe("on('message')", () => {
     beforeEach(() => {
       jest.clearAllMocks();
+    });
+
+    it("should return void if the whatsapp message sent does not match the validation schema: ", async () => {
+      const expectedValidationError = `\"text\" is not allowed to be empty`;
+      const mockedWhatsappMessageFromClient: IWhatsappTextMessageFromClient = {
+        ...demoWhatsappMessageFromClient,
+        text: "",
+      };
+      // Mock the call with the collected serverSocket
+      clientSocket.emit(
+        "message",
+        mockedWhatsappMessageFromClient,
+        mockedSocketCallback
+      );
+
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve(undefined);
+        }, 500);
+      });
+      expect(logger.error).toBeCalledWith(
+        `The validation of the received WhatsApp message failed. ${expectedValidationError}`
+      );
     });
 
     it("should call sendTextMessage with the bot and append a new message to the user document when a message is emitted to the server", async () => {
@@ -128,7 +151,7 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
       await new Promise((resolve, reject) => {
         setTimeout(() => {
           resolve(undefined);
-        }, 1000);
+        }, 500);
       });
 
       expect(mockedBot.sendTextMessage).toBeCalledWith(
@@ -136,13 +159,13 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
         demoWhatsappMessageFromClient.wa_id
       );
       expect(logger.info).toBeCalledWith(
-        `Received a whatsapp message from the client to send: ${demoWhatsappMessageFromClient.wa_id}.`
+        `Received a WhatsApp message from the client to send: ${demoWhatsappMessageFromClient.wa_id}.`
       );
       expect(logger.info).toBeCalledWith(
         `Wamid was provided back to the client.`
       );
       expect(logger.error).not.toBeCalledWith(
-        `User with wa_id ${demoWhatsappMessageFromClient.wa_id} was not found. Append new whatsapp message failed.`
+        `User with wa_id ${demoWhatsappMessageFromClient.wa_id} was not found. Append new WhatsApp message failed.`
       );
       expect(logger.verbose).toBeCalledWith(
         `New message was created and appended to ${demoWhatsappMessageFromClient.wa_id}.`
@@ -175,20 +198,20 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
       await new Promise((resolve, reject) => {
         setTimeout(() => {
           resolve(undefined);
-        }, 1000);
+        }, 500);
       });
       expect(mockedBot.sendTextMessage).toBeCalledWith(
         demoWhatsappMessageFromClient.text,
         demoWhatsappMessageFromClient.wa_id
       );
       expect(logger.info).toBeCalledWith(
-        `Received a whatsapp message from the client to send: ${demoWhatsappMessageFromClient.wa_id}.`
+        `Received a WhatsApp message from the client to send: ${demoWhatsappMessageFromClient.wa_id}.`
       );
       expect(logger.info).toBeCalledWith(
         `Wamid was provided back to the client.`
       );
       expect(logger.error).not.toBeCalledWith(
-        `User with wa_id ${demoWhatsappMessageFromClient.wa_id} was not found. Append new whatsapp message failed.`
+        `User with wa_id ${demoWhatsappMessageFromClient.wa_id} was not found. Append new WhatsApp message failed.`
       );
       expect(logger.verbose).not.toBeCalledWith(
         `New message was created and appended to ${demoWhatsappMessageFromClient.wa_id}.`
@@ -199,7 +222,7 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
 
       // Failed to find the user document.
       expect(logger.error).toBeCalledWith(
-        `Failed to append a new whatsapp message to ${demoWhatsappMessageFromClient.wa_id}.`
+        `Failed to append a new WhatsApp message to ${demoWhatsappMessageFromClient.wa_id}.`
       );
       expect(demoUser.save).not.toBeCalled();
     });
@@ -225,7 +248,7 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
       await new Promise((resolve, reject) => {
         setTimeout(() => {
           resolve(undefined);
-        }, 1000);
+        }, 500);
       });
 
       expect(mockedBot.sendTextMessage).toBeCalledWith(
@@ -233,21 +256,21 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
         demoWhatsappMessageFromClient.wa_id
       );
       expect(logger.info).toBeCalledWith(
-        `Received a whatsapp message from the client to send: ${demoWhatsappMessageFromClient.wa_id}.`
+        `Received a WhatsApp message from the client to send: ${demoWhatsappMessageFromClient.wa_id}.`
       );
       expect(logger.info).toBeCalledWith(
         `Wamid was provided back to the client.`
       );
       expect(mockedSocketCallback).toBeCalledWith(demoWamId);
       expect(logger.error).not.toBeCalledWith(
-        `User with wa_id ${demoWhatsappMessageFromClient.wa_id} was not found. Append new whatsapp message failed.`
+        `User with wa_id ${demoWhatsappMessageFromClient.wa_id} was not found. Append new WhatsApp message failed.`
       );
       expect(demoUser.save).toBeCalled();
       expect(logger.verbose).not.toBeCalledWith(
         `New message was created and appended to ${demoWhatsappMessageFromClient.wa_id}.`
       );
       expect(logger.error).toBeCalledWith(
-        `Failed to append a new whatsapp message to ${demoWhatsappMessageFromClient.wa_id}.`
+        `Failed to append a new WhatsApp message to ${demoWhatsappMessageFromClient.wa_id}.`
       );
     });
 
@@ -286,11 +309,31 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
       beforeEach(() => {
         jest.clearAllMocks();
       });
+      it("should log a validation error if the WhatsApp text message from the bot is not valid", async () => {
+        const mockListenerTextMessage: IListenerTextMessage = {
+          ...demoListenerTextMessage,
+          message_id: "NOT VALID",
+        };
+        const expectedError = `"wam_id" with value "${mockListenerTextMessage.message_id}" fails to match the required pattern: /^wamid\\..*$/`;
+
+        await onMessageHandler(mockListenerTextMessage);
+
+        await new Promise((resolve) => {
+          setTimeout(resolve, 500);
+        });
+
+        expect(logger.error).toBeCalledWith(
+          `Validation of incoming WhatsApp message from bot failed. ${expectedError}`
+        );
+      });
+
       it("should log verbose if 'socket.data.currentChatUser' does not match the wa_id of the received message & throw an error if userRef is not defined.", async () => {
         const expectedError = new Error("EFATAL");
         mockedGetUser.mockRejectedValueOnce(expectedError);
+
         const mockSetTimeout = jest.spyOn(global, "setTimeout");
         const demoQueryFilter: UsersFilterList = ["whatsappProfileImage"];
+
         /** It should only create a new WhatsApp message from the server when the wa_id matches. */
         await onMessageHandler(demoListenerTextMessage);
         expect(logger.verbose).toBeCalledWith(
@@ -359,7 +402,7 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
           `An error occurred while fetching the whatsapp profile image of ${demoListenerTextMessage.contact.wa_id}. ${expectedErrorForFailedFetch}`
         );
       });
-      it("should emit to the client when the chat IDs match, indicating that the user is interested in receiving the new message", () => {
+      it("should emit to the client when the chat IDs match, indicating that the user is interested in receiving the new message", async () => {
         /** It should only create a new WhatsApp message from the server when the wa_id matches. */
         const _demoListenerTextMessage: IListenerTextMessage = {
           ...demoListenerTextMessage,
@@ -369,6 +412,11 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
           },
         };
         onMessageHandler(_demoListenerTextMessage);
+        await new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve(undefined);
+          }, 500);
+        });
         expect(logger.verbose).toBeCalledWith(
           `Received a text message for the client watching the currentChatUser.`
         );
@@ -376,20 +424,30 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
     });
   });
 
-  describe("When the user switches the chat", () => {
+  describe("on('chatSwitch')", () => {
     beforeEach(() => {
       jest.clearAllMocks();
     });
 
-    it.todo(
-      "should update the 'serverSocket.data.currentChatUser' when a chat switch event is emitted"
-    );
+    it("should log to the console when the user switched the chat: ", async () => {
+      clientSocket.emit("chatSwitch", demoWhatsappMessageFromClient.wa_id);
+
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve(undefined);
+        }, 500);
+      });
+
+      expect(logger.info).toBeCalledWith(
+        `Socket User ${serverSocket.id} has switched the chat from ${demoUserWAID} to ${demoWhatsappMessageFromClient.wa_id}.`
+      );
+    });
   });
 
   afterAll((done) => {
+    clientSocket?.disconnect();
     io.removeAllListeners();
     io.disconnectSockets();
-    clientSocket?.disconnect();
     io.close();
     jest.restoreAllMocks();
     done();

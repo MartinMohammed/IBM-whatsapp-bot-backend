@@ -1,12 +1,11 @@
 import joi from "@hapi/joi";
+import { IWhatsappTextMessageFromClient } from "../../app";
+import { textSchema, waIdSchema } from "./reusable";
 
-const messageSchema = joi.object({
+const messageSchema = joi.object<IWhatsappTextMessageFromClient>({
   // Now the different fields
-  text: joi.string().trim().min(1).required(),
-  wa_id: joi
-    .string()
-    .regex(/^[1-9]{1}[0-9]{3,14}$/)
-    .required(),
+  text: textSchema.required(),
+  wa_id: waIdSchema.required(),
 });
 
 export default messageSchema;

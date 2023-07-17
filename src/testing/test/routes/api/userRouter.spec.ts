@@ -21,7 +21,6 @@ import UserModelType from "../../../../customTypes/models/User";
 import getWhatsappBot from "../../../../utils/whatsappBot/init";
 import demoUserStored from "../../../data/whatsapp/Mongo/userStored";
 import createHttpError from "http-errors";
-import HTTPError from "../../../../customTypes/REST/HTTPError";
 import getUnixTimestamp from "../../../../utils/getUnixTimestamp";
 
 const BASE_URL = "/api/users";
@@ -51,100 +50,100 @@ describe("Give the http requests to the 'userRouter'", () => {
     await initialUser.save();
   });
   // Test the '/api/users' endpoint
-  // describe(`Testing the '/api/users' endpoint`, () => {
-  //   it("should respond with a '200' HTTP status code and retrieve all users from the users collection", async () => {
-  //     // Send a GET request to the '/api/users' endpoint
-  //     const response = await supertestRequest(app).get(BASE_URL);
+  describe(`Testing the '/api/users' endpoint`, () => {
+    it("should respond with a '200' HTTP status code and retrieve all users from the users collection", async () => {
+      // Send a GET request to the '/api/users' endpoint
+      const response = await supertestRequest(app).get(BASE_URL);
 
-  //     // Extract the received users from the response body
-  //     let receivedUsers: UserModelType[] = response.body;
+      // Extract the received users from the response body
+      let receivedUsers: UserModelType[] = response.body;
 
-  //     // Verify that the response has a '200' HTTP status code
-  //     expect(response.status).toBe(200);
+      // Verify that the response has a '200' HTTP status code
+      expect(response.status).toBe(200);
 
-  //     const queryFilter: (keyof UserModelType)[] = [
-  //       "name",
-  //       "wa_id",
-  //       "whatsapp_messages",
-  //       "_id",
-  //       "whatsappProfileImage",
-  //     ];
-  //     // Fetch all users from the database
-  //     const expectedUsers = await User.find({}).select(queryFilter).lean();
+      const queryFilter: (keyof UserModelType)[] = [
+        "name",
+        "wa_id",
+        "whatsapp_messages",
+        "_id",
+        "whatsappProfileImage",
+      ];
+      // Fetch all users from the database
+      const expectedUsers = await User.find({}).select(queryFilter).lean();
 
-  //     // Verify that the expected users match the received users
-  //     receivedUsers.forEach((user, index) => {
-  //       expect(user.wa_id).toBe(expectedUsers[index].wa_id);
-  //       // Check if all required fields are included in each user.
-  //       expect(queryFilter[index] in user).toBeTruthy();
-  //     });
+      // Verify that the expected users match the received users
+      receivedUsers.forEach((user, index) => {
+        expect(user.wa_id).toBe(expectedUsers[index].wa_id);
+        // Check if all required fields are included in each user.
+        expect(queryFilter[index] in user).toBeTruthy();
+      });
 
-  //     // Verify that the appropriate logs were made
-  //     expect(logger.info).toBeCalledWith(
-  //       "Successfully retrieved all users from the database."
-  //     );
+      // Verify that the appropriate logs were made
+      expect(logger.info).toBeCalledWith(
+        "Successfully retrieved all users from the database."
+      );
 
-  //     expect(logger.verbose).toBeCalledWith(
-  //       `No field filters for the '/users' endpoint were provided.`
-  //     );
-  //   });
+      expect(logger.verbose).toBeCalledWith(
+        `No field filters for the '/users' endpoint were provided.`
+      );
+    });
 
-  //   describe("Testing the '/api/users' endpoint with custom field filter through the 'fields' query parameter", () => {
-  //     it("should return only the requested fields, including the Object ID", async () => {
-  //       for (const key of Object.keys(demoUserStored)) {
-  //         const filterString = `${key},`;
-  //         const response = await supertestRequest(app).get(
-  //           `${BASE_URL}?fields=${filterString}`
-  //         );
-  //         const receivedUsers: UserModelType[] = response.body;
+    describe("Testing the '/api/users' endpoint with custom field filter through the 'fields' query parameter", () => {
+      it("should return only the requested fields, including the Object ID", async () => {
+        for (const key of Object.keys(demoUserStored)) {
+          const filterString = `${key},`;
+          const response = await supertestRequest(app).get(
+            `${BASE_URL}?fields=${filterString}`
+          );
+          const receivedUsers: UserModelType[] = response.body;
 
-  //         // Assertion: The response should contain only the requested field and the Object ID
-  //         expect(Object.keys(receivedUsers[0]).length).toEqual(1 + 1); // Object ID + requested field
-  //         expect(key in receivedUsers[0]).toBeTruthy();
+          // Assertion: The response should contain only the requested field and the Object ID
+          expect(Object.keys(receivedUsers[0]).length).toEqual(1 + 1); // Object ID + requested field
+          expect(key in receivedUsers[0]).toBeTruthy();
 
-  //         // Logging: Verbose log for the field filters used
-  //         expect(logger.verbose).toBeCalledWith(
-  //           `Field filters for the '/users' endpoint were provided: ${filterString}.`
-  //         );
-  //       }
-  //     });
+          // Logging: Verbose log for the field filters used
+          expect(logger.verbose).toBeCalledWith(
+            `Field filters for the '/users' endpoint were provided: ${filterString}.`
+          );
+        }
+      });
 
-  //     it("should filter out invalid filterItems and log an error", async () => {
-  //       // Define a filter string with both valid and invalid filterItems
-  //       const filterString = `name,invalid_field`;
+      it("should filter out invalid filterItems and log an error", async () => {
+        // Define a filter string with both valid and invalid filterItems
+        const filterString = `name,invalid_field`;
 
-  //       // Send a GET request to the API with the filter string
-  //       const response = await supertestRequest(app).get(
-  //         `${BASE_URL}?fields=${filterString}`
-  //       );
+        // Send a GET request to the API with the filter string
+        const response = await supertestRequest(app).get(
+          `${BASE_URL}?fields=${filterString}`
+        );
 
-  //       // Get the received users from the response body
-  //       const receivedUsers: UserModelType[] = response.body;
+        // Get the received users from the response body
+        const receivedUsers: UserModelType[] = response.body;
 
-  //       // Expect the received user objects to only contain the valid fields ('_id' and 'name')
-  //       expect(Object.keys(receivedUsers[0]).length).toEqual(1 + 1);
+        // Expect the received user objects to only contain the valid fields ('_id' and 'name')
+        expect(Object.keys(receivedUsers[0]).length).toEqual(1 + 1);
 
-  //       // Expect the logger to be called with an error message for the invalid filterItem
-  //       expect(logger.error).toBeCalledWith(
-  //         `An invalid filterItem was added when making a request to '/api/users': '${`invalid_field`}'.`
-  //       );
+        // Expect the logger to be called with an error message for the invalid filterItem
+        expect(logger.error).toBeCalledWith(
+          `An invalid filterItem was added when making a request to '/api/users': '${`invalid_field`}'.`
+        );
 
-  //       // Expect the valid field ('name') to be present in the received user object
-  //       expect("name" in receivedUsers[0]).toBeTruthy();
-  //     });
+        // Expect the valid field ('name') to be present in the received user object
+        expect("name" in receivedUsers[0]).toBeTruthy();
+      });
 
-  //     it.todo(
-  //       "should throw an error if fetching all users from the database throws an error"
-  //     );
+      it.todo(
+        "should throw an error if fetching all users from the database throws an error"
+      );
 
-  //     afterEach(() => {
-  //       expect(logger.verbose).not.toBeCalledWith(
-  //         `No field filters for the /users endpoint were provided.`
-  //       );
-  //       jest.clearAllMocks();
-  //     });
-  //   });
-  // });
+      afterEach(() => {
+        expect(logger.verbose).not.toBeCalledWith(
+          `No field filters for the /users endpoint were provided.`
+        );
+        jest.clearAllMocks();
+      });
+    });
+  });
 
   describe("Test the '/api/users/:userId/messages' endpoint: ", () => {
     describe("Method: GET", () => {
