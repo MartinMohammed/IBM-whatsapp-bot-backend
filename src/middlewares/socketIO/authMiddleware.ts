@@ -14,7 +14,6 @@ import jwt from "jsonwebtoken";
 async function auth(socket: ChatSocket, next: Function) {
   // Extract the auth token from the socket handshake
   const token = socket.handshake.auth.token;
-  console.log(token, "jajsdfjsjdf");
   // If no token is provided, log a warning and call the 'next' function with an error
   if (!token) {
     logger.warn(
