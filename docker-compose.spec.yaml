@@ -16,7 +16,7 @@ services:
     image: mongo
     restart: "no"
     environment:
-      MONGO_INITDB_DATABASE: users
+      MONGO_INITDB_DATABASE: testDb
     ports:
       - 27017:27017
     command: mongod --quiet --logpath=/dev/null

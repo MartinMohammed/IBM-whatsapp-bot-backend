@@ -16,6 +16,6 @@ services:
     image: mongo
     restart: always
     environment:
-      MONGO_INITDB_DATABASE: users
+      MONGO_INITDB_DATABASE: testDb
     ports:
       - 27017:27017
