@@ -45,8 +45,11 @@ import UserModelType, { IUser } from "../../../../customTypes/models/User";
 
 import * as UserRepositoryModule from "../../../../models/mongoDB/UserRepository";
 import demoUserStored from "../../../data/whatsapp/Mongo/userStored";
+import auth from "../../../../middlewares/socketIO/authMiddleware";
+import { generateAccessToken } from "../../../../utils/jwt";
 
 describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
+  let accessToken: string;
   const mockedGetUser = jest
     .spyOn(UserRepositoryModule, "getUser")
     .mockImplementation(jest.fn());
@@ -66,34 +69,53 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
   >;
 
   beforeAll((done) => {
-    // Set up Socket.io server for managing connections and co.
-    io = new Server<
-      ClientToServerEventsMessagesType,
-      ServerToClientEventsMessagesType
-    >(TARGET_PORT);
+    const demoUserId = "<DEMO-USER-ID>";
+    generateAccessToken(demoUserId).then((token) => {
+      accessToken = token;
 
-    // Create a new namespace and set a listener for incoming connection.
-    io.of(`${AllNamespaces.CHAT}`).on("connection", (socket) => {
-      serverSocket = socket;
-      // Identifies the chat the current client is in on their WhatsApp dashboard.
-      // Inital value for the currentChatUser...
-      serverSocket.data.currentChatUser = demoUserWAID;
-      messagesController(serverSocket);
-      expect(logger.info).toBeCalledWith(
-        `Received a socket connection: ${serverSocket.id}.`
+      // Set up Socket.io server for managing connections and co.
+      io = new Server<
+        ClientToServerEventsMessagesType,
+        ServerToClientEventsMessagesType
+      >(TARGET_PORT);
+
+      // Create a new namespace and set a listener for incoming connection.
+      const chatNamespace = io.of(`${AllNamespaces.CHAT}`);
+
+      // Register auth middleware
+      chatNamespace.use(auth);
+
+      chatNamespace.on("connection", (socket) => {
+        serverSocket = socket;
+
+        // Identifies the chat the current client is in on their WhatsApp dashboard.
+        // Inital value for the currentChatUser...
+        serverSocket.data.currentChatUser = demoUserWAID;
+        messagesController(serverSocket);
+        expect(logger.info).toBeCalledWith(
+          `Received a socket connection: ${serverSocket.id}.`
+        );
+        expect(mockedBot.on).toHaveBeenCalled();
+
+        socket.on("messages", demoOnMessages);
+      });
+
+      // Establish a brand new socket connection
+      clientSocket = Client(
+        `http://localhost:${TARGET_PORT}${AllNamespaces.CHAT}`,
+        {
+          auth: {
+            token: accessToken,
+          },
+        }
       );
-      expect(mockedBot.on).toHaveBeenCalled();
 
-      socket.on("messages", demoOnMessages);
-    });
-
-    // Establish a brand new socket connection
-    clientSocket = Client(
-      `http://localhost:${TARGET_PORT}${AllNamespaces.CHAT}`
-    );
-
-    clientSocket.on("connect", () => {
-      done();
+      clientSocket.on("connect", () => {
+        done();
+        expect(logger.info).toBeCalledWith(
+          `${demoUserId} is authenticated to establish a socket connection.`
+        );
+      });
     });
   });
 
@@ -441,6 +463,82 @@ describe("Testing the websocket endpoint for the namespace: '/chat'", () => {
       expect(logger.info).toBeCalledWith(
         `Socket User ${serverSocket.id} has switched the chat from ${demoUserWAID} to ${demoWhatsappMessageFromClient.wa_id}.`
       );
+    });
+  });
+
+  // Put it as last test, so it does not interrupt the other tests.
+  // Assuming necessary imports and configurations are already in place.
+
+  /**
+   * Test suite for socket connection related functionality.
+   */
+  describe("Socket connection with authMiddleware.", () => {
+    const socketUrl = `http://localhost:${TARGET_PORT}${AllNamespaces.CHAT}`;
+
+    /**
+     * Test case to ensure that a socket connection attempt without providing an access token fails as expected.
+     * It verifies that an error is thrown when attempting to establish a socket connection with an undefined access token.
+     * Additionally, it checks that the appropriate warning logs are triggered.
+     */
+    it("should fail when trying to establish a socket connection without an accessToken", async () => {
+      const newClientSocket = Client(socketUrl, {
+        auth: {
+          token: undefined,
+        },
+      });
+
+      let error: Error | undefined;
+
+      newClientSocket.on("connect_error", (err) => {
+        error = err;
+      });
+
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1000);
+      });
+
+      newClientSocket.close();
+
+      expect(logger.warn).toBeCalledWith(
+        "Received a socket connection request with an unspecified accessToken."
+      );
+      expect(error).not.toBeUndefined();
+      expect((error as Error)?.message).toBe("No access token was provided.");
+    });
+
+    /**
+     * Test case to ensure that a socket connection attempt with an invalid access token fails as expected.
+     * It verifies that an error is thrown when attempting to establish a socket connection with an invalid access token.
+     * Additionally, it checks that the appropriate warning logs are triggered.
+     */
+    it("should fail when trying to establish a socket connection with an invalid accessToken", async () => {
+      const invalidAccessToken = "some.invalid.access.token";
+
+      const newClientSocket = Client(socketUrl, {
+        auth: {
+          token: invalidAccessToken,
+        },
+      });
+
+      let error: Error | undefined;
+
+      newClientSocket.on("connect_error", (err) => {
+        error = err as unknown as Error;
+      });
+
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1000);
+      });
+
+      newClientSocket.close();
+
+      expect(logger.warn).toBeCalledWith(
+        "Received socket connection with an invalid access token."
+      );
+      expect(logger.warn).toBeCalledWith(
+        "Received an invalid JWT Access token."
+      );
+      expect((error as Error)?.message).toBe("Unauthorized");
     });
   });
 

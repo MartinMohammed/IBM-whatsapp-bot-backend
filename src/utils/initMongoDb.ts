@@ -6,9 +6,16 @@ import logger from "../logger";
  */
 async function initMongoDb() {
   try {
+    let mongoUri: string;
+
+    // Just make sure not ot use production db, for testing.
+    if (process.env.NODE_ENV !== "test") {
+      mongoUri = `mongodb+srv://${process.env.MONGO_ATLAS_DB_USERNAME}:${process.env.MONGO_ATLAS_DB_PASSWORD}@cluster0.pqvdc.mongodb.net/${process.env.MONGO_ATLAS_DB_NAME}?retryWrites=true&w=majority`;
+    } else {
+      mongoUri = "mongodb://mongo:27017/testDb";
+    }
     // Connect to MongoDB using the provided connection URI and options
-    const uri = `mongodb+srv://${process.env.MONGO_ATLAS_DB_USERNAME}:${process.env.MONGO_ATLAS_DB_PASSWORD}@cluster0.pqvdc.mongodb.net/${process.env.MONGO_ATLAS_DB_NAME}?retryWrites=true&w=majority`;
-    await mongoose.connect(uri);
+    await mongoose.connect(mongoUri);
   } catch (error) {
     logger.error(`Failed to establish MongoDB connection: ${error}.`);
     throw error; // Pass the error further

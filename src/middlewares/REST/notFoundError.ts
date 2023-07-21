@@ -1,6 +1,5 @@
 import createHttpError from "http-errors";
-import HTTPError from "../customTypes/REST/HTTPError";
-import logger from "../logger";
+import logger from "../../logger";
 import express from "express";
 
 /**

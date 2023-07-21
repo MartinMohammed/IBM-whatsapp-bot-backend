@@ -17,7 +17,7 @@ describe("textMessageHandler", () => {
    */
   beforeAll(async () => {
     // Establish connection to db for this test suite
-    const mongoUri = `mongodb://mongo:27017/users`;
+    const mongoUri = `mongodb://mongo:27017/testDb`;
     await mongoose.connect(mongoUri);
   });
 

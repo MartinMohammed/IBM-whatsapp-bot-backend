@@ -36,6 +36,12 @@ declare namespace NodeJS {
     MONGO_ATLAS_DB_NAME: string;
 
     /**
+     * Represents the secret that is used to create the
+     * digital signature of the jwt payload and headers of the Access Token.
+     */
+    JWT_SIGNING_KEY: string;
+
+    /**
      * The ID of the phone number associated with the application.
      */
     PHONE_NUMBER_ID: string;

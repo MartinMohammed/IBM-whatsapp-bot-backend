@@ -17,9 +17,10 @@ import healthRouter from "./routes/healthRouter";
 // ----------------- Router ----------------- //
 
 // ----------------- Custom Middleware ----------------- //
-import errorHandler from "./middlewares/errorHandler";
-import notFoundError from "./middlewares/notFoundError";
+import errorHandler from "./middlewares/REST/errorHandler";
+import notFoundError from "./middlewares/REST/notFoundError";
 import apiRouter from "./routes/api";
+import verifyAccessTokenMiddleware from "./middlewares/REST/verifyAccessTokenMiddleware";
 // ----------------- Custom Middleware ----------------- //
 
 // ----------------- EXPORT ALL TYPES FOR THE TYPE BUNDLER ----------------- //
@@ -66,7 +67,7 @@ app.use(bodyParser.json());
 // Sign in the router
 app.use("/", healthRouter);
 app.use("/webhook", webhookRouter);
-app.use("/api", apiRouter);
+app.use("/api", verifyAccessTokenMiddleware, apiRouter);
 
 // Apply for unmatched routes.
 app.use(notFoundError);

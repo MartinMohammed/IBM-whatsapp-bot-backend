@@ -6,6 +6,7 @@ import { ChatNamespace } from "./customTypes/socketIO/chatNamespace";
 import { AllNamespaces } from "./customTypes/socketIO/root";
 import messagesController from "./controllers/socketIO/chatController";
 import initMongoDb from "./utils/initMongoDb";
+import auth from "./middlewares/socketIO/authMiddleware";
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
@@ -29,9 +30,13 @@ const connectToDatabase = async (): Promise<void> => {
       },
     });
     // Initialize the messages namespace
-    const messagesNamespace: ChatNamespace = io.of(AllNamespaces.CHAT);
+    const chatNamespace: ChatNamespace = io.of(AllNamespaces.CHAT);
+
+    // Register middleware for authentication
+    chatNamespace.use(auth);
+
     //   Listen for incoming connection requests.
-    messagesNamespace.on("connection", messagesController);
+    chatNamespace.on("connection", messagesController);
   } catch (error) {
     logger.error(`Failed to connect to MongoDB Atlas database: ${error}`);
   }

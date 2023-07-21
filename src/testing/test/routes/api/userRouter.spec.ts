@@ -22,6 +22,7 @@ import getWhatsappBot from "../../../../utils/whatsappBot/init";
 import demoUserStored from "../../../data/whatsapp/Mongo/userStored";
 import createHttpError from "http-errors";
 import getUnixTimestamp from "../../../../utils/getUnixTimestamp";
+import { generateAccessToken } from "../../../../utils/jwt";
 
 const BASE_URL = "/api/users";
 describe("Give the http requests to the 'userRouter'", () => {
@@ -30,10 +31,12 @@ describe("Give the http requests to the 'userRouter'", () => {
   const mockedWhatsappBot = getWhatsappBot() as jest.Mocked<any>;
   const mockedSendTextMessage = jest.fn();
   mockedWhatsappBot.sendTextMessage.mockImplementation(mockedSendTextMessage);
+  let demoAccessToken: string;
 
   beforeAll(async () => {
     // Connect to test db
-    const mongoUri = "mongodb://mongo:27017/users";
+    const mongoUri = "mongodb://mongo:27017/testDb";
+    demoAccessToken = await generateAccessToken("<DEMO_USER_ID>");
     await mongoose.connect(mongoUri);
   });
 
@@ -45,15 +48,26 @@ describe("Give the http requests to the 'userRouter'", () => {
       wa_id: demoWhatsappContact.wa_id,
     });
     // Get the document id of the demo user.
-    waidOfUser = initialUser.wa_id.toString();
+    waidOfUser = initialUser.wa_id;
 
     await initialUser.save();
   });
   // Test the '/api/users' endpoint
   describe(`Testing the '/api/users' endpoint`, () => {
-    it("should respond with a '200' HTTP status code and retrieve all users from the users collection", async () => {
+    it("should fail if no bearer token was provided: ", async () => {
+      const expectedError = createHttpError.Unauthorized("Unauthorized");
+
       // Send a GET request to the '/api/users' endpoint
       const response = await supertestRequest(app).get(BASE_URL);
+      expect(response.statusCode).toBe(expectedError.statusCode);
+      expect(response.body?.error?.message).toBe(expectedError.message);
+      expect(response.body?.error?.statusCode).toBe(expectedError.statusCode);
+    });
+    it("should respond with a '200' HTTP status code and retrieve all users from the users collection", async () => {
+      // Send a GET request to the '/api/users' endpoint
+      const response = await supertestRequest(app)
+        .get(BASE_URL)
+        .set("Authorization", `Bearer ${demoAccessToken}`);
 
       // Extract the received users from the response body
       let receivedUsers: UserModelType[] = response.body;
@@ -92,9 +106,9 @@ describe("Give the http requests to the 'userRouter'", () => {
       it("should return only the requested fields, including the Object ID", async () => {
         for (const key of Object.keys(demoUserStored)) {
           const filterString = `${key},`;
-          const response = await supertestRequest(app).get(
-            `${BASE_URL}?fields=${filterString}`
-          );
+          const response = await supertestRequest(app)
+            .get(`${BASE_URL}?fields=${filterString}`)
+            .set("Authorization", `Bearer ${demoAccessToken}`);
           const receivedUsers: UserModelType[] = response.body;
 
           // Assertion: The response should contain only the requested field and the Object ID
@@ -113,9 +127,9 @@ describe("Give the http requests to the 'userRouter'", () => {
         const filterString = `name,invalid_field`;
 
         // Send a GET request to the API with the filter string
-        const response = await supertestRequest(app).get(
-          `${BASE_URL}?fields=${filterString}`
-        );
+        const response = await supertestRequest(app)
+          .get(`${BASE_URL}?fields=${filterString}`)
+          .set("Authorization", `Bearer ${demoAccessToken}`);
 
         // Get the received users from the response body
         const receivedUsers: UserModelType[] = response.body;
@@ -150,6 +164,35 @@ describe("Give the http requests to the 'userRouter'", () => {
       beforeEach(() => {
         jest.clearAllMocks();
       });
+
+      it("should fail if no bearer token was provided: ", async () => {
+        const expectedError = createHttpError.Unauthorized("Unauthorized");
+
+        /**
+         * Per default one user is created already
+         * Create new users in the database.
+         *  */
+        // Append some new messages to the array of the default user
+        const userRef = await User.findOne({
+          wa_id: demoWhatsappContact.wa_id,
+        });
+        for (let i = 0; i < 10; i++) {
+          userRef?.whatsapp_messages.push({
+            ...demoWhatsappMessageStored,
+            wam_id: `waid.${i}`,
+          });
+        }
+        await userRef?.save();
+        const page = 1;
+
+        const response = await supertestRequest(app).get(
+          `${BASE_URL}/${waidOfUser}/messages?page=${page}`
+        );
+        expect(response.statusCode).toBe(expectedError.statusCode);
+        expect(response.body?.error?.message).toBe(expectedError.message);
+        expect(response.body?.error?.statusCode).toBe(expectedError.statusCode);
+      });
+
       it("should fetch only the amount of entries as the limitter has specified: ", async () => {
         /**
          * Per default one user is created already
@@ -169,9 +212,9 @@ describe("Give the http requests to the 'userRouter'", () => {
         const page = 1;
 
         const numberOfEntriesMaximumExpected = page * 10;
-        const response = await supertestRequest(app).get(
-          `${BASE_URL}/${waidOfUser}/messages?page=${page}`
-        );
+        const response = await supertestRequest(app)
+          .get(`${BASE_URL}/${waidOfUser}/messages?page=${page}`)
+          .set("Authorization", `Bearer ${demoAccessToken}`);
         const messages: IWhatsappMessage[] = response.body;
         expect(messages.length).toBeLessThanOrEqual(
           numberOfEntriesMaximumExpected
@@ -186,6 +229,19 @@ describe("Give the http requests to the 'userRouter'", () => {
     describe("Method: POST", () => {
       const wamIdOfSentMessage = demoWamId;
 
+      it("should fail if no bearer token was provided: ", async () => {
+        const expectedError = createHttpError.Unauthorized("Unauthorized");
+
+        const response = await supertestRequest(app)
+          .post(`${BASE_URL}/${waidOfUser}/messages`)
+          .send({
+            text: demoWhatsappMessageFromClient.text,
+          });
+        expect(response.statusCode).toBe(expectedError.statusCode);
+        expect(response.body?.error?.message).toBe(expectedError.message);
+        expect(response.body?.error?.statusCode).toBe(expectedError.statusCode);
+      });
+
       it("should append a new WhatsApp message to the user's WhatsApp message array", async () => {
         mockedSendTextMessage.mockResolvedValueOnce(wamIdOfSentMessage);
 
@@ -193,7 +249,8 @@ describe("Give the http requests to the 'userRouter'", () => {
           .post(`${BASE_URL}/${waidOfUser}/messages`)
           .send({
             text: demoWhatsappMessageFromClient.text,
-          });
+          })
+          .set("Authorization", `Bearer ${demoAccessToken}`);
 
         expect(logger.verbose).toHaveBeenCalledWith(
           `Find one User with the given wa_id ${
@@ -217,7 +274,8 @@ describe("Give the http requests to the 'userRouter'", () => {
           .post(`${BASE_URL}/${waidOfUser}/messages`)
           .send({
             text: "", // empty
-          });
+          })
+          .set("Authorization", `Bearer ${demoAccessToken}`);
 
         expect(response.statusCode).toBe(422);
         expect("error" in response.body).toBeTruthy();
@@ -231,7 +289,8 @@ describe("Give the http requests to the 'userRouter'", () => {
           .send({
             text: demoWhatsappMessageStored.text, // empty
             timestamp: getUnixTimestamp(),
-          });
+          })
+          .set("Authorization", `Bearer ${demoAccessToken}`);
 
         expect(response.statusCode).toBe(422);
         expect("error" in response.body).toBeTruthy();
@@ -251,7 +310,8 @@ describe("Give the http requests to the 'userRouter'", () => {
           .post(`${BASE_URL}/${mockUserId}/messages`)
           .send({
             text: demoWhatsappMessageFromClient.text,
-          });
+          })
+          .set("Authorization", `Bearer ${demoAccessToken}`);
 
         await new Promise((resolve, reject) => {
           setTimeout(() => {
@@ -279,7 +339,8 @@ describe("Give the http requests to the 'userRouter'", () => {
           .post(`${BASE_URL}/${waidOfUser}/messages`)
           .send({
             text: demoWhatsappMessageFromClient.text,
-          });
+          })
+          .set("Authorization", `Bearer ${demoAccessToken}`);
 
         // It should find the user document.
         expect(logger.verbose).toBeCalledWith(
