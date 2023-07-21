@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./src:/app/src:ro
+    environment:
+      - JWT_SIGNING_KEY_TEST=tHiSiStEsT
     depends_on:
       - mongo
       # Build, after removing the dist folder in Dockerfile.dev

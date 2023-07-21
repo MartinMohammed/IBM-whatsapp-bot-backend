@@ -20,7 +20,7 @@ exports.default = {
   detectOpenHandles: true,
   verbose: true,
   moduleFileExtensions: ["js"],
-  testTimeout: 45000,
+  testTimeout: 30000,
   // Each setupFile will be run once per test file.
   setupFiles: ["./dist/testing/setupTests.js"],
 };

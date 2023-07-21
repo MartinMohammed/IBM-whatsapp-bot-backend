@@ -42,6 +42,12 @@ declare namespace NodeJS {
     JWT_SIGNING_KEY: string;
 
     /**
+     * Same as the JWT_SIGNING_KEY but used for testing and exposed
+     * in docker-compose.spec.yaml and docker-compose.spec.watch file.
+     */
+    JWT_SIGNING_KEY_TEST: string;
+
+    /**
      * The ID of the phone number associated with the application.
      */
     PHONE_NUMBER_ID: string;

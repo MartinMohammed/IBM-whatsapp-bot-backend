@@ -9,9 +9,13 @@ const ACCESS_TOKEN_EXPIRATION = "2h";
 /** Returns a promise either resolving with the generated token or rejecting with an error */
 // Used for both generating the access token and the refresh token
 export function generateAccessToken(userId: string): Promise<string> {
-  const { JWT_SIGNING_KEY } = process.env;
+  let signingSecret: string;
+  if (process.env.NODE_ENV === "test") {
+    signingSecret = process.env.JWT_SIGNING_KEY_TEST;
+  } else {
+    signingSecret = process.env.JWT_SIGNING_KEY;
+  }
 
-  const signingSecret = JWT_SIGNING_KEY;
   const expiresIn = ACCESS_TOKEN_EXPIRATION; // Set a default value if not provided
 
   const tokenType = "accessToken";
@@ -64,8 +68,15 @@ export function generateAccessToken(userId: string): Promise<string> {
  * for token invalidity (e.g., "Unauthorized" for token verification failure).
  */
 export function verifyAccessToken(token: string): Promise<JWTPayload> {
+  let signingSecret: string;
+  if (process.env.NODE_ENV === "test") {
+    signingSecret = process.env.JWT_SIGNING_KEY_TEST;
+  } else {
+    signingSecret = process.env.JWT_SIGNING_KEY;
+  }
+
   return new Promise((resolve, reject) => {
-    jwt.verify(token, process.env.JWT_SIGNING_KEY, (err, payload) => {
+    jwt.verify(token, signingSecret, (err, payload) => {
       if (err) {
         const errorMessage =
           err.name === "JsonWebTokenError" ? "Unauthorized" : err.name;
