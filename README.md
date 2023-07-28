@@ -17,10 +17,10 @@ The success of the WhatsApp Chatbot was impressive, as it garnered widespread in
 ### Quick navigation 
 
 
-- [Gym Occupancy Tracker Repository](https://github.com/MartinMohammed/IBM-whatsapp-occupancy-scraper)
+
 - [Svelte Frontend Dashboard Repository](https://github.com/MartinMohammed/IBM-whatsapp-bot-frontend)
-- [WhatsApp Backend Server Repository](https://github.com/MartinMohammed/IBM-whatsapp-bot-backend)
 - [Authorization Server Repository](https://github.com/MartinMohammed/IBM-jwt-authorization)
+- [Gym Occupancy Tracker Repository](https://github.com/MartinMohammed/IBM-whatsapp-occupancy-scraper)
 - [WhatsApp Middleware NPM Package](https://github.com/MartinMohammed/IBM-whatsapp-bot-middleware-npm)
 
 ## Gym Occupancy Tracker
@@ -162,10 +162,6 @@ To deploy the webhook API to a production environment, follow these steps:
 
 The Webhook API provides a seamless integration with WhatsApp, allowing you to receive and process messages from users. By following this documentation, you can easily set up and deploy the webhook API for your application.
 
-Please note that this documentation is a template and should be customized based on your specific API implementation and requirements.
-
-
-[Link to WhatsApp Backend Server Repository](https://github.com/MartinMohammed/IBM-whatsapp-bot-backend)
 
 ## Authorization Server with JWT
 
