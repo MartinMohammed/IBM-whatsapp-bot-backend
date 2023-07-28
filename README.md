@@ -16,18 +16,10 @@ The success of the WhatsApp Chatbot was impressive, as it garnered widespread in
 
 ### Quick navigation 
 
-
-
 - [Svelte Frontend Dashboard Repository](https://github.com/MartinMohammed/IBM-whatsapp-bot-frontend)
 - [Authorization Server Repository](https://github.com/MartinMohammed/IBM-jwt-authorization)
 - [Gym Occupancy Tracker Repository](https://github.com/MartinMohammed/IBM-whatsapp-occupancy-scraper)
 - [WhatsApp Middleware NPM Package](https://github.com/MartinMohammed/IBM-whatsapp-bot-middleware-npm)
-
-## Gym Occupancy Tracker
-
-The Gym Occupancy Tracker is a Python program that web-scrapes the Fitness Fabrik gym website to extract data about the current number of people training in the gym. It uses Beautiful Soup to parse the HTML and extract relevant data. The program also integrates with a Telegram bot to notify users when the gym occupancy meets their desired criteria.
-
-[Link to Gym Occupancy Tracker Repository](https://github.com/MartinMohammed/IBM-whatsapp-occupancy-scraper)
 
 ## Svelte Frontend Dashboard
 
@@ -169,7 +161,13 @@ The Authorization Server with JWT is a secure authentication service that allows
 
 [Link to Authorization Server Repository](https://github.com/MartinMohammed/IBM-jwt-authorization)
 
-# WhatsApp Middleware NPM Package
+## Gym Occupancy Tracker
+
+The Gym Occupancy Tracker is a Python program that web-scrapes the Fitness Fabrik gym website to extract data about the current number of people training in the gym. It uses Beautiful Soup to parse the HTML and extract relevant data. The program also integrates with a Telegram bot to notify users when the gym occupancy meets their desired criteria.
+
+[Link to Gym Occupancy Tracker Repository](https://github.com/MartinMohammed/IBM-whatsapp-occupancy-scraper)
+
+## WhatsApp Middleware NPM Package
 
 The WhatsApp Middleware Package is a highly successful npm package developed during my internship at IBM. It serves as a crucial component of the Fitness App Suite, enabling seamless integration with the WhatsApp Chatbot and real-time message communication.
 
