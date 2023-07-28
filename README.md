@@ -1,8 +1,12 @@
 [![Checks](https://github.com/body-culture/webhook-api/actions/workflows/checks.yaml/badge.svg)](https://github.com/body-culture/webhook-api/actions/workflows/checks.yaml)
 
+# Project Overview - Whatsapp ChatBot / Dashboard Application
+
+This section represents the public demo backend version of the Whatsapp ChatBot / dashboard application developed during my time at IBM. As the product owner for the project with Body Culture Group in Darmstadt, my responsibilities included overseeing the development and implementation of the backend server. The server consists of a REST API and a web socket server that enables the delivery of messages to the frontend. To ensure security, the API routes are protected using a JWT authorization mechanism, with tokens provided by the authorization server. Additionally, the server utilizes the public demo version of the WhatsApp middleware developed by myself, which allows for the receiving and subscribing to new incoming WhatsApp messages.
+
 ## Webhook API Documentation
 
-The Webhook API is an HTTP-based API that allows you to receive and process incoming messages from WhatsApp. This documentation provides an overview of the API endpoints, request/response formats, and examples of how to use the API.
+The Webhook API is an HTTP-based API designed to facilitate the receipt and processing of incoming messages from WhatsApp. This documentation provides an overview of the API endpoints, request/response formats, and examples demonstrating how to interact with the API.
 
 ### Base URL
 
@@ -34,7 +38,7 @@ Status: 200 OK
 
 #### `POST /webhook`
 
-This endpoint is used to receive incoming messages from WhatsApp. The payload of the request will contain the message details.
+This endpoint is used to receive incoming messages from WhatsApp. The payload of the request will contain the details of the received message.
 
 ##### Request Example
 
